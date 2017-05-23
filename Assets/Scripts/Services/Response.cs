@@ -14,11 +14,11 @@ public class Response {
 		this.status = status;
 	}
 
-	public String getMessage () {
+	public String GetMessage () {
 		return message;
 	}
 
-	public Status getStatus () {
+	public Status GetStatus () {
 		return status;
 	}
 

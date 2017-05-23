@@ -3,6 +3,7 @@ using System.Net;
 using System.Text;
 using UnityEngine;
 using System.IO;
+using System.Collections.Generic;
 
 public class DBServer {
 
@@ -12,42 +13,60 @@ public class DBServer {
 	}
 
 	// TODO
-	public static Response login (String username, String password) {
-		return DBServer.sendRequest ("login " + username + " " + password, "GET");
+	public static Response Login (String username, String password) {
+		Dictionary<String, String> headers = new Dictionary<String, String>() {
+			{"login", "true"},
+			{"username", username},
+			{"password", password}
+		};
+
+		HttpWebResponse response = SendGETRequest (headers);
+
+		return new Response(GetMessage (response), Status.Successful);
 	}
 
 	// TODO
-	public static Response logout () {
-		return DBServer.sendRequest ("logout", "GET");
+	public static Response Logout () {
+		return new Response(Status.Successful);
 	}
 
-	private static Response sendRequest (String data, String method) {
-		Byte[] bytes = Encoding.UTF8.GetBytes (data);
-
-		// setup template
-		WebRequest request = WebRequest.Create (DBServerAddr);
-		request.Credentials = CredentialCache.DefaultCredentials;
-		((HttpWebRequest)request).UserAgent = "Imperial Dungeon";
-		request.ContentLength = bytes.Length;
-		request.ContentType = "application/x-www-form-urlencoded";
-		request.Method = method;
-		Stream dataStream = request.GetRequestStream ();
-		dataStream.Write (bytes, 0, bytes.Length);
-
-		// get web response
-		WebResponse response = request.GetResponse();
-
+	private static String GetMessage (HttpWebResponse response) {
 		Stream responseData = response.GetResponseStream ();
 		StreamReader sr = new StreamReader (responseData);
-		Response resp = new Response (sr.ReadToEnd (), Status.Successful);
-
-		// close streams
-		dataStream.Close ();
+		String message = sr.ReadToEnd ();
 		sr.Close ();
-		responseData.Close ();
-		response.Close();
-
-		return resp;
+		response.Close ();
+		return message;
 	}
 
+	private static HttpWebRequest GetRequestTemplate (Dictionary<String, String> headers, String method) {
+		HttpWebRequest request = (HttpWebRequest) WebRequest.Create(DBServerAddr);
+		request.UserAgent = "Imperial Dungeon";
+		request.Credentials = CredentialCache.DefaultCredentials;
+		request.ContentType = "application/x-www-form-urlencoded";
+		request.Method = method;
+
+		foreach (var header in headers) {
+			request.Headers[header.Key] = header.Value;
+		}
+
+		return request;
+	}
+
+	private static HttpWebResponse SendGETRequest (Dictionary<String, String> headers) {
+		HttpWebRequest request = GetRequestTemplate (headers, "GET");
+
+		return (HttpWebResponse) request.GetResponse ();
+	}
+
+	private static HttpWebResponse SendPOSTRequest (Dictionary<String, String> headers, String message) {
+		HttpWebRequest request = GetRequestTemplate (headers, "POST");
+
+		Byte[] bytes = Encoding.UTF8.GetBytes (message);
+		request.ContentLength = bytes.Length;
+		Stream dataStream = request.GetRequestStream ();
+		dataStream.Write (bytes, 0, bytes.Length);
+		dataStream.Close ();
+		return (HttpWebResponse) request.GetResponse ();
+	}
 }
