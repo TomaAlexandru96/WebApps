@@ -15,9 +15,9 @@ public class DBServer {
 	// TODO
 	public static Response Login (String username, String password) {
 		Dictionary<String, String> headers = new Dictionary<String, String>() {
-			{"login", "true"},
-			{"username", username},
-			{"password", password}
+			{"x-method", "login"},
+			{"x-username", username},
+			{"x-password", password}
 		};
 
 		HttpWebResponse response = SendGETRequest (headers);
