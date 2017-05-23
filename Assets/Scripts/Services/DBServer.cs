@@ -20,20 +20,10 @@ public class DBServer {
 	public static Response<User> Login (String username, String password) {
 		try {
 			HttpWebResponse response = SendGETRequest (DBServerAddr + "/users?username="+username+"&password="+Encrypt(password));
-
-			if (response.StatusCode != HttpStatusCode.OK) {
-				return new Response<User>(null, response.StatusCode);
-			} else {
-				return new Response<User>(JsonUtility.FromJson<User> (GetMessage (response)), response.StatusCode);
-			}
+			return new Response<User>(JsonUtility.FromJson<User> (GetMessage (response)));
 		} catch (WebException e) {
-			return new Response<User>(null, e.ToString ());
+			return new Response<User>(e);
 		}
-	}
-
-	/* Issues logout request to the DB server */
-	public static bool Logout () {
-		return true;
 	}
 
 	/* Issues register request to DB server */
@@ -42,15 +32,15 @@ public class DBServer {
 
 		try {
 			HttpWebResponse response = SendPOSTRequest (DBServerAddr + "/register", JsonUtility.ToJson (user));
-
-			if (response.StatusCode != HttpStatusCode.OK) {
-				return new Response<User>(null, response.StatusCode);
-			}
-
-			return new Response<User>(user, response.StatusCode);
+			return new Response<User>(JsonUtility.FromJson<User> (GetMessage (response)));
 		} catch (WebException e) {
-			return new Response<User>(null, e.ToString ());
+			return new Response<User>(e);
 		}
+	}
+
+	/* Issues logout request to the DB server */
+	public static bool Logout () {
+		return true;
 	}
 
 	private static String Encrypt(String message) {
