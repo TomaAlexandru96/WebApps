@@ -1,8 +1,10 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Net;
+using System.Net.Sockets;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class LoginPanelController : MonoBehaviour {
 	
@@ -17,21 +19,29 @@ public class LoginPanelController : MonoBehaviour {
 			return;
 		}
 
-		errorLabel.text = "";
 		Response<User> response = DBServer.Login (username.text, password.text);
 
-		if (response.error != "") {
-			errorLabel.text = response.error;
-		} else if (response.status != HttpStatusCode.OK) {
-			errorLabel.text = response.status.ToString ();
+		if (response.error != null) {
+			if (response.error.Status == WebExceptionStatus.ConnectFailure) {
+				errorLabel.text = "Could not connect to the server!\n";
+			} else if (response.error.Status == WebExceptionStatus.ReceiveFailure) {
+				errorLabel.text = "Username or password combination wrong!\n";
+			} else {
+				errorLabel.text = "Error unknown!";
+			}
 		} else {
-			Debug.Log("Logged: " + response.data.username);
+			CurrentUser.GetInstance ().SetUserInfo (response.data);
+			SceneManager.LoadScene ("Menu");
 		}
 	}
 
 	/* Checks validity of input and displays error message if any */
 	public bool CheckInput () {
-		return true;
+		errorLabel.text = "";
+		errorLabel.text += Validator.isUsernameValid (username.text);
+		errorLabel.text += Validator.isPasswordValid (password.text);
+
+		return errorLabel.text.Equals ("");
 	}
 
 	/* Used to return to main scene */
