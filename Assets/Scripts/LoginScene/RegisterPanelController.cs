@@ -11,10 +11,12 @@ public class RegisterPanelController : MonoBehaviour {
 	public InputField confirmPassword;
 	public GameObject mainPanel;
 
+	/* Used by register button to issue aregister query to the DB */
 	public void RequestRegister () {
-		Debug.Log ("requested register");
+		User user = DBServer.Register (username.text, password.text, email.text);
 	}
 
+	/* Used by cancel button to go back to the main pane */
 	public void GoBack () {
 		this.gameObject.SetActive (false);
 		mainPanel.SetActive (true);
