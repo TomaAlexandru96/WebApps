@@ -14,12 +14,12 @@ public class MainPanelController : MonoBehaviour {
 	/* Used by login button to change the pane to login pane */
 	public void Login () {
 		this.gameObject.SetActive (false);
-		loginPanel.SetActive (true);
+		loginPanel.GetComponent<LoginPanelController>().Activate(true);
 	}
 
 	/* Used by registeer button to change the pane to register pane */
 	public void Register () {
 		this.gameObject.SetActive (false);
-		registerPanel.SetActive (true);
+		registerPanel.GetComponent<LoginPanelController>().Activate(true);
 	}
 }
