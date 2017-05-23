@@ -55,7 +55,7 @@ class DBHTTPHandler(BaseHTTPRequestHandler):
                WHERE USERNAME = '{}' AND PASSWORD = '{}'
             '''.format(params['username'][0], params['password'][0])
     cursor.execute(query)
-    response = list(cursor.fetchone())
+    response = cursor.fetchone()
     if (response is None):
       self.send_response(NOT_FOUND)
     else:
