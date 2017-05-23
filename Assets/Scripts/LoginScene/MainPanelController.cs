@@ -11,12 +11,12 @@ public class MainPanelController : MonoBehaviour {
 		Debug.Log ("You need to login");
 	}
 
-	public void login () {
+	public void Login () {
 		this.gameObject.SetActive (false);
 		loginPanel.SetActive (true);
 	}
 
-	public void register () {
+	public void Register () {
 		this.gameObject.SetActive (false);
 		registerPanel.SetActive (true);
 	}

@@ -1,20 +1,21 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class RegisterPanelController : MonoBehaviour {
 
-	public GameObject username;
-	public GameObject email;
-	public GameObject password;
-	public GameObject confirmPassword;
+	public InputField username;
+	public InputField email;
+	public InputField password;
+	public InputField confirmPassword;
 	public GameObject mainPanel;
 
-	public void requestRegister () {
+	public void RequestRegister () {
 		Debug.Log ("requested register");
 	}
 
-	public void goBack () {
+	public void GoBack () {
 		this.gameObject.SetActive (false);
 		mainPanel.SetActive (true);
 	}
