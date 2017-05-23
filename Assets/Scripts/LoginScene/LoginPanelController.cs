@@ -1,18 +1,20 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class LoginPanelController : MonoBehaviour {
 	
-	public GameObject username;
-	public GameObject password;
+	public InputField username;
+	public InputField password;
 	public GameObject mainPanel;
 
-	public void requestLogin () {
-		Debug.Log ("requested login");
+	public void RequestLogin () {
+		Response response = DBServer.Login (username.text, password.text);
+		Debug.Log (response);
 	}
 
-	public void goBack () {
+	public void GoBack () {
 		this.gameObject.SetActive (false);
 		mainPanel.SetActive (true);
 	}
