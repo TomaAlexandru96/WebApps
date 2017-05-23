@@ -17,18 +17,17 @@ public class DBServer {
 		if no user is found for the following entries
 		than it returns null
 	*/
-	public static User Login (String username, String password) {
+	public static Response<User> Login (String username, String password) {
 		try {
 			HttpWebResponse response = SendGETRequest (DBServerAddr + "/users?username="+username+"&password="+Encrypt(password));
 
 			if (response.StatusCode != HttpStatusCode.OK) {
-				return null;
+				return new Response<User>(null, response.StatusCode);
 			} else {
-				return JsonUtility.FromJson<User> (GetMessage (response));
+				return new Response<User>(JsonUtility.FromJson<User> (GetMessage (response)), response.StatusCode);
 			}
-		} catch (Exception e) {
-			Debug.LogError (e);
-			return null;
+		} catch (WebException e) {
+			return new Response<User>(null, e.ToString ());
 		}
 	}
 
@@ -38,27 +37,24 @@ public class DBServer {
 	}
 
 	/* Issues register request to DB server */
-	public static User Register (String username, String password, String email) {
+	public static Response<User> Register (String username, String password, String email) {
 		User user = new User (username, Encrypt (password), email);
 
 		try {
 			HttpWebResponse response = SendPOSTRequest (DBServerAddr + "/register", JsonUtility.ToJson (user));
 
 			if (response.StatusCode != HttpStatusCode.OK) {
-				return null;
+				return new Response<User>(null, response.StatusCode);
 			}
 
-			return user;
-		} catch (Exception e) {
-			Debug.LogError (e);
-			return null;
+			return new Response<User>(user, response.StatusCode);
+		} catch (WebException e) {
+			return new Response<User>(null, e.ToString ());
 		}
 	}
 
 	private static String Encrypt(String message) {
-		//byte[] encryptedPassBytes = SHA1.Create ().ComputeHash (Encoding.Unicode.GetBytes(message));
-		//return Encoding.Unicode.GetString (encryptedPassBytes);
-		return message
+		return Convert.ToBase64String (Encoding.Unicode.GetBytes (message));
 	}
 
 	/* Gets the string message of the response */
