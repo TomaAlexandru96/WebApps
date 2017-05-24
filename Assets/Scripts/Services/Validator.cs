@@ -1,8 +1,12 @@
 ﻿using System;
 using System.Text.RegularExpressions;
 using System.Net.Mail;
+using UnityEngine;
 
 public class Validator {
+
+	public const string validPattern = @"^([a-zA-Z0-9]|\_|\.)+$";
+	public const string emailValidPattern = @"^([\w\.\-]+)@([\w\-]+)((\.(\w){2,3})+)$";
 
 	public static String isUsernameValid (String username) {
 		String error = "";
@@ -11,10 +15,8 @@ public class Validator {
 			error = "Username should not be empty!\n";
 		} else if (username.Length < 4) {
 			error = "Username length should be greater than 4 characters!\n";
-		} else if (username.Contains (" ±!@£$%^&*()_+§[]\\';,./{}|\":?><")) {
-			error = "Username not valid!\n";
-		} else {
-			return error;
+		} else if (!Regex.IsMatch (username, validPattern)) {
+			error = "Username not valid! Valid pattern is "+validPattern+"\n";
 		}
 
 		return error;
@@ -27,10 +29,8 @@ public class Validator {
 			error = "Password should not be empty!\n";
 		} else if (password.Length < 8) {
 			error = "Password length should be greater than 8 characters!\n";
-		} else if (password.Contains (" ±!@£$%^&*()_+§[]\\';,./{}|\":?><")) {
-			error = "Password not valid!\n";
-		} else {
-			return error;
+		} else if (!Regex.IsMatch (password, validPattern)) {
+			error = "Password not valid! Valid pattern is "+validPattern+"\n";
 		}
 
 		return error;
@@ -41,13 +41,8 @@ public class Validator {
 
 		if (email.Length == 0) {
 			error = "Email should not be empty!\n";
-			return error;
-		}
-
-		try {
-			new MailAddress (email);
-		} catch (FormatException _) {
-			error = "Email format invalid!\n";
+		} else if (!Regex.IsMatch (email, emailValidPattern)) {
+			error = "Email is invalid!\n";
 		}
 
 		return error;

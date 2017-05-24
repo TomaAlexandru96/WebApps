@@ -17,9 +17,13 @@ public class DBServer {
 		if no user is found for the following entries
 		than it returns null
 	*/
-	public static Response<User> Login (String username, String password) {
+	public static Response<User> Login (String username, String password, bool withEncryption) {
+		if (withEncryption) {
+			password = Encrypt (password);
+		}
+
 		try {
-			HttpWebResponse response = SendGETRequest (DBServerAddr + "/users?username="+username+"&password="+Encrypt(password));
+			HttpWebResponse response = SendGETRequest (DBServerAddr + "/users?username="+username+"&password="+password);
 			return new Response<User>(JsonUtility.FromJson<User> (GetMessage (response)));
 		} catch (WebException e) {
 			return new Response<User>(e);
