@@ -24,9 +24,13 @@ class DBHTTPHandler(BaseHTTPRequestHandler):
   # POST
   def do_POST(self):
     url = urlparse(self.path)
+    data = self.rfile.read(int(self.headers['Content-Length'])).decode('utf-8')
     if (url.path == "/register"):
-      userJSON = self.rfile.read(int(self.headers['Content-Length'])).decode('utf-8')
-      self.handle_register (userJSON)
+      self.handle_register(data)
+    elif (url.path == "/room"):
+      self.handle_post_room(data)
+    elif (url.path == "/message"):
+      self.handle_post_message(data)
     else:
       self.send_response(NOT_FOUND)
 
@@ -36,6 +40,10 @@ class DBHTTPHandler(BaseHTTPRequestHandler):
     url = urlparse(self.path)
     if (url.path == "/users"):
       self.handle_users(url)
+    elif (url.path == "/rooms"):
+      self.handle_get_rooms(url)
+    elif (url.path == "/messages"):
+      self.handle_get_messages(url)
     else:
       self.send_response(NOT_FOUND)
 
@@ -87,6 +95,23 @@ class DBHTTPHandler(BaseHTTPRequestHandler):
     cursor.execute(query)
     conn.commit()
     self.send_JSON(user)
+
+
+    def handle_get_rooms(self, url):
+      pass
+
+    
+    def handle_get_messages(self, url):
+      pass
+
+
+    def handle_post_room(self, roomJSON):
+      pass
+
+
+    def handle_post_message(self, messageJSON):
+      pass
+
 
 def startServer():
   server_address = ('146.169.46.104', 8081)
