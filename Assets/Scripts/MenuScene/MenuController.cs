@@ -9,5 +9,5 @@ public class MenuController : MonoBehaviour {
 		DBServer.Logout ();
 		CurrentUser.GetInstance ().Logout ();
 		SceneManager.LoadScene ("Login");
-	}
+	}		
 }
