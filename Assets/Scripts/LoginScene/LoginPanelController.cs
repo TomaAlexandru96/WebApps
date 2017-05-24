@@ -19,7 +19,7 @@ public class LoginPanelController : MonoBehaviour {
 			return;
 		}
 
-		Response<User> response = DBServer.Login (username.text, password.text);
+		Response<User> response = DBServer.Login (username.text, password.text, true);
 
 		if (response.error != null) {
 			if (response.error.Status == WebExceptionStatus.ConnectFailure) {

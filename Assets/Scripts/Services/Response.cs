@@ -2,6 +2,7 @@
 using System.Net;
 
 public class Response<T> {
+	
 	public T data = default(T);
 	public WebException error = null;
 

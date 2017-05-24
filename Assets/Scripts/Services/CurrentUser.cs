@@ -24,7 +24,16 @@ public class CurrentUser {
 			if (userInfoJSON.Equals ("")) {
 				return;
 			}
+
 			userInfo = JsonUtility.FromJson<User> (userInfoJSON);
+
+			Response<User> response = DBServer.Login (userInfo.username, userInfo.password, false);
+			Debug.Log (response.error);
+			Debug.Log (response.data);
+
+			if (response.data == null) {
+				userInfo = null;
+			}
 
 			file.Close ();
 		} catch (Exception _) {
