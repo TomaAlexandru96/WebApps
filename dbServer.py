@@ -3,7 +3,7 @@
 import psycopg2
 import json
 from urllib.parse import urlparse, parse_qs
-from http.server import BaseHTTPRequestHandler, HTTPServer
+from http.server import BaseHTTPRequestHandler, HTTPServer, SimpleHTTPRequestHandler
  
 NOT_FOUND = 404
 OK = 200
@@ -21,8 +21,13 @@ except Exception as e:
 
 class DBHTTPHandler(BaseHTTPRequestHandler):
 
-  # PUT
-  def do_PUT(self):
+  # OPTIONS
+  def do_OPTIONS(self):
+    self.send_code_only(OK)
+
+
+  # POST
+  def do_POST(self):
     url = urlparse(self.path)
     data = self.rfile.read(int(self.headers['Content-Length'])).decode('utf-8')
     if (url.path == "/register"):
@@ -47,13 +52,24 @@ class DBHTTPHandler(BaseHTTPRequestHandler):
     else:
       self.send_code_only(NOT_FOUND);
 
+
   def send_code_only (self, code):
     self.send_response(code)
+    self.send_CORS()
     self.end_headers()
+
+
+  def send_CORS (self):
+    self.send_header("Access-Control-Allow-Credentials", "true")
+    self.send_header("Access-Control-Allow-Headers", "Accept, X-Access-Token, X-Application-Name, X-Request-Sent-Time")
+    self.send_header("Access-Control-Allow-Methods", "POST, GET, OPTIONS")
+    self.send_header("Access-Control-Allow-Origin", "*")
+    self.send_header("Access-Control-Max-Age", "86400")
 
 
   def send_JSON(self, obj):
     self.send_response(OK)
+    self.send_CORS()
     self.send_header('Content-type','text/html')
     self.end_headers()
     self.wfile.write(bytes(json.dumps(obj), "utf8"))
@@ -79,13 +95,14 @@ class DBHTTPHandler(BaseHTTPRequestHandler):
       self.send_JSON(user)
  
   
-  def handle_register(self, userJSON):
-    user = json.loads(userJSON)
+  def handle_register(self, userData):
+    print(userData)
+    user = parse_qs(userData)
     cursor = conn.cursor()
     query = '''SELECT *
                FROM USERS
                WHERE USERNAME = '{}'
-            '''.format(user['username'])
+            '''.format(user['username'][0])
     cursor.execute(query)
 
     if (cursor.fetchone() is not None):
@@ -95,25 +112,25 @@ class DBHTTPHandler(BaseHTTPRequestHandler):
     cursor = conn.cursor()
     query = '''INSERT INTO USERS (USERNAME, PASSWORD, EMAIL) 
                VALUES ('{}', '{}', '{}')
-            '''.format(user['username'], user['password'], user['email'])
+            '''.format(user['username'][0], user['password'][0], user['email'][0])
     cursor.execute(query)
     conn.commit()
     self.send_JSON(user)
 
 
-    def handle_get_rooms(self, url):
-      pass
+  def handle_get_rooms(self, url):
+    pass
 
-    
-    def handle_get_messages(self, url):
-      pass
-
-
-    def handle_post_room(self, roomJSON):
-      pass
+  
+  def handle_get_messages(self, url):
+    pass
 
 
-    def handle_post_message(self, messageJSON):
+  def handle_post_room(self, roomJSON):
+    pass
+
+
+  def handle_post_message(self, messageJSON):
       pass
 
 
