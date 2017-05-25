@@ -11,7 +11,9 @@ public class ChatService : MonoBehaviour, IChatClientListener {
 
 	public const String APP_ID = "0b79eaae-0063-4f99-9212-ed71c61a6375";
 	public const String GLOBAL_CH = "General";
+	public const int FONT_SIZE = 20;
 	public InputField input;
+	public Text viewportContentText;
 	public GameObject viewportContent;
 	private static ChatService instance = null;
 	private ChatClient chatClient = null;
@@ -50,6 +52,7 @@ public class ChatService : MonoBehaviour, IChatClientListener {
 		if (!input.text.Equals ("")) {
 			chatClient.PublishMessage (activeCH, input.text);
 			input.text = "";
+			EventSystem.current.SetSelectedGameObject (input.gameObject);
 		}
 	}
 
@@ -80,8 +83,9 @@ public class ChatService : MonoBehaviour, IChatClientListener {
 
 	private void UpdateViewport () {
 		while (chatMessages.Count != 0) {
-			viewportContent.GetComponent<Text> ().text += chatMessages [0];
+			viewportContentText.text += chatMessages [0];
 			chatMessages.RemoveAt (0);
+			viewportContent.GetComponent <RectTransform> ().sizeDelta += new Vector2 (0, FONT_SIZE);
 		}
 	}
 
