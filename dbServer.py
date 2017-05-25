@@ -21,8 +21,8 @@ except Exception as e:
 
 class DBHTTPHandler(BaseHTTPRequestHandler):
 
-  # POST
-  def do_POST(self):
+  # PUT
+  def do_PUT(self):
     url = urlparse(self.path)
     data = self.rfile.read(int(self.headers['Content-Length'])).decode('utf-8')
     if (url.path == "/register"):
@@ -32,7 +32,7 @@ class DBHTTPHandler(BaseHTTPRequestHandler):
     elif (url.path == "/message"):
       self.handle_post_message(data)
     else:
-      self.send_response(NOT_FOUND)
+      self.send_code_only(NOT_FOUND);
 
  
   # GET
@@ -45,7 +45,11 @@ class DBHTTPHandler(BaseHTTPRequestHandler):
     elif (url.path == "/messages"):
       self.handle_get_messages(url)
     else:
-      self.send_response(NOT_FOUND)
+      self.send_code_only(NOT_FOUND);
+
+  def send_code_only (self, code):
+    self.send_response(code)
+    self.end_headers()
 
 
   def send_JSON(self, obj):
@@ -65,7 +69,7 @@ class DBHTTPHandler(BaseHTTPRequestHandler):
     cursor.execute(query)
     response = cursor.fetchone()
     if (response is None):
-      self.send_response(NOT_FOUND)
+      self.send_code_only(NOT_FOUND)
     else:
       user = {}
       user['id'] = response[0]
@@ -85,7 +89,7 @@ class DBHTTPHandler(BaseHTTPRequestHandler):
     cursor.execute(query)
 
     if (cursor.fetchone() is not None):
-      self.send_response(NOT_ACCEPTABLE)
+      self.send_code_only(NOT_ACCEPTABLE)
       return
 
     cursor = conn.cursor()
