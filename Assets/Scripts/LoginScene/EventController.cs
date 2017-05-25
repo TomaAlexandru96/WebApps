@@ -47,6 +47,13 @@ public class EventController : MonoBehaviour {
 		if (Input.GetKeyUp ("tab")) {
 			SelectNextItem ();
 		}
+			
+		GameObject[] buttons = panelButtons[GetActivePanel ()];
+		for (activeIndex = 0; activeIndex < buttons.Length; activeIndex++) {
+			if (buttons[activeIndex] == es.currentSelectedGameObject) {
+				break;
+			}
+		}
 	}
 
 	private void SelectNextItem () {
