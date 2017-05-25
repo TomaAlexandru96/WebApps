@@ -13,6 +13,7 @@ public class AdventureController : MonoBehaviour {
 		chat = GameObject.FindGameObjectWithTag ("Chat");
 		canvas = GameObject.FindGameObjectWithTag ("Canvas");
 		chat.GetComponent <Transform> ().SetParent (canvas.GetComponent<Transform> ());
+		chat.GetComponent <ChatService> ().enabled = true;
 	}
 
 	public void ExitGame () {
