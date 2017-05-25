@@ -6,8 +6,7 @@ using UnityEngine.SceneManagement;
 public class MenuController : MonoBehaviour {
 
 	public void Logout () {
-		DBServer.Logout ();
-		CurrentUser.GetInstance ().Logout ();
+		DBServer.GetInstance ().Logout ();
 		SceneManager.LoadScene ("Login");
 	}		
 }

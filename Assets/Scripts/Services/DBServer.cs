@@ -1,93 +1,86 @@
 ﻿using System;
-using System.Net;
 using System.Text;
-using UnityEngine;
-using System.IO;
 using System.Collections.Generic;
-using System.Security.Cryptography;
+using UnityEngine;
+using UnityEngine.Networking;
 
-public class DBServer {
+public class DBServer : MonoBehaviour {
 
 	public const String DBServerAddr = "http://146.169.46.104:8081";
+	public const long OK_STATUS = 200;
+	public const long NOT_ACCEPTABLE_STATUS = 406;
+	public const long NOT_FOUND_STATUS = 404;
+	private static DBServer instance = null;
 
-	private DBServer () {
+	void Awake () {
+		if (instance == null) {
+			DBServer.instance = this;	
+		}
+	}
+
+	public static DBServer GetInstance () {
+		return DBServer.instance;
 	}
 		
 	/*  Issues login request to the DB server
 		if no user is found for the following entries
 		than it returns null
 	*/
-	public static Response<User> Login (String username, String password, bool withEncryption) {
-		if (withEncryption) {
-			password = Encrypt (password);
+	public void Login (String username, String password, bool withEncription,
+											Action<User> callback, Action<long> errorcall) {
+		StartCoroutine (LoginHelper (username, password, withEncription, callback, errorcall));
+		StopCoroutine (LoginHelper (username, password, withEncription, callback, errorcall));
+	}
+
+	private IEnumerator<AsyncOperation> LoginHelper (String username, String password, bool withEncription,
+										Action<User> callback, Action<long> errorcall) {
+		if (withEncription) {
+			password = DBServer.Encrypt (password);	
 		}
 
-		try {
-			HttpWebResponse response = SendGETRequest (DBServerAddr + "/users?username="+username+"&password="+password);
-			return new Response<User>(JsonUtility.FromJson<User> (GetMessage (response)));
-		} catch (WebException e) {
-			return new Response<User>(e);
+		UnityWebRequest request = UnityWebRequest.Get (DBServerAddr + "/users?username=" +
+												username + "&password=" + password);
+
+		yield return request.Send ();
+
+		if (request.responseCode != OK_STATUS) {
+			errorcall (request.responseCode);
+		} else {
+			User userData = JsonUtility.FromJson<User> (request.downloadHandler.text);
+			CurrentUser.GetInstance ().SetUserInfo (userData);
+			callback (userData);
 		}
 	}
 
 	/* Issues register request to DB server */
-	public static Response<User> Register (String username, String password, String email) {
-		User user = new User (username, Encrypt (password), email);
+	public void Register (User user, Action<User> callback, Action<long> errorcall) {
+		StartCoroutine (RegisterHelper (user, callback, errorcall));
+		StopCoroutine (RegisterHelper (user, callback, errorcall));
+	}
 
-		try {
-			HttpWebResponse response = SendPOSTRequest (DBServerAddr + "/register", JsonUtility.ToJson (user));
-			return new Response<User>(JsonUtility.FromJson<User> (GetMessage (response)));
-		} catch (WebException e) {
-			return new Response<User>(e);
+	private IEnumerator<AsyncOperation> RegisterHelper (User user,
+										Action<User> callback, Action<long> errorcall) {
+		user.password = DBServer.Encrypt (user.password);
+
+		UnityWebRequest request = UnityWebRequest.Put (DBServerAddr + "/register", JsonUtility.ToJson (user));
+
+		yield return request.Send ();
+
+		if (request.responseCode != OK_STATUS) {
+			errorcall (request.responseCode);
+		} else {
+			User userData = JsonUtility.FromJson<User> (request.downloadHandler.text);
+			CurrentUser.GetInstance ().SetUserInfo (userData);
+			callback (userData);
 		}
 	}
 
 	/* Issues logout request to the DB server */
-	public static bool Logout () {
-		return true;
+	public void Logout () {
+		CurrentUser.GetInstance ().Logout ();
 	}
 
 	private static String Encrypt(String message) {
 		return Convert.ToBase64String (Encoding.Unicode.GetBytes (message));
-	}
-
-	/* Gets the string message of the response */
-	private static String GetMessage (HttpWebResponse response) {
-		Stream responseData = response.GetResponseStream ();
-		StreamReader sr = new StreamReader (responseData);
-		String message = sr.ReadToEnd ();
-		sr.Close ();
-		response.Close ();
-		return message;
-	}
-
-	/* Generates a default template for a request which includes the headers */
-	private static HttpWebRequest GetRequestTemplate (String addr, String method) {
-		HttpWebRequest request = (HttpWebRequest) WebRequest.Create(addr);
-		request.UserAgent = "Imperial Dungeon";
-		request.Credentials = CredentialCache.DefaultCredentials;
-		request.ContentType = "application/x-www-form-urlencoded";
-		request.Method = method;
-
-		return request;
-	}
-
-	/* Creates a GET request and sends it to the DB server */
-	private static HttpWebResponse SendGETRequest (String addr) {
-		HttpWebRequest request = GetRequestTemplate (addr, "GET");
-
-		return (HttpWebResponse) request.GetResponse ();
-	}
-
-	/* Creates a POST request and sends it to the DB server */
-	private static HttpWebResponse SendPOSTRequest (String addr, String message) {
-		HttpWebRequest request = GetRequestTemplate (addr, "POST");
-
-		Byte[] bytes = Encoding.UTF8.GetBytes (message);
-		request.ContentLength = bytes.Length;
-		Stream dataStream = request.GetRequestStream ();
-		dataStream.Write (bytes, 0, bytes.Length);
-		dataStream.Close ();
-		return (HttpWebResponse) request.GetResponse ();
 	}
 }
