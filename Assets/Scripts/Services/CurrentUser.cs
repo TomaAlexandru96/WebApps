@@ -5,6 +5,7 @@ using UnityEngine;
 public class CurrentUser : MonoBehaviour {
 	
 	private User userInfo = null;
+	private ExitGames.Client.Photon.Chat.AuthenticationValues av = null;
 	public const String userCache = "Assets/cache";
 	private static CurrentUser instance = null;
 
@@ -33,7 +34,7 @@ public class CurrentUser : MonoBehaviour {
 				return;
 			}
 
-			userInfo = JsonUtility.FromJson<User> (userInfoJSON);
+			SetUserInfo (JsonUtility.FromJson<User> (userInfoJSON));
 
 			DBServer.GetInstance ().Login (userInfo.username, userInfo.password, false, (user) => { }, (error) => {
 				Logout ();
@@ -61,6 +62,7 @@ public class CurrentUser : MonoBehaviour {
 
 	public void Logout () {
 		userInfo = null;
+		av = null;
 		ClearCahce ();
 	}
 
@@ -71,6 +73,10 @@ public class CurrentUser : MonoBehaviour {
 	public void SetUserInfo (User userInfo) {
 		this.userInfo = userInfo;
 		SaveToCache ();
+	}
+
+	public void SetAuthentificationValues (ExitGames.Client.Photon.Chat.AuthenticationValues av) {
+		this.av = av;
 	}
 
 	public bool IsLoggedIn () {
