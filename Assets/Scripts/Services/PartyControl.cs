@@ -16,8 +16,7 @@ public class PartyControl : MonoBehaviour {
 			Vector3 position = player.GetComponent<RectTransform> ().localPosition;
 			newPlayer.GetComponent<RectTransform> ().localPosition = new Vector3 (position.x, position.y - 70, position.z);
 
-
-			player = newPlayer;
+			this.player = newPlayer;
 			playersInParty++;
 		}
 	} 
