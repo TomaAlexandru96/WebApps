@@ -7,13 +7,18 @@ public class PartyControl : MonoBehaviour {
 	public GameObject player;
 	public GameObject party;
 
+	private int maxPlayers = 4;
+	private int playersInParty = 1;
+
 	public void addPlayer() {
-		GameObject player2 = Instantiate (player, party.transform);
-		player2.GetComponent<RectTransform> ().position = new Vector3 (0, 0, 0);
-//		GameObject player2 = new GameObject("Image");
-//		player2.AddComponent<RectTransform> ();
-//		player2.AddComponent<CanvasRenderer> ();
-//		Vector3 position = new Vector3(player.transform.position);
-//		player2.transform.parent = party.transform;
+		if (playersInParty < maxPlayers) {
+			GameObject newPlayer = Instantiate (player, party.transform);
+			Vector3 position = player.GetComponent<RectTransform> ().localPosition;
+			newPlayer.GetComponent<RectTransform> ().localPosition = new Vector3 (position.x, position.y - 70, position.z);
+
+
+			player = newPlayer;
+			playersInParty++;
+		}
 	} 
 }
