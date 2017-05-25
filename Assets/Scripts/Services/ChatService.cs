@@ -51,8 +51,10 @@ public class ChatService : MonoBehaviour, IChatClientListener {
 	public void SendMessage () {
 		if (!input.text.Equals ("")) {
 			chatClient.PublishMessage (activeCH, input.text);
+			String message = "[" + chatClient.UserId + "]: " + input.text + "\n";
+			chatMessages.Add (message);
+			UpdateViewport ();
 			input.text = "";
-			EventSystem.current.SetSelectedGameObject (input.gameObject);
 		}
 	}
 
@@ -74,6 +76,10 @@ public class ChatService : MonoBehaviour, IChatClientListener {
 
 	public void OnGetMessages(string channelName, string[] senders, object[] messages) {
 		for (int i = 0; i < messages.Length; i++) {
+			if (senders [i] == chatClient.UserId) {
+				continue;
+			}
+
 			String message = "[" + senders[i] + "]: " + messages [i] + "\n";
 			chatMessages.Add (message);
 		}
