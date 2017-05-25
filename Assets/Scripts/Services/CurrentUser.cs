@@ -2,14 +2,21 @@
 using System.IO;
 using UnityEngine;
 
-public class CurrentUser {
+public class CurrentUser : MonoBehaviour {
 	
-	private static CurrentUser instance = new CurrentUser();
 	private User userInfo = null;
 	public const String userCache = "Assets/cache";
+	private static CurrentUser instance = null;
 
-	private CurrentUser () {
-		LoadFromCache ();
+	void Awake () {
+		if (instance == null) {
+			instance = this;
+			LoadFromCache ();
+		}
+	}
+
+	public static CurrentUser GetInstance () {
+		return instance;
 	}
 
 	private void SaveToCache () {
@@ -21,22 +28,19 @@ public class CurrentUser {
 		try {
 			StreamReader file = new StreamReader (userCache);
 			String userInfoJSON = file.ReadToEnd ();
+
 			if (userInfoJSON.Equals ("")) {
 				return;
 			}
 
 			userInfo = JsonUtility.FromJson<User> (userInfoJSON);
 
-			Response<User> response = DBServer.Login (userInfo.username, userInfo.password, false);
-			Debug.Log (response.error);
-			Debug.Log (response.data);
-
-			if (response.data == null) {
-				userInfo = null;
-			}
+			DBServer.GetInstance ().Login (userInfo.username, userInfo.password, false, (user) => { }, (error) => {
+				Logout ();
+			});
 
 			file.Close ();
-		} catch (Exception _) {
+		} catch (Exception) {
 			return;
 		}
 	}
@@ -46,7 +50,7 @@ public class CurrentUser {
 			StreamWriter file = new StreamWriter (userCache);
 			file.WriteLine (message);
 			file.Close ();
-		} catch (Exception _) {
+		} catch (Exception) {
 			return;
 		}
 	}
@@ -58,10 +62,6 @@ public class CurrentUser {
 	public void Logout () {
 		userInfo = null;
 		ClearCahce ();
-	}
-
-	public static CurrentUser GetInstance () {
-		return instance;
 	}
 
 	public User GetUserInfo () {

@@ -1,7 +1,6 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
-using System.Net;
-using System.Net.Sockets;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
@@ -19,20 +18,17 @@ public class LoginPanelController : MonoBehaviour {
 			return;
 		}
 
-		Response<User> response = DBServer.Login (username.text, password.text, true);
-
-		if (response.error != null) {
-			if (response.error.Status == WebExceptionStatus.ConnectFailure) {
-				errorLabel.text = "Could not connect to the server!\n";
-			} else if (response.error.Status == WebExceptionStatus.ReceiveFailure) {
-				errorLabel.text = "Username or password combination wrong!\n";
-			} else {
-				errorLabel.text = "Error unknown!";
+		DBServer.GetInstance ().Login (username.text, password.text, true, (user) => {
+			SceneManager.LoadScene ("Menu");	
+		}, (errorCode) => {
+			String errorMessage = "";
+			switch (errorCode) {
+			case DBServer.NOT_FOUND_STATUS: errorMessage = "Username or password combination wrong!\n";break;
+			default: errorMessage = "Could not connect to the server!\n";break;
 			}
-		} else {
-			CurrentUser.GetInstance ().SetUserInfo (response.data);
-			SceneManager.LoadScene ("Menu");
-		}
+
+			errorLabel.text = errorMessage;
+		});
 	}
 
 	/* Checks validity of input and displays error message if any */

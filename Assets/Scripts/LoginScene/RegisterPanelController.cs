@@ -1,7 +1,6 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
-using System.Net;
-using System.Net.Sockets;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
@@ -21,20 +20,19 @@ public class RegisterPanelController : MonoBehaviour {
 			return;
 		}
 
-		Response<User> response = DBServer.Register (username.text, password.text, email.text);
-
-		if (response.error != null) {
-			if (response.error.Status == WebExceptionStatus.ConnectFailure) {
-				errorLabel.text = "Could not connect to the server!\n";
-			} else if (response.error.Status == WebExceptionStatus.ReceiveFailure) {
-				errorLabel.text = "Username already exists\n";
-			} else {
-				errorLabel.text = "Error unknown!";
-			}
-		} else {
-			CurrentUser.GetInstance ().SetUserInfo (response.data);
+		User user = new User (username.text, password.text, email.text);
+		DBServer.GetInstance ().Register (user, (userData) => {
 			SceneManager.LoadScene ("Menu");
-		}
+		}, (errorCode) => {
+			String errorMessage = "";
+
+			switch (errorCode) {
+			case DBServer.NOT_ACCEPTABLE_STATUS: errorMessage = "Username already exists\n"; break;
+			default: errorMessage = "Could not connect to the server!\n"; break;
+			}
+
+			errorLabel.text = errorMessage;
+		});
 	}
 
 	/* Checks validity of input and displays error message if any */
