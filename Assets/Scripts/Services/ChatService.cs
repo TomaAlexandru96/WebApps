@@ -12,9 +12,11 @@ public class ChatService : MonoBehaviour, IChatClientListener {
 	public const String APP_ID = "0b79eaae-0063-4f99-9212-ed71c61a6375";
 	public const String GLOBAL_CH = "General";
 	public InputField input;
+	public GameObject viewportContent;
 	private static ChatService instance = null;
 	private ChatClient chatClient = null;
 	private String activeCH = GLOBAL_CH;
+	private List<String> chatMessages = new List<String> ();
 
 	void Awake () {
 		if (instance == null) {
@@ -27,9 +29,8 @@ public class ChatService : MonoBehaviour, IChatClientListener {
 
 	public void Update () {
 		chatClient.Service ();
-		if (//EventSystem.current.currentSelectedGameObject == input && 
+		if (EventSystem.current.currentSelectedGameObject == input.gameObject && 
 					Input.GetKeyUp (KeyCode.Return)) {
-			Debug.Log ("Send");
 			SendMessage ();
 		}
 	}
@@ -43,13 +44,12 @@ public class ChatService : MonoBehaviour, IChatClientListener {
 		ExitGames.Client.Photon.Chat.AuthenticationValues av = new ExitGames.Client.Photon.Chat.AuthenticationValues ();
 		av.UserId = CurrentUser.GetInstance ().GetUserInfo ().username;
 		chatClient.Connect (APP_ID, NetworkService.GAME_VERSION, av);
-		CurrentUser.GetInstance ().SetAuthentificationValues (av);
 	}
 
 	public void SendMessage () {
 		if (!input.text.Equals ("")) {
 			chatClient.PublishMessage (activeCH, input.text);
-			input.text = "";	
+			input.text = "";
 		}
 	}
 
@@ -71,8 +71,17 @@ public class ChatService : MonoBehaviour, IChatClientListener {
 
 	public void OnGetMessages(string channelName, string[] senders, object[] messages) {
 		for (int i = 0; i < messages.Length; i++) {
-			String message = "[" + senders[i] + "]: " + messages [i];
-			Debug.Log (message);
+			String message = "[" + senders[i] + "]: " + messages [i] + "\n";
+			chatMessages.Add (message);
+		}
+
+		UpdateViewport ();
+	}
+
+	private void UpdateViewport () {
+		while (chatMessages.Count != 0) {
+			viewportContent.GetComponent<Text> ().text += chatMessages [0];
+			chatMessages.RemoveAt (0);
 		}
 	}
 
