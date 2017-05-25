@@ -4,15 +4,28 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class MenuController : MonoBehaviour {
+	
+	private GameObject chat;
+	private GameObject canvas;
+
+	public void Start () {
+		// restore chat
+		chat = GameObject.FindGameObjectWithTag ("Chat");
+		canvas = GameObject.FindGameObjectWithTag ("Canvas");
+		chat.GetComponent <Transform> ().SetParent (canvas.GetComponent<Transform> ());
+	}
 
 	public void Logout () {
 		DBServer.GetInstance ().Logout ();
-		Destroy (GameObject.FindGameObjectWithTag ("ChatCanvas"));
+		Destroy (GameObject.FindGameObjectWithTag ("Chat"));
 		Destroy (GameObject.FindGameObjectWithTag ("NetworkEntity"));
 		SceneManager.LoadScene ("Login");
 	}
 
-	public void Play () {
+	public void PlayAdventure () {
+		// move chat to adventure
+		chat.GetComponent <Transform> ().SetParent (null);
+		DontDestroyOnLoad (chat);
 		SceneManager.LoadScene ("Adventure");
 	}
 }
