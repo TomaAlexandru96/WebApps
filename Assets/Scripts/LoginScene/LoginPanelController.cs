@@ -21,10 +21,10 @@ public class LoginPanelController : MonoBehaviour {
 		DBServer.GetInstance ().Login (username.text, password.text, true, (user) => {
 			SceneManager.LoadScene ("Menu");	
 		}, (errorCode) => {
-			String errorMessage = "";
+			String errorMessage = errorCode + ": ";
 			switch (errorCode) {
-			case DBServer.NOT_FOUND_STATUS: errorMessage = "Username or password combination wrong!\n";break;
-			default: errorMessage = "Could not connect to the server!\n";break;
+			case DBServer.NOT_FOUND_STATUS: errorMessage += "Username or password combination wrong!\n";break;
+			default: errorMessage += "Could not connect to the server!\n";break;
 			}
 
 			errorLabel.text = errorMessage;

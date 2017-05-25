@@ -62,7 +62,12 @@ public class DBServer : MonoBehaviour {
 										Action<User> callback, Action<long> errorcall) {
 		user.password = DBServer.Encrypt (user.password);
 
-		UnityWebRequest request = UnityWebRequest.Put (DBServerAddr + "/register", JsonUtility.ToJson (user));
+		WWWForm form = new WWWForm ();
+		form.AddField ("username", user.username);
+		form.AddField ("password", user.password);
+		form.AddField ("email", user.email);
+
+		UnityWebRequest request = UnityWebRequest.Post (DBServerAddr + "/register", form);
 
 		yield return request.Send ();
 
