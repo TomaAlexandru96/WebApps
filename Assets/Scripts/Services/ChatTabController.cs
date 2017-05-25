@@ -8,7 +8,7 @@ public class ChatTabController : MonoBehaviour {
 	public GameObject party;
 
 	private int maxChat = 6;
-	private int totalChats = 1;
+	private int totalChats = 0;
 
 	public void addChat() {
 		if (totalChats < maxChat) {
