@@ -24,11 +24,11 @@ public class RegisterPanelController : MonoBehaviour {
 		DBServer.GetInstance ().Register (user, (userData) => {
 			SceneManager.LoadScene ("Menu");
 		}, (errorCode) => {
-			String errorMessage = "";
+			String errorMessage = errorCode + ": ";
 
 			switch (errorCode) {
-			case DBServer.NOT_ACCEPTABLE_STATUS: errorMessage = "Username already exists\n"; break;
-			default: errorMessage = "Could not connect to the server!\n"; break;
+			case DBServer.NOT_ACCEPTABLE_STATUS: errorMessage += "Username already exists\n"; break;
+			default: errorMessage += "Could not connect to the server!\n"; break;
 			}
 
 			errorLabel.text = errorMessage;
