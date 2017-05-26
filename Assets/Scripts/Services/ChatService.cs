@@ -11,10 +11,7 @@ public class ChatService : MonoBehaviour, IChatClientListener {
 
 	public const String APP_ID = "0b79eaae-0063-4f99-9212-ed71c61a6375";
 	public const String GLOBAL_CH = "General";
-	public const int FONT_SIZE = 20;
-	public InputField input;
-	public Text viewportContentText;
-	public GameObject viewportContent;
+	public GameObject messagePrefab;
 	private static ChatService instance = null;
 	private ChatClient chatClient = null;
 	private String activeCH = GLOBAL_CH;
@@ -24,6 +21,7 @@ public class ChatService : MonoBehaviour, IChatClientListener {
 		if (instance == null) {
 			instance = this;
 			ConnectToChatService ();
+			DontDestroyOnLoad (gameObject);
 		} else {
 			Destroy (gameObject);
 		}
@@ -31,7 +29,7 @@ public class ChatService : MonoBehaviour, IChatClientListener {
 
 	public void Update () {
 		chatClient.Service ();
-		if (EventSystem.current.currentSelectedGameObject == input.gameObject && 
+		if (EventSystem.current.currentSelectedGameObject == GetChatInput ().gameObject && 
 					Input.GetKeyUp (KeyCode.Return)) {
 			SendMessage ();
 		}
@@ -48,13 +46,31 @@ public class ChatService : MonoBehaviour, IChatClientListener {
 		chatClient.Connect (APP_ID, NetworkService.GAME_VERSION, av);
 	}
 
+	private GameObject GetChatView () {
+		return GameObject.FindGameObjectWithTag ("Chat");
+	}
+
+	private GameObject GetChatViewport () {
+		return GetChatView ().transform.GetChild (0).gameObject;
+	}
+
+	private GameObject GetChatViewportContent () {
+		return GetChatViewport ().transform.GetChild (0).gameObject;
+	}
+
+	private InputField GetChatInput () {
+		return GetChatView ().transform.GetChild (2).GetComponent<InputField> ();
+	}
+
 	public void SendMessage () {
-		if (!input.text.Equals ("")) {
-			chatClient.PublishMessage (activeCH, input.text);
-			String message = "[" + chatClient.UserId + "]: " + input.text + "\n";
+		if (!GetChatInput ().text.Equals ("")) {
+			chatClient.PublishMessage (activeCH, GetChatInput ().text);
+			String message = "[" + chatClient.UserId + "]: " + GetChatInput ().text;
 			chatMessages.Add (message);
 			UpdateViewport ();
-			input.text = "";
+			GetChatInput ().text = "";
+			EventSystem.current.SetSelectedGameObject (GetChatInput ().gameObject);
+			Debug.Log (EventSystem.current.currentSelectedGameObject.name);
 		}
 	}
 
@@ -80,7 +96,7 @@ public class ChatService : MonoBehaviour, IChatClientListener {
 				continue;
 			}
 
-			String message = "[" + senders[i] + "]: " + messages [i] + "\n";
+			String message = "[" + senders[i] + "]: " + messages [i];
 			chatMessages.Add (message);
 		}
 
@@ -89,9 +105,10 @@ public class ChatService : MonoBehaviour, IChatClientListener {
 
 	private void UpdateViewport () {
 		while (chatMessages.Count != 0) {
-			viewportContentText.text += chatMessages [0];
+			GameObject newMessageObj = Instantiate (messagePrefab);
+			newMessageObj.transform.SetParent (GetChatViewportContent ().transform);
+			newMessageObj.GetComponentInChildren<Text> ().text = chatMessages [0];
 			chatMessages.RemoveAt (0);
-			viewportContent.GetComponent <RectTransform> ().sizeDelta += new Vector2 (0, FONT_SIZE);
 		}
 	}
 
