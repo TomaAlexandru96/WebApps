@@ -11,13 +11,12 @@ public class ChatService : MonoBehaviour, IChatClientListener {
 
 	public const String APP_ID = "0b79eaae-0063-4f99-9212-ed71c61a6375";
 	public const String GLOBAL_CH = "General";
-	public GameObject messagePrefab;
 	private static ChatService instance = null;
 	private ChatClient chatClient = null;
 	private String activeCH = GLOBAL_CH;
 	private List<String> chatMessages = new List<String> ();
 
-	void Awake () {
+	public void Awake () {
 		if (instance == null) {
 			instance = this;
 			ConnectToChatService ();
@@ -29,10 +28,6 @@ public class ChatService : MonoBehaviour, IChatClientListener {
 
 	public void Update () {
 		chatClient.Service ();
-		if (EventSystem.current.currentSelectedGameObject == GetChatInput ().gameObject && 
-					Input.GetKeyUp (KeyCode.Return)) {
-			SendMessage ();
-		}
 	}
 
 	public static ChatService GetInstance () {
@@ -46,32 +41,17 @@ public class ChatService : MonoBehaviour, IChatClientListener {
 		chatClient.Connect (APP_ID, NetworkService.GAME_VERSION, av);
 	}
 
-	private GameObject GetChatView () {
-		return GameObject.FindGameObjectWithTag ("Chat").transform.GetChild (0).gameObject;
+	private ChatController GetChat () {
+		return GameObject.FindGameObjectWithTag ("Chat").GetComponent<ChatController> ();
 	}
 
-	private GameObject GetChatViewport () {
-		return GetChatView ().transform.GetChild (0).gameObject;
-	}
-
-	private GameObject GetChatViewportContent () {
-		return GetChatViewport ().transform.GetChild (0).gameObject;
-	}
-
-	private InputField GetChatInput () {
-		return GameObject.FindGameObjectWithTag ("Chat").transform.GetChild (1).GetComponent<InputField> ();
-	}
-
-	public void SendMessage () {
-		if (!GetChatInput ().text.Equals ("")) {
-			chatClient.PublishMessage (activeCH, GetChatInput ().text);
-			String message = "[" + chatClient.UserId + "]: " + GetChatInput ().text;
+	public void SendMessage (String message) {
+		if (!message.Equals ("")) {
+			message = "[" + chatClient.UserId + "]: " + message;
+			chatClient.PublishMessage (activeCH, message);
 			chatMessages.Add (message);
-			GetChatInput ().text = "";
-			UpdateViewport ();
+			GetChat ().UpdateViewport (chatMessages);
 		}
-		GetChatInput ().Select ();
-		GetChatInput ().ActivateInputField ();
 	}
 
 	public void DebugReturn(DebugLevel level, string message) {
@@ -100,16 +80,7 @@ public class ChatService : MonoBehaviour, IChatClientListener {
 			chatMessages.Add (message);
 		}
 
-		UpdateViewport ();
-	}
-
-	private void UpdateViewport () {
-		while (chatMessages.Count != 0) {
-			GameObject newMessageObj = Instantiate (messagePrefab);
-			newMessageObj.transform.SetParent (GetChatViewportContent ().transform);
-			newMessageObj.GetComponentInChildren<Text> ().text = chatMessages [0];
-			chatMessages.RemoveAt (0);
-		}
+		GetChat ().UpdateViewport (chatMessages);
 	}
 
 	public void OnPrivateMessage(string sender, object message, string channelName) {
