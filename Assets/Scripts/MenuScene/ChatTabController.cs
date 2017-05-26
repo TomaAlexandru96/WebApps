@@ -4,21 +4,12 @@ using UnityEngine;
 
 public class ChatTabController : MonoBehaviour {
 
-	public GameObject chat;
-	public GameObject party;
-
-	private int maxChat = 6;
+	public GameObject tabPrefab;
 	private int totalChats = 0;
 
-	public void addChat() {
-		if (totalChats < maxChat) {
-			GameObject newPlayer = Instantiate (chat, party.transform);
-			Vector3 position = chat.GetComponent<RectTransform> ().localPosition;
-			newPlayer.GetComponent<RectTransform> ().localPosition = new Vector3 (position.x + 80, position.y, position.z);
-
-
-			chat = newPlayer;
-			totalChats++;
-		}
+	public void AddChat() {
+		GameObject newTab = Instantiate (tabPrefab);
+		newTab.transform.SetParent (transform);
+		totalChats++;
 	} 
 }

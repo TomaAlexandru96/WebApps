@@ -47,7 +47,7 @@ public class ChatService : MonoBehaviour, IChatClientListener {
 	}
 
 	private GameObject GetChatView () {
-		return GameObject.FindGameObjectWithTag ("Chat");
+		return GameObject.FindGameObjectWithTag ("Chat").transform.GetChild (0).gameObject;
 	}
 
 	private GameObject GetChatViewport () {
@@ -59,7 +59,7 @@ public class ChatService : MonoBehaviour, IChatClientListener {
 	}
 
 	private InputField GetChatInput () {
-		return GetChatView ().transform.GetChild (2).GetComponent<InputField> ();
+		return GameObject.FindGameObjectWithTag ("Chat").transform.GetChild (1).GetComponent<InputField> ();
 	}
 
 	public void SendMessage () {
@@ -67,11 +67,11 @@ public class ChatService : MonoBehaviour, IChatClientListener {
 			chatClient.PublishMessage (activeCH, GetChatInput ().text);
 			String message = "[" + chatClient.UserId + "]: " + GetChatInput ().text;
 			chatMessages.Add (message);
-			GetChatInput ().Select ();
-			GetChatInput ().ActivateInputField ();
 			GetChatInput ().text = "";
 			UpdateViewport ();
 		}
+		GetChatInput ().Select ();
+		GetChatInput ().ActivateInputField ();
 	}
 
 	public void DebugReturn(DebugLevel level, string message) {
