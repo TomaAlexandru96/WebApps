@@ -43,6 +43,8 @@ class DBHTTPHandler(BaseHTTPRequestHandler):
     url = urlparse(self.path)
     if (url.path == "/users"):
       self.handle_users(url)
+    elif (url.path == "/find_user"):
+      self.handle_find_user(url);
     else:
       self.send_code_only(NOT_FOUND);
 
@@ -90,8 +92,30 @@ class DBHTTPHandler(BaseHTTPRequestHandler):
       user['friend_requests'] = response[5]
       user['active'] = response[6]
       self.send_JSON(user)
- 
+
   
+  def handle_find_user(self, url):
+    params = parse_qs(url.query)
+    cursor = conn.cursor()
+    query = '''SELECT * 
+               FROM USERS
+               WHERE USERNAME = '{}'
+            '''.format(params['username'][0]);
+    cursor.execute(query)
+    response = cursor.fetchone()
+    if (response is None):
+      self.send_code_only(NOT_FOUND)
+    else:
+      user = {}
+      user['id'] = response[0]
+      user['username'] = response[1]
+      user['email'] = response[3]
+      user['friends'] = response[4]
+      user['friend_requests'] = response[5]
+      user['active'] = response[6]
+      self.send_JSON(user)
+  
+
   def handle_register(self, userData):
     user = parse_qs(userData)
     cursor = conn.cursor()
