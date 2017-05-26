@@ -32,10 +32,8 @@ class DBHTTPHandler(BaseHTTPRequestHandler):
     data = self.rfile.read(int(self.headers['Content-Length'])).decode('utf-8')
     if (url.path == "/register"):
       self.handle_register(data)
-    elif (url.path == "/room"):
-      self.handle_post_room(data)
-    elif (url.path == "/message"):
-      self.handle_post_message(data)
+    elif (url.path == "/set_active"):
+      self.handle_set_active(data)
     else:
       self.send_code_only(NOT_FOUND);
 
@@ -45,10 +43,6 @@ class DBHTTPHandler(BaseHTTPRequestHandler):
     url = urlparse(self.path)
     if (url.path == "/users"):
       self.handle_users(url)
-    elif (url.path == "/rooms"):
-      self.handle_get_rooms(url)
-    elif (url.path == "/messages"):
-      self.handle_get_messages(url)
     else:
       self.send_code_only(NOT_FOUND);
 
@@ -92,11 +86,13 @@ class DBHTTPHandler(BaseHTTPRequestHandler):
       user['username'] = response[1]
       user['password'] = response[2]
       user['email'] = response[3]
+      user['friends'] = response[4]
+      user['friend_requests'] = response[5]
+      user['active'] = response[6]
       self.send_JSON(user)
  
   
   def handle_register(self, userData):
-    print(userData)
     user = parse_qs(userData)
     cursor = conn.cursor()
     query = '''SELECT *
@@ -118,21 +114,15 @@ class DBHTTPHandler(BaseHTTPRequestHandler):
     self.send_JSON(user)
 
 
-  def handle_get_rooms(self, url):
-    pass
-
-  
-  def handle_get_messages(self, url):
-    pass
-
-
-  def handle_post_room(self, roomJSON):
-    pass
-
-
-  def handle_post_message(self, messageJSON):
-      pass
-
+  def handle_set_active(self, data):
+    user = parse_qs(data)
+    cursor = conn.cursor()
+    query = '''UPDATE USERS SET ACTIVE = '{}'
+               WHERE id = '{}'
+            '''.format(user['active'][0], user['id'][0])
+    cursor.execute (query)
+    conn.commit()
+    self.send_code_only(OK)
 
 def startServer():
   server_address = ('146.169.46.104', 8081)
