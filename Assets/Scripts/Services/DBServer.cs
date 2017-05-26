@@ -6,7 +6,7 @@ using UnityEngine.Networking;
 
 public class DBServer : MonoBehaviour {
 
-	public const String DBServerAddr = "http://146.169.46.104:8081";
+	public const String DBServerAddr = "http://146.169.46.104:8080";
 	public const long OK_STATUS = 200;
 	public const long NOT_ACCEPTABLE_STATUS = 406;
 	public const long NOT_FOUND_STATUS = 404;
