@@ -15,5 +15,10 @@ public class User {
 		this.password = password;
 		this.email = email;
 	}
+
+	public override String ToString () {
+		return String.Format ("[id: {0}, username: {1}, password: {2}, email: {3}, friends: {4}, friend_requests: {5}, active: {6}]",
+			id, username, password, email, friends.ToString (), friend_requests.ToString (), active.ToString ());
+	}
 }
 

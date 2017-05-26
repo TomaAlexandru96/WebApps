@@ -77,5 +77,13 @@ public class CurrentUser : MonoBehaviour {
 	public bool IsLoggedIn () {
 		return userInfo != null;
 	}
+
+	public override String ToString () {
+		if (userInfo != null) {
+			return userInfo.ToString ();
+		} else {
+			return "Not Logged";
+		}
+	}
 }
 

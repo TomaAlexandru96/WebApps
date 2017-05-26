@@ -29,6 +29,7 @@ public class DBServer : MonoBehaviour {
 	public void Login (String username, String password, bool withEncription,
 											Action<User> callback, Action<long> errorcall) {
 		StartCoroutine (LoginHelper (username, password, withEncription, callback, errorcall));
+		Debug.Log (CurrentUser.GetInstance ());
 	}
 
 	private IEnumerator<AsyncOperation> LoginHelper (String username, String password, bool withEncription,

@@ -16,4 +16,10 @@ public class FriendsTopButtonsManager : MonoBehaviour {
 		friendsPanel.SetActive (false);
 		friendRequestsPanel.SetActive (true);
 	}
+
+	public void RequestSendFriendRequset () {
+		RequestAlertController.Create ("Who do you want to add as a friend?", (response) => {
+			Debug.Log (response);
+		});
+	}
 }
