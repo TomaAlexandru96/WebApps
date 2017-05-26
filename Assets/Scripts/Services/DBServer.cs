@@ -29,7 +29,6 @@ public class DBServer : MonoBehaviour {
 	public void Login (String username, String password, bool withEncription,
 											Action<User> callback, Action<long> errorcall) {
 		StartCoroutine (LoginHelper (username, password, withEncription, callback, errorcall));
-		StopCoroutine (LoginHelper (username, password, withEncription, callback, errorcall));
 	}
 
 	private IEnumerator<AsyncOperation> LoginHelper (String username, String password, bool withEncription,
@@ -55,7 +54,6 @@ public class DBServer : MonoBehaviour {
 	/* Issues register request to DB server */
 	public void Register (User user, Action<User> callback, Action<long> errorcall) {
 		StartCoroutine (RegisterHelper (user, callback, errorcall));
-		StopCoroutine (RegisterHelper (user, callback, errorcall));
 	}
 
 	private IEnumerator<AsyncOperation> RegisterHelper (User user,

@@ -9,6 +9,7 @@ public class MenuController : MonoBehaviour {
 		DBServer.GetInstance ().Logout ();
 		NetworkService.GetInstance ().DestroyConnection ();
 		Destroy (GameObject.FindGameObjectWithTag ("NetworkEntity"));
+		Destroy (GameObject.FindGameObjectWithTag ("ChatEntity"));
 		SceneManager.LoadScene ("Login");
 	}
 
