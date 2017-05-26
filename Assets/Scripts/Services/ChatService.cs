@@ -67,10 +67,10 @@ public class ChatService : MonoBehaviour, IChatClientListener {
 			chatClient.PublishMessage (activeCH, GetChatInput ().text);
 			String message = "[" + chatClient.UserId + "]: " + GetChatInput ().text;
 			chatMessages.Add (message);
-			UpdateViewport ();
+			GetChatInput ().Select ();
+			GetChatInput ().ActivateInputField ();
 			GetChatInput ().text = "";
-			EventSystem.current.SetSelectedGameObject (GetChatInput ().gameObject);
-			Debug.Log (EventSystem.current.currentSelectedGameObject.name);
+			UpdateViewport ();
 		}
 	}
 
