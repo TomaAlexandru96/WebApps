@@ -47,8 +47,19 @@ public class DBServer : MonoBehaviour {
 		} else {
 			User userData = JsonUtility.FromJson<User> (request.downloadHandler.text);
 			CurrentUser.GetInstance ().SetUserInfo (userData);
+			StartCoroutine (SetUserActive (true));
 			callback (userData);
 		}
+	}
+
+	private IEnumerator<AsyncOperation> SetUserActive (bool active) {
+		WWWForm form = new WWWForm ();
+		form.AddField ("id", CurrentUser.GetInstance ().GetUserInfo ().id);
+		form.AddField ("active", active.ToString ());
+
+		UnityWebRequest request = UnityWebRequest.Post (DBServerAddr + "/set_active", form);
+
+		yield return request.Send ();
 	}
 
 	/* Issues register request to DB server */
@@ -80,6 +91,7 @@ public class DBServer : MonoBehaviour {
 
 	/* Issues logout request to the DB server */
 	public void Logout () {
+		StartCoroutine (SetUserActive (false));
 		CurrentUser.GetInstance ().Logout ();
 	}
 

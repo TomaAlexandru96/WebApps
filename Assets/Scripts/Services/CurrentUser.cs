@@ -70,6 +70,7 @@ public class CurrentUser : MonoBehaviour {
 
 	public void SetUserInfo (User userInfo) {
 		this.userInfo = userInfo;
+		this.userInfo.active = true;
 		SaveToCache ();
 	}
 
