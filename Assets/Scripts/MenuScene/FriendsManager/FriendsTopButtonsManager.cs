@@ -19,7 +19,11 @@ public class FriendsTopButtonsManager : MonoBehaviour {
 
 	public void RequestSendFriendRequset () {
 		RequestAlertController.Create ("Who do you want to add as a friend?", (response) => {
-			Debug.Log (response);
+			DBServer.GetInstance ().FindUser (response, (user) => {
+				Debug.Log (user);
+			}, (error) => {
+				Debug.LogError ("Failed: " + error);
+			});
 		});
 	}
 }

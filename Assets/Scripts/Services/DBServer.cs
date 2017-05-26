@@ -6,7 +6,7 @@ using UnityEngine.Networking;
 
 public class DBServer : MonoBehaviour {
 
-	public const String DBServerAddr = "http://146.169.46.104:8080";
+	public const String DBServerAddr = "http://146.169.46.104:8081";
 	public const long OK_STATUS = 200;
 	public const long NOT_ACCEPTABLE_STATUS = 406;
 	public const long NOT_FOUND_STATUS = 404;
@@ -94,6 +94,23 @@ public class DBServer : MonoBehaviour {
 	public void Logout () {
 		StartCoroutine (SetUserActive (false));
 		CurrentUser.GetInstance ().Logout ();
+	}
+
+	public void FindUser (String username, Action<User> callback, Action<long> errorcall) {
+		StartCoroutine (FindUserHelper (username, callback, errorcall));
+	}
+
+	private IEnumerator<AsyncOperation> FindUserHelper (String username, Action<User> callback, Action<long> errorcall) {
+		UnityWebRequest request = UnityWebRequest.Get (DBServerAddr + "/find_user?username=" + username);
+
+		yield return request.Send ();
+
+		if (request.responseCode != OK_STATUS) {
+			errorcall (request.responseCode);
+		} else {
+			User userData = JsonUtility.FromJson<User> (request.downloadHandler.text);
+			callback (userData);
+		}
 	}
 
 	private static String Encrypt(String message) {
