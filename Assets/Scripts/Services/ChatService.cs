@@ -9,8 +9,8 @@ using ExitGames.Client.Photon;
 
 public class ChatService : MonoBehaviour, IChatClientListener {
 
-	public const String APP_ID = "0b79eaae-0063-4f99-9212-ed71c61a6375";
 	public const String GLOBAL_CH = "General";
+	public const String APP_ID = "0b79eaae-0063-4f99-9212-ed71c61a6375";
 	private static ChatService instance = null;
 	private ChatClient chatClient = null;
 	private String activeCH = GLOBAL_CH;
@@ -45,6 +45,11 @@ public class ChatService : MonoBehaviour, IChatClientListener {
 		return GameObject.FindGameObjectWithTag ("Chat").GetComponent<ChatController> ();
 	}
 
+	public void ChangeChanel (String name) {
+		activeCH = name;
+		GetChat ().UpdateViewport (chatMessages);
+	}
+
 	public void SendMessage (String message) {
 		if (!message.Equals ("")) {
 			message = "[" + chatClient.UserId + "]: " + message;
@@ -52,6 +57,10 @@ public class ChatService : MonoBehaviour, IChatClientListener {
 			chatMessages.Add (message);
 			GetChat ().UpdateViewport (chatMessages);
 		}
+	}
+
+	public void CreateNewChat (String name) {
+		chatClient.Subscribe (new String[]{name});
 	}
 
 	public void DebugReturn(DebugLevel level, string message) {
@@ -63,8 +72,7 @@ public class ChatService : MonoBehaviour, IChatClientListener {
 	}
 
 	public void OnConnected() {
-		// initalise global chat
-		chatClient.Subscribe (new String[]{GLOBAL_CH});
+		CreateNewChat (GLOBAL_CH);
 	}
 
 	public void OnChatStateChange(ChatState state) {
