@@ -2,12 +2,11 @@
 
 public class User {
 	
-	public int id;
 	public String username;
 	public String password;
 	public String email;
-	public int[] friends;
-	public int[] friend_requests;
+	public String[] friends;
+	public String[] friend_requests;
 	public bool active;
 
 	public User (String username, String password, String email) {
@@ -17,8 +16,8 @@ public class User {
 	}
 
 	public override String ToString () {
-		return String.Format ("[id: {0}, username: {1}, password: {2}, email: {3}, friends: {4}, friend_requests: {5}, active: {6}]",
-			id, username, password, email, friends.ToString (), friend_requests.ToString (), active.ToString ());
+		return String.Format ("[username: {0}, password: {1}, email: {2}, friends: {3}, friend_requests: {4}, active: {5}]",
+			username, password, email, friends.ToString (), friend_requests.ToString (), active.ToString ());
 	}
 }
 
