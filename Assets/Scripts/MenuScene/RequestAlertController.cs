@@ -37,6 +37,8 @@ public class RequestAlertController : MonoBehaviour {
 	public void Update () {
 		if (Input.GetKeyUp (KeyCode.Return)) {
 			Submit ();
+			input.Select ();
+			input.ActivateInputField ();
 		}
 	}
 }

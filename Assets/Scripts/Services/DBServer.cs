@@ -114,6 +114,61 @@ public class DBServer : MonoBehaviour {
 		}
 	}
 
+	public void RequestFriend (String username, Action<User> callback, Action<long> errorcall) {
+		StartCoroutine (RequestFriendHelper (username, callback, errorcall));
+	}
+
+	private IEnumerator<AsyncOperation> RequestFriendHelper (String username, Action<User> callback, Action<long> errorcall) {
+		WWWForm form = new WWWForm ();
+		form.AddField ("user", CurrentUser.GetInstance ().GetUserInfo ().username);
+		form.AddField ("requested_friend", username);
+
+		UnityWebRequest request = UnityWebRequest.Post (DBServerAddr + "/request_friend", form);
+
+		yield return request.Send ();
+
+		if (request.responseCode != OK_STATUS) {
+			errorcall (request.responseCode);
+		} else {
+			User otherUserData = JsonUtility.FromJson<User> (request.downloadHandler.text);
+			callback (otherUserData);
+		}
+	}
+
+	public void FindFriendsForUser (String username, Action<User[]> callback, Action<long> errorcall) {
+		StartCoroutine (FindFriendsForUserHelper (username, callback, errorcall));
+	}
+
+	private IEnumerator<AsyncOperation> FindFriendsForUserHelper (String username, Action<User[]> callback, Action<long> errorcall) {
+		UnityWebRequest request = UnityWebRequest.Get (DBServerAddr + "/friends?username=" + username);
+
+		yield return request.Send ();
+
+		if (request.responseCode != OK_STATUS) {
+			errorcall (request.responseCode);
+		} else {
+			User[] userData = JsonUtility.FromJson<User[]> (request.downloadHandler.text);
+			callback (userData);
+		}
+	}
+
+	public void FindFriendRequestsForUser (String username, Action<User[]> callback, Action<long> errorcall) {
+		StartCoroutine (FindFriendRequestsForUserHelper (username, callback, errorcall));
+	}
+
+	private IEnumerator<AsyncOperation> FindFriendRequestsForUserHelper (String username, Action<User[]> callback, Action<long> errorcall) {
+		UnityWebRequest request = UnityWebRequest.Get (DBServerAddr + "/friend_requests?username=" + username);
+
+		yield return request.Send ();
+
+		if (request.responseCode != OK_STATUS) {
+			errorcall (request.responseCode);
+		} else {
+			User[] userData = JsonUtility.FromJson<User[]> (request.downloadHandler.text);
+			callback (userData);
+		}
+	}
+
 	private static String Encrypt(String message) {
 		return Convert.ToBase64String (Encoding.Unicode.GetBytes (message));
 	}
