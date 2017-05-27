@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class ChatTabController : MonoBehaviour {
 
@@ -20,5 +21,14 @@ public class ChatTabController : MonoBehaviour {
 		newTab.GetComponent <ChatTab> ().UpdateName (name);
 		totalChats++;
 		chat.CreateNewChat (name);
+		ActivateLastTab ();
+	}
+
+	private void ActivateLastTab() {
+		for (int i = 0; i < GameObject.FindGameObjectWithTag ("ChatButtons").transform.childCount; i++) {
+			GameObject.FindGameObjectWithTag ("ChatButtons").transform.GetChild(i).GetComponent<Image>().color = new Color32(255,255,225,240);
+		}
+		int totalTabs = GameObject.FindGameObjectWithTag ("ChatButtons").transform.childCount;
+		GameObject.FindGameObjectWithTag ("ChatButtons").transform.GetChild(totalTabs-1).GetComponent<Image>().color = new Color32 (0, 0, 0, 0);
 	}
 }
