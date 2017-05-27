@@ -11,7 +11,7 @@ public class ChatTabController : MonoBehaviour {
 	private int totalChats = 0;
 
 	public void AddChat () {
-		AddChat ("test");
+		AddChat ("chat " + totalChats);
 	}
 
 	public void AddChat (String name) {
