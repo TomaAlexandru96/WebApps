@@ -25,16 +25,7 @@ public class ChatTabController : MonoBehaviour {
 	}
 
 	private void ActivateLastTab() {
-		for (int i = 0; i < GameObject.FindGameObjectWithTag ("ChatButtons").transform.childCount; i++) {
-			GameObject.FindGameObjectWithTag ("ChatButtons").transform.GetChild(i).GetComponent<Image>().color = new Color32(255,255,225,240);
-		}
 		int totalTabs = GameObject.FindGameObjectWithTag ("ChatButtons").transform.childCount;
-		GameObject.FindGameObjectWithTag ("ChatButtons").transform.GetChild(totalTabs-1).GetComponent<Image>().color = new Color32 (0, 0, 0, 0);
-		getChatView ().GetComponent<ScrollRect> ().content = 
-			(RectTransform)getChatView ().GetChild(0).transform.GetChild (totalTabs-1);
+		GameObject.FindGameObjectWithTag ("ChatButtons").transform.GetChild (totalTabs - 1).GetComponent<ChatTab> ().SelectChat ();
 	}
-
-	private Transform getChatView() {
-		return GameObject.FindGameObjectWithTag ("Chat").transform.GetChild (0);
-	} 
 }
