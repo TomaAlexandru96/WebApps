@@ -18,7 +18,7 @@ public class ChatTabController : MonoBehaviour {
 	public void AddChat (String name) {
 		GameObject newTab = Instantiate (tabPrefab);
 		newTab.transform.SetParent (content.transform);
-		newTab.GetComponent <ChatTab> ().UpdateName (name);
+		newTab.GetComponent <ChatTab> ().UpdateName (name, totalChats);
 		totalChats++;
 		chat.CreateNewChat (name);
 		ActivateLastTab ();
@@ -30,5 +30,11 @@ public class ChatTabController : MonoBehaviour {
 		}
 		int totalTabs = GameObject.FindGameObjectWithTag ("ChatButtons").transform.childCount;
 		GameObject.FindGameObjectWithTag ("ChatButtons").transform.GetChild(totalTabs-1).GetComponent<Image>().color = new Color32 (0, 0, 0, 0);
+		getChatView ().GetComponent<ScrollRect> ().content = 
+			(RectTransform)getChatView ().GetChild(0).transform.GetChild (totalTabs-1);
 	}
+
+	private Transform getChatView() {
+		return GameObject.FindGameObjectWithTag ("Chat").transform.GetChild (0);
+	} 
 }
