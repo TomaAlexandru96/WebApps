@@ -18,17 +18,14 @@ public class ChatTabController : MonoBehaviour {
 	public void AddChat (String name) {
 		GameObject newTab = Instantiate (tabPrefab);
 		newTab.transform.SetParent (content.transform);
-		newTab.GetComponent <ChatTab> ().UpdateName (name);
+		newTab.GetComponent <ChatTab> ().UpdateName (name, totalChats);
 		totalChats++;
 		chat.CreateNewChat (name);
 		ActivateLastTab ();
 	}
 
 	private void ActivateLastTab() {
-		for (int i = 0; i < GameObject.FindGameObjectWithTag ("ChatButtons").transform.childCount; i++) {
-			GameObject.FindGameObjectWithTag ("ChatButtons").transform.GetChild(i).GetComponent<Image>().color = new Color32(255,255,225,240);
-		}
 		int totalTabs = GameObject.FindGameObjectWithTag ("ChatButtons").transform.childCount;
-		GameObject.FindGameObjectWithTag ("ChatButtons").transform.GetChild(totalTabs-1).GetComponent<Image>().color = new Color32 (0, 0, 0, 0);
+		GameObject.FindGameObjectWithTag ("ChatButtons").transform.GetChild (totalTabs - 1).GetComponent<ChatTab> ().SelectChat ();
 	}
 }
