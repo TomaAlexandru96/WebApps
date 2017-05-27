@@ -89,8 +89,7 @@ public class ChatService : MonoBehaviour, IChatClientListener {
 				continue;
 			}
 
-			String message = "[" + senders[i] + "]: " + messages [i];
-			chatMessages.Add (message);
+			chatMessages.Add ((String) messages [i]);
 		}
 
 		GetChat ().UpdateViewport (chatMessages);

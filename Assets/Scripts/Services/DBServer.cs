@@ -55,7 +55,7 @@ public class DBServer : MonoBehaviour {
 
 	private IEnumerator<AsyncOperation> SetUserActive (bool active) {
 		WWWForm form = new WWWForm ();
-		form.AddField ("id", CurrentUser.GetInstance ().GetUserInfo ().id);
+		form.AddField ("username", CurrentUser.GetInstance ().GetUserInfo ().username);
 		form.AddField ("active", active.ToString ());
 
 		UnityWebRequest request = UnityWebRequest.Post (DBServerAddr + "/set_active", form);
@@ -86,6 +86,7 @@ public class DBServer : MonoBehaviour {
 		} else {
 			User userData = JsonUtility.FromJson<User> (request.downloadHandler.text);
 			CurrentUser.GetInstance ().SetUserInfo (userData);
+			StartCoroutine (SetUserActive (true));
 			callback (userData);
 		}
 	}
