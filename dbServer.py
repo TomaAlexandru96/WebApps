@@ -8,6 +8,7 @@ from http.server import BaseHTTPRequestHandler, HTTPServer, SimpleHTTPRequestHan
 NOT_FOUND = 404
 OK = 200
 NOT_ACCEPTABLE = 406
+CONFLICT = 409
 
 try:
   connect_str = "dbname='g1627107_u' user='g1627107_u'" + \
@@ -34,6 +35,8 @@ class DBHTTPHandler(BaseHTTPRequestHandler):
       self.handle_register(parse_qs(data))
     elif (url.path == "/set_active"):
       self.handle_set_active(parse_qs(data))
+    elif (url.path == "/request_friend"):
+      self.handle_request_friend(parse_qs(data))
     else:
       self.send_code_only(NOT_FOUND);
 
@@ -44,7 +47,11 @@ class DBHTTPHandler(BaseHTTPRequestHandler):
     if (url.path == "/users"):
       self.handle_users(parse_qs(url.query))
     elif (url.path == "/find_user"):
-      self.handle_find_user(parse_qs(url.query));
+      self.handle_find_user(parse_qs(url.query))
+    elif (url.path == "/friends"):
+      self.handle_friends(parse_qs(url.query))
+    elif (url.path == "/friend_requests"):
+      self.handle_friend_requests(parse_qs(url.query))
     else:
       self.send_code_only(NOT_FOUND);
 
@@ -71,16 +78,52 @@ class DBHTTPHandler(BaseHTTPRequestHandler):
     self.wfile.write(bytes(json.dumps(obj), "utf8"))
 
 
+  # login method
   def handle_users(self, params):
+    user = self.helper_find_user(params['username'][0])
+    if (user is None or user['password'] != params['password'][0]):
+      self.send_code_only(NOT_ACCEPTABLE)
+    else:
+      self.send_JSON(user)
+
+  
+  def handle_find_user(self, params):
+    user = self.helper_find_user(params['username'][0])
+    if (user is None):
+      self.send_code_only(NOT_FOUND)
+    else:
+      user['password'] = ''
+      self.send_JSON(user)
+ 
+  
+  def handle_friends(self, params):
+    user = self.helper_find_user(params['username'][0]) 
+    if (user is None):
+      self.send_code_only(NOT_FOUND)
+    else:
+      print(user['friends'])
+      self.send_code_only(OK)
+
+  
+  def handle_friend_requests(self, params):    
+    user = self.helper_find_user(params['username'][0])
+    if (user is None):
+      self.send_code_only(NOT_FOUND)
+    else:
+      print(user['friend_requests'])
+      self.send_code_only(OK)
+
+
+  def helper_find_user(self, u_name):
     cursor = conn.cursor()
-    query = '''SELECT *
+    query = '''SELECT * 
                FROM USERS
-               WHERE USERNAME = '{}' AND PASSWORD = '{}'
-            '''.format(params['username'][0], params['password'][0])
+               WHERE USERNAME = '{}'
+            '''.format(u_name);
     cursor.execute(query)
     response = cursor.fetchone()
     if (response is None):
-      self.send_code_only(NOT_FOUND)
+      return None
     else:
       user = {}
       user['username'] = response[0]
@@ -89,28 +132,8 @@ class DBHTTPHandler(BaseHTTPRequestHandler):
       user['friends'] = response[3]
       user['friend_requests'] = response[4]
       user['active'] = response[5]
-      self.send_JSON(user)
-
-  
-  def handle_find_user(self, params):
-    cursor = conn.cursor()
-    query = '''SELECT * 
-               FROM USERS
-               WHERE USERNAME = '{}'
-            '''.format(params['username'][0]);
-    cursor.execute(query)
-    response = cursor.fetchone()
-    if (response is None):
-      self.send_code_only(NOT_FOUND)
-    else:
-      user = {}
-      user['username'] = response[0]
-      user['email'] = response[2]
-      user['friends'] = response[3]
-      user['friend_requests'] = response[4]
-      user['active'] = response[5]
-      self.send_JSON(user)
-  
+      return user
+ 
 
   def handle_register(self, user):
     cursor = conn.cursor()
@@ -131,6 +154,33 @@ class DBHTTPHandler(BaseHTTPRequestHandler):
     cursor.execute(query)
     conn.commit()
     self.handle_find_user(user)
+
+
+  def handle_request_friend(self, data):
+    user = self.helper_find_user(data['user'][0]);
+    requested_friend = self.helper_find_user(data['requested_friend'][0]);
+    if (user is None or requested_friend is None):
+      self.send_code_only(NOT_FOUND)
+      return
+  
+    if (user['username'] == requested_friend['username']):
+      self.send_code_only(CONFLICT)
+      return
+
+    
+    if (user['username'] in requested_friend['friend_requests']):
+      self.send_code_only(NOT_ACCEPTABLE)
+      return    
+
+
+    cursor = conn.cursor()
+    print(user)
+    query = '''UPDATE USERS SET FRIEND_REQUESTS = array_prepend('{}', FRIEND_REQUESTS)
+               WHERE USERNAME = '{}'
+            '''.format(user['username'], requested_friend['username'])
+    cursor.execute (query)
+    conn.commit()
+    self.send_code_only(OK)
 
 
   def handle_set_active(self, user):
