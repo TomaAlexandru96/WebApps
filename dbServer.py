@@ -31,9 +31,9 @@ class DBHTTPHandler(BaseHTTPRequestHandler):
     url = urlparse(self.path)
     data = self.rfile.read(int(self.headers['Content-Length'])).decode('utf-8')
     if (url.path == "/register"):
-      self.handle_register(data)
+      self.handle_register(parse_qs(data))
     elif (url.path == "/set_active"):
-      self.handle_set_active(data)
+      self.handle_set_active(parse_qs(data))
     else:
       self.send_code_only(NOT_FOUND);
 
@@ -42,9 +42,9 @@ class DBHTTPHandler(BaseHTTPRequestHandler):
   def do_GET(self):
     url = urlparse(self.path)
     if (url.path == "/users"):
-      self.handle_users(url)
+      self.handle_users(parse_qs(url.query))
     elif (url.path == "/find_user"):
-      self.handle_find_user(url);
+      self.handle_find_user(parse_qs(url.query));
     else:
       self.send_code_only(NOT_FOUND);
 
@@ -71,8 +71,7 @@ class DBHTTPHandler(BaseHTTPRequestHandler):
     self.wfile.write(bytes(json.dumps(obj), "utf8"))
 
 
-  def handle_users(self, url):
-    params = parse_qs(url.query)
+  def handle_users(self, params):
     cursor = conn.cursor()
     query = '''SELECT *
                FROM USERS
@@ -84,18 +83,16 @@ class DBHTTPHandler(BaseHTTPRequestHandler):
       self.send_code_only(NOT_FOUND)
     else:
       user = {}
-      user['id'] = response[0]
-      user['username'] = response[1]
-      user['password'] = response[2]
-      user['email'] = response[3]
-      user['friends'] = response[4]
-      user['friend_requests'] = response[5]
-      user['active'] = response[6]
+      user['username'] = response[0]
+      user['password'] = response[1]
+      user['email'] = response[2]
+      user['friends'] = response[3]
+      user['friend_requests'] = response[4]
+      user['active'] = response[5]
       self.send_JSON(user)
 
   
-  def handle_find_user(self, url):
-    params = parse_qs(url.query)
+  def handle_find_user(self, params):
     cursor = conn.cursor()
     query = '''SELECT * 
                FROM USERS
@@ -107,17 +104,15 @@ class DBHTTPHandler(BaseHTTPRequestHandler):
       self.send_code_only(NOT_FOUND)
     else:
       user = {}
-      user['id'] = response[0]
-      user['username'] = response[1]
-      user['email'] = response[3]
-      user['friends'] = response[4]
-      user['friend_requests'] = response[5]
-      user['active'] = response[6]
+      user['username'] = response[0]
+      user['email'] = response[2]
+      user['friends'] = response[3]
+      user['friend_requests'] = response[4]
+      user['active'] = response[5]
       self.send_JSON(user)
   
 
-  def handle_register(self, userData):
-    user = parse_qs(userData)
+  def handle_register(self, user):
     cursor = conn.cursor()
     query = '''SELECT *
                FROM USERS
@@ -135,18 +130,18 @@ class DBHTTPHandler(BaseHTTPRequestHandler):
             '''.format(user['username'][0], user['password'][0], user['email'][0])
     cursor.execute(query)
     conn.commit()
-    self.send_JSON(user)
+    self.handle_find_user(user)
 
 
-  def handle_set_active(self, data):
-    user = parse_qs(data)
+  def handle_set_active(self, user):
     cursor = conn.cursor()
     query = '''UPDATE USERS SET ACTIVE = '{}'
-               WHERE id = '{}'
-            '''.format(user['active'][0], user['id'][0])
+               WHERE USERNAME = '{}'
+            '''.format(user['active'][0], user['username'][0])
     cursor.execute (query)
     conn.commit()
     self.send_code_only(OK)
+
 
 def startServer():
   server_address = ('146.169.46.104', 8081)
