@@ -8,7 +8,7 @@ public class ChatTabController : MonoBehaviour {
 	public GameObject tabPrefab;
 	public ChatController chat;
 	public GameObject content;
-	private int totalChats = 0;
+	private int totalChats = -1;
 
 	public void AddChat () {
 		AddChat ("chat " + totalChats);

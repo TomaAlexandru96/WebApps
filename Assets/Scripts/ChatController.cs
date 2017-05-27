@@ -18,6 +18,7 @@ public class ChatController : MonoBehaviour {
 
 	public void Start () {
 		chatTabController.AddChat (ChatService.GLOBAL_CH);
+		chatTabController.AddChat (ChatService.PARTY_CH);
 	}
 
 	public void Update () {
@@ -58,7 +59,7 @@ public class ChatController : MonoBehaviour {
 		foreach (var obj in allChatPanels.Values) {
 			obj.SetActive (false);
 		}
-
+			
 		activePanel.SetActive (true);
 		ChatService.GetInstance ().ChangeChanel (name);
 	}
