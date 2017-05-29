@@ -14,15 +14,26 @@ public class FriendsRequestEntry : MonoBehaviour {
 		friendsPanel = GameObject.FindGameObjectWithTag ("Friends");
 	}
 
-	public void AcceptRequest() {
-		string name = friendRequestEntry.transform.GetChild (0).GetComponent<Text> ().text;
-		GameObject image = Instantiate (friendRequestEntry.transform.GetChild (1).gameObject, Vector3.zero, Quaternion.identity);
+	private string GetName () {
+		return friendRequestEntry.transform.GetChild (0).GetComponent<Text> ().text;
+	}
 
-		friendsPanel.transform.GetComponent<FriendsPanelManager> ().CreateFriend(name,image);
-		DestroyImmediate (friendRequestEntry);
+	public void AcceptRequest() {
+		DBServer.GetInstance ().AcceptFriendRequest (GetName (), () => {
+			GameObject image = Instantiate (friendRequestEntry.transform.GetChild (1).gameObject, Vector3.zero, Quaternion.identity);
+
+			friendsPanel.transform.GetComponent<FriendsPanelManager> ().CreateFriend (GetName (), image);
+			DestroyImmediate (friendRequestEntry);
+		}, (error) => {
+			Debug.LogError (error);
+		});
 	}
 
 	public void RejectRequest() {
-		DestroyImmediate (friendRequestEntry);
+		DBServer.GetInstance ().RejectFriendRequest (GetName (), () => {
+			DestroyImmediate (friendRequestEntry);	
+		}, (error) => {
+			Debug.LogError (error);
+		});
 	}
 }
