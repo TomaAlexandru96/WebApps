@@ -9,10 +9,15 @@ public class PartyControl : MonoBehaviour {
 	private int maxPlayers = 4;
 	private int playersInParty = 1;
 
-	public void AddPlayer() {
+	public void Start () {
+		AddPlayer (CurrentUser.GetInstance ().GetUserInfo ().username);
+	}
+
+	public void AddPlayer(string username) {
 		if (playersInParty < maxPlayers) {
 			GameObject newPlayer = Instantiate (playerPrefab);
 			newPlayer.transform.SetParent (transform);
+			newPlayer.GetComponent<PartyEntry> ().ChangeName (username);
 			playersInParty++;
 		}
 	} 
