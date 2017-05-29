@@ -114,11 +114,11 @@ public class DBServer : MonoBehaviour {
 		}
 	}
 
-	public void RequestFriend (String username, Action<User> callback, Action<long> errorcall) {
+	public void RequestFriend (String username, Action callback, Action<long> errorcall) {
 		StartCoroutine (RequestFriendHelper (username, callback, errorcall));
 	}
 
-	private IEnumerator<AsyncOperation> RequestFriendHelper (String username, Action<User> callback, Action<long> errorcall) {
+	private IEnumerator<AsyncOperation> RequestFriendHelper (String username, Action callback, Action<long> errorcall) {
 		WWWForm form = new WWWForm ();
 		form.AddField ("user", CurrentUser.GetInstance ().GetUserInfo ().username);
 		form.AddField ("requested_friend", username);
@@ -130,8 +130,47 @@ public class DBServer : MonoBehaviour {
 		if (request.responseCode != OK_STATUS) {
 			errorcall (request.responseCode);
 		} else {
-			User otherUserData = JsonUtility.FromJson<User> (request.downloadHandler.text);
-			callback (otherUserData);
+			callback ();
+		}
+	}
+
+	public void AcceptFriendRequest (String username, Action callback, Action<long> errorcall) {
+		StartCoroutine (AcceptFriendRequestHelper (username, callback, errorcall));
+	}
+
+	private IEnumerator<AsyncOperation> AcceptFriendRequestHelper (String username, Action callback, Action<long> errorcall) {
+		WWWForm form = new WWWForm ();
+		form.AddField ("user", CurrentUser.GetInstance ().GetUserInfo ().username);
+		form.AddField ("requested_friend", username);
+
+		UnityWebRequest request = UnityWebRequest.Post (DBServerAddr + "/accept_friend_request", form);
+
+		yield return request.Send ();
+
+		if (request.responseCode != OK_STATUS) {
+			errorcall (request.responseCode);
+		} else {
+			callback ();
+		}
+	}
+
+	public void RejectFriendRequest (String username, Action callback, Action<long> errorcall) {
+		StartCoroutine (RejectFriendRequestHelper (username, callback, errorcall));
+	}
+
+	private IEnumerator<AsyncOperation> RejectFriendRequestHelper (String username, Action callback, Action<long> errorcall) {
+		WWWForm form = new WWWForm ();
+		form.AddField ("user", CurrentUser.GetInstance ().GetUserInfo ().username);
+		form.AddField ("requested_friend", username);
+
+		UnityWebRequest request = UnityWebRequest.Post (DBServerAddr + "/reject_friend_request", form);
+
+		yield return request.Send ();
+
+		if (request.responseCode != OK_STATUS) {
+			errorcall (request.responseCode);
+		} else {
+			callback ();
 		}
 	}
 
