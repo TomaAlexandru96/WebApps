@@ -19,5 +19,25 @@ public class User {
 		return String.Format ("[username: {0}, password: {1}, email: {2}, friends: {3}, friend_requests: {4}, active: {5}]",
 			username, password, email, friends.ToString (), friend_requests.ToString (), active.ToString ());
 	}
+
+	public override bool Equals (object other) {
+		if (!(other is User)) {
+			return false;
+		}
+
+		User otherUser = (User) other;
+
+		return username == otherUser.username &&
+			password == otherUser.password &&
+			email == otherUser.email &&
+			friends.Equals (otherUser.friends) &&
+			friend_requests.Equals (otherUser.friend_requests) &&
+			active == otherUser.active;
+	}
+
+	public override int GetHashCode ()
+	{
+		return base.GetHashCode ();
+	}
 }
 

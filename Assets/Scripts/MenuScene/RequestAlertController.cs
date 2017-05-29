@@ -14,7 +14,7 @@ public class RequestAlertController : MonoBehaviour {
 	public void Start () {
 		input.Select ();
 		input.ActivateInputField ();
-	}
+	} 
 
 	public void Close () {
 		Destroy (gameObject);
