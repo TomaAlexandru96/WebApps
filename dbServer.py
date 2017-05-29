@@ -37,6 +37,10 @@ class DBHTTPHandler(BaseHTTPRequestHandler):
       self.handle_set_active(parse_qs(data))
     elif (url.path == "/request_friend"):
       self.handle_request_friend(parse_qs(data))
+    elif (url.path == "/accept_friend_request"):
+      self.handle_accept_friend_request(parse_qs(data))
+    elif (url.path == "/reject_friend_request"):
+      self.handle_reject_friend_request(parse_qs(data))
     else:
       self.send_code_only(NOT_FOUND);
 
@@ -48,10 +52,6 @@ class DBHTTPHandler(BaseHTTPRequestHandler):
       self.handle_users(parse_qs(url.query))
     elif (url.path == "/find_user"):
       self.handle_find_user(parse_qs(url.query))
-    elif (url.path == "/friends"):
-      self.handle_friends(parse_qs(url.query))
-    elif (url.path == "/friend_requests"):
-      self.handle_friend_requests(parse_qs(url.query))
     else:
       self.send_code_only(NOT_FOUND);
 
@@ -92,26 +92,7 @@ class DBHTTPHandler(BaseHTTPRequestHandler):
     if (user is None):
       self.send_code_only(NOT_FOUND)
     else:
-      user['password'] = ''
       self.send_JSON(user)
- 
-  
-  def handle_friends(self, params):
-    user = self.helper_find_user(params['username'][0]) 
-    if (user is None):
-      self.send_code_only(NOT_FOUND)
-    else:
-      print(user['friends'])
-      self.send_code_only(OK)
-
-  
-  def handle_friend_requests(self, params):    
-    user = self.helper_find_user(params['username'][0])
-    if (user is None):
-      self.send_code_only(NOT_FOUND)
-    else:
-      print(user['friend_requests'])
-      self.send_code_only(OK)
 
 
   def helper_find_user(self, u_name):
@@ -129,9 +110,9 @@ class DBHTTPHandler(BaseHTTPRequestHandler):
       user['username'] = response[0]
       user['password'] = response[1]
       user['email'] = response[2]
-      user['friends'] = response[3]
-      user['friend_requests'] = response[4]
-      user['active'] = response[5]
+      user['friend_requests'] = response[3]
+      user['active'] = response[4]
+      user['friends'] = response[5]
       return user
  
 
@@ -174,7 +155,6 @@ class DBHTTPHandler(BaseHTTPRequestHandler):
 
 
     cursor = conn.cursor()
-    print(user)
     query = '''UPDATE USERS SET FRIEND_REQUESTS = array_prepend('{}', FRIEND_REQUESTS)
                WHERE USERNAME = '{}'
             '''.format(user['username'], requested_friend['username'])
@@ -188,6 +168,54 @@ class DBHTTPHandler(BaseHTTPRequestHandler):
     query = '''UPDATE USERS SET ACTIVE = '{}'
                WHERE USERNAME = '{}'
             '''.format(user['active'][0], user['username'][0])
+    cursor.execute (query)
+    conn.commit()
+    self.send_code_only(OK)
+
+
+  def handle_accept_friend_request(self, data):
+    user = self.helper_find_user(data['user'][0]);
+    requested_friend = self.helper_find_user(data['requested_friend'][0]);
+
+    if (user is None or requested_friend is None):
+      self.send_code_only(NOT_FOUND)
+      return
+
+    cursor = conn.cursor()
+    query = '''UPDATE USERS SET FRIEND_REQUESTS = array_remove(FRIEND_REQUESTS::varchar(50)[], ARRAY['{}']::varchar(50)[])
+               WHERE USERNAME = '{}'
+            '''.format(requested_friend['username'], user['username'])
+    cursor.execute (query)
+    conn.commit()
+
+    cursor = conn.cursor()
+    query = '''UPDATE USERS SET FRIENDS = array_prepend('{}', FRIENDS)
+               WHERE USERNAME = '{}'
+            '''.format(user['username'], requested_friend['username'])
+    cursor.execute (query)
+    conn.commit()
+
+    cursor = conn.cursor()
+    query = '''UPDATE USERS SET FRIENDS = array_prepend('{}', FRIENDS)
+               WHERE USERNAME = '{}'
+            '''.format(requested_friend['username'], user['username'])
+    cursor.execute (query)
+    conn.commit()
+    self.send_code_only(OK)
+
+
+  def handle_reject_friend_request(self, data):
+    user = self.helper_find_user(data['user'][0]);
+    requested_friend = self.helper_find_user(data['requested_friend'][0]);
+
+    if (user is None or requested_friend is None):
+      self.send_code_only(NOT_FOUND)
+      return
+
+    cursor = conn.cursor()
+    query = '''UPDATE USERS SET FRIEND_REQUESTS = array_remove(FRIEND_REQUESTS::varchar(50)[], ARRAY['{}']::varchar(50)[])
+               WHERE USERNAME = '{}'
+            '''.format(requested_friend['username'], user['username'])
     cursor.execute (query)
     conn.commit()
     self.send_code_only(OK)
