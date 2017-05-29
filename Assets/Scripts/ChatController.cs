@@ -17,8 +17,8 @@ public class ChatController : MonoBehaviour {
 	private Dictionary<String, GameObject> allChatPanels = new Dictionary<String, GameObject> ();
 
 	public void Start () {
-		chatTabController.AddChat (ChatService.GLOBAL_CH);
-		chatTabController.AddChat (ChatService.PARTY_CH);
+		chatTabController.AddChat (ChatService.GLOBAL_CH, false);
+		chatTabController.AddChat (ChatService.PARTY_CH, false);
 	}
 
 	public void Update () {

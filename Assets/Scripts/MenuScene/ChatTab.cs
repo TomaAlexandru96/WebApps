@@ -8,7 +8,13 @@ public class ChatTab : MonoBehaviour {
 	
 	private String chName;
 	private int chatNum;
-	public GameObject chatTab; 
+	public GameObject chatTab;
+	public GameObject closeButton;
+	public bool isCloseable;
+
+	public void Start () {
+		closeButton.SetActive (isCloseable);
+	}
 
 	public void SelectChat () {
 		GameObject.FindGameObjectWithTag ("Chat").GetComponent<ChatController> ().LoadChat (chName);
@@ -28,6 +34,11 @@ public class ChatTab : MonoBehaviour {
 		for (int i = 0; i < GameObject.FindGameObjectWithTag ("ChatButtons").transform.childCount; i++) {
 			GameObject.FindGameObjectWithTag ("ChatButtons").transform.GetChild(i).GetComponent<Image>().color = new Color32(255,255,225,240);
 		}
+	}
+
+	public void CloseTab () {
+		ChatService.GetInstance ().Unsubscribe (new string[]{chName});
+		DestroyImmediate (gameObject);
 	}
 
 	public void UpdateName (String name, int num) {
