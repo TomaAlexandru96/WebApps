@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class CurrentUser : MonoBehaviour {
@@ -7,12 +8,18 @@ public class CurrentUser : MonoBehaviour {
 	private User userInfo = null;
 	public const String userCache = "Assets/cache";
 	private static CurrentUser instance = null;
+	private List<Notifiable> notifiables = new List<Notifiable> ();
 
 	void Awake () {
 		if (instance == null) {
 			instance = this;
 			LoadFromCache ();
+			InvokeRepeating ("UpdateUserInfoCoroutine", 0, 5);
 		}
+	}
+
+	public void Subscribe (Notifiable n) {
+		notifiables.Add (n);
 	}
 
 	public static CurrentUser GetInstance () {
@@ -83,6 +90,26 @@ public class CurrentUser : MonoBehaviour {
 			return userInfo.ToString ();
 		} else {
 			return "Not Logged";
+		}
+	}
+
+	private void NotifyAll () {
+		foreach (var n in notifiables) {
+			n.Notify ();
+		}
+	}
+
+	private void UpdateUserInfoCoroutine () {
+		if (IsLoggedIn ()) {
+			DBServer.GetInstance ().FindUser (userInfo.username, (user) => {
+				if (!user.Equals (userInfo)) {
+					SetUserInfo (user);
+					NotifyAll ();
+				}
+			}, (error) => {
+				Debug.LogError ("Something happened to the user: " + error);
+				Logout ();
+			});
 		}
 	}
 }
