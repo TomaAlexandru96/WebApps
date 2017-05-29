@@ -1,0 +1,21 @@
+fileFormatVersion: 2
+guid: 34f5f92fc57fd45269e501ad828fcb91
+timeCreated: 1496066747
+licenseType: Free
+TrueTypeFontImporter:
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontName: Pixel Azure Bonds
+  fontNames:
+  - Pixel Azure Bonds
+  fallbackFontReferences: []
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
