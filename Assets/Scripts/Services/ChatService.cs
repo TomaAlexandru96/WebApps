@@ -54,6 +54,10 @@ public class ChatService : MonoBehaviour, IChatClientListener {
 		GetChat ().UpdateViewport (chatMessages);
 	}
 
+	public void Unsubscribe (string[] chs) {
+		chatClient.Unsubscribe (chs);
+	}
+
 	public void SendMessage (String message) {
 		if (!message.Equals ("")) {
 			message = "[" + chatClient.UserId + "]: " + message;

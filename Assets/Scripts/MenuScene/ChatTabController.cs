@@ -12,13 +12,14 @@ public class ChatTabController : MonoBehaviour {
 	private int totalChats = -1;
 
 	public void AddChat () {
-		AddChat ("chat " + totalChats);
+		AddChat ("chat " + totalChats, true);
 	}
 
-	public void AddChat (String name) {
+	public void AddChat (String name, bool isCloseable) {
 		GameObject newTab = Instantiate (tabPrefab);
 		newTab.transform.SetParent (content.transform);
 		newTab.GetComponent <ChatTab> ().UpdateName (name, totalChats);
+		newTab.GetComponent <ChatTab> ().isCloseable = isCloseable;
 		totalChats++;
 		chat.CreateNewChat (name);
 		ActivateLastTab ();
