@@ -11,5 +11,13 @@ public class PartyMembers {
 	public int GetSize () {
 		return index;
 	}
+
+	public string[] GetMembers () {
+		string[] allMembers = new string[index];
+		for (int i = 0; i < index; i++) {
+			allMembers [i] = partyMembers [i];
+		}
+		return allMembers;
+	}
 }
 
