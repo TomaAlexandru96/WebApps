@@ -169,6 +169,11 @@ class DBHTTPHandler(BaseHTTPRequestHandler):
       return    
 
 
+    if (user['username'] in requested_friend['friends']):
+      self.send_code_only(NOT_ACCEPTABLE)
+      return    
+
+
     cursor = conn.cursor()
     query = '''UPDATE USERS SET FRIEND_REQUESTS = array_prepend('{}', FRIEND_REQUESTS)
                WHERE USERNAME = '{}'
