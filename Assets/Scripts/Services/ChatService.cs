@@ -110,7 +110,9 @@ public class ChatService : MonoBehaviour, IChatClientListener {
 	}
 
 	public void OnPrivateMessage(string sender, object message, string channelName) {
-		UpdateService.GetInstance ().Recieve (sender, (UpdateType) message);
+		if (!channelName.Split(':')[0].Equals (sender)) {
+			UpdateService.GetInstance ().Recieve (sender, (UpdateType) message);
+		}
 	}
 
 	public void OnSubscribed(string[] channels, bool[] results) {
