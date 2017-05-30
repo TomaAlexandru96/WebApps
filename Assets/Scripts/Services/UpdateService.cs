@@ -7,7 +7,7 @@ using ExitGames.Client.Photon.Chat;
 public class UpdateService : MonoBehaviour {
 	
 	private static UpdateService instance = null;
-	private Dictionary<UpdateType, List<Action>> subscribers = new Dictionary<UpdateType, List<Action>> ();
+	private Dictionary<UpdateType, List<Action<String>>> subscribers = new Dictionary<UpdateType, List<Action<String>>> ();
 
 	public void Awake () {
 		if (instance == null) {
@@ -20,8 +20,8 @@ public class UpdateService : MonoBehaviour {
 	}
 
 	private void InstantiateSubs () {
-		subscribers.Add (UpdateType.PartyRequest, new List<Action> ());
-		subscribers.Add (UpdateType.UserUpdate, new List<Action> ());
+		subscribers.Add (UpdateType.PartyRequest, new List<Action<String>> ());
+		subscribers.Add (UpdateType.UserUpdate, new List<Action<String>> ());
 	}
 
 	public static UpdateService GetInstance () {
@@ -35,16 +35,16 @@ public class UpdateService : MonoBehaviour {
 	}
 
 	public void Recieve (string sender, UpdateType messageType) {
-		List<Action> functions;
+		List<Action<String>> functions;
 		subscribers.TryGetValue (messageType, out functions);
 
 		foreach (var func in functions) {
-			func ();
+			func (sender);
 		}
 	}
 
-	public void Subscribe (UpdateType ev, Action func) {
-		List<Action> functions;
+	public void Subscribe (UpdateType ev, Action<String> func) {
+		List<Action<String>> functions;
 		subscribers.TryGetValue (ev, out functions);
 		functions.Add (func);
 	}

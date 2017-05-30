@@ -19,7 +19,7 @@ public class CurrentUser : MonoBehaviour {
 	}
 
 	void Start () {
-		UpdateService.GetInstance ().Subscribe (UpdateType.UserUpdate, () => {
+		UpdateService.GetInstance ().Subscribe (UpdateType.UserUpdate, (sender) => {
 			RequestUpdate ();
 		});
 	}
