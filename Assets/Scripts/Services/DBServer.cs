@@ -14,7 +14,7 @@ public class DBServer : MonoBehaviour {
 
 	void Awake () {
 		if (instance == null) {
-			DBServer.instance = this;	
+			DBServer.instance = this;
 		}
 	}
 
@@ -38,8 +38,11 @@ public class DBServer : MonoBehaviour {
 			password = DBServer.Encrypt (password);	
 		}
 
-		UnityWebRequest request = UnityWebRequest.Get (DBServerAddr + "/users?username=" +
-												username + "&password=" + password);
+		WWWForm form = new WWWForm ();
+		form.AddField ("username", username);
+		form.AddField ("password", password);
+
+		UnityWebRequest request = UnityWebRequest.Post (DBServerAddr + "/login", form);
 
 		yield return request.Send ();
 
@@ -48,28 +51,17 @@ public class DBServer : MonoBehaviour {
 		} else {
 			User userData = JsonUtility.FromJson<User> (request.downloadHandler.text);
 			CurrentUser.GetInstance ().SetUserInfo (userData);
-			StartCoroutine (SetUserActive (true));
 			callback (userData);
 		}
 	}
 
-	private IEnumerator<AsyncOperation> SetUserActive (bool active) {
-		WWWForm form = new WWWForm ();
-		form.AddField ("username", CurrentUser.GetInstance ().GetUserInfo ().username);
-		form.AddField ("active", active.ToString ());
-
-		UnityWebRequest request = UnityWebRequest.Post (DBServerAddr + "/set_active", form);
-
-		yield return request.Send ();
-	}
-
 	/* Issues register request to DB server */
-	public void Register (User user, Action<User> callback, Action<long> errorcall) {
+	public void Register (User user, Action callback, Action<long> errorcall) {
 		StartCoroutine (RegisterHelper (user, callback, errorcall));
 	}
 
 	private IEnumerator<AsyncOperation> RegisterHelper (User user,
-										Action<User> callback, Action<long> errorcall) {
+										Action callback, Action<long> errorcall) {
 		user.password = DBServer.Encrypt (user.password);
 
 		WWWForm form = new WWWForm ();
@@ -84,16 +76,12 @@ public class DBServer : MonoBehaviour {
 		if (request.responseCode != OK_STATUS) {
 			errorcall (request.responseCode);
 		} else {
-			User userData = JsonUtility.FromJson<User> (request.downloadHandler.text);
-			CurrentUser.GetInstance ().SetUserInfo (userData);
-			StartCoroutine (SetUserActive (true));
-			callback (userData);
+			callback ();
 		}
 	}
 
 	/* Issues logout request to the DB server */
 	public void Logout () {
-		StartCoroutine (SetUserActive (false));
 		CurrentUser.GetInstance ().Logout ();
 	}
 

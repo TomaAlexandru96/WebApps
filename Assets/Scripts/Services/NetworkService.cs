@@ -11,7 +11,7 @@ public class NetworkService : MonoBehaviour {
 	void Awake () {
 		if (instance == null) {
 			instance = this;
-			PhotonNetwork.ConnectUsingSettings (GAME_VERSION);
+			SetupConnection ();
 			DontDestroyOnLoad (gameObject);
 		} else {
 			Destroy (gameObject);
@@ -20,6 +20,10 @@ public class NetworkService : MonoBehaviour {
 
 	public static NetworkService GetInstance () {
 		return instance;
+	}
+
+	private void SetupConnection () {
+		PhotonNetwork.ConnectUsingSettings (GAME_VERSION);
 	}
 
 	public void DestroyConnection () {
