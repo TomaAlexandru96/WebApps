@@ -50,7 +50,7 @@ public class DBServer : MonoBehaviour {
 			errorcall (request.responseCode);
 		} else {
 			User userData = JsonUtility.FromJson<User> (request.downloadHandler.text);
-			CurrentUser.GetInstance ().SetUserInfo (userData);
+			CurrentUser.GetInstance ().Login (userData);
 			callback (userData);
 		}
 	}

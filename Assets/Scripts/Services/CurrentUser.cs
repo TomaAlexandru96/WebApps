@@ -18,10 +18,8 @@ public class CurrentUser : MonoBehaviour {
 		}
 	}
 
-	void Start () {
-		UpdateService.GetInstance ().Subscribe (UpdateType.UserUpdate, (sender) => {
-			RequestUpdate ();
-		});
+	void OnApplicationQuit() {
+		DBServer.GetInstance ().Logout ();
 	}
 
 	public void Subscribe (Notifiable n) {
@@ -46,9 +44,9 @@ public class CurrentUser : MonoBehaviour {
 				return;
 			}
 
-			SetUserInfo (JsonUtility.FromJson<User> (userInfoJSON));
+			User loadedUser = JsonUtility.FromJson<User> (userInfoJSON);
 
-			DBServer.GetInstance ().Login (userInfo.username, userInfo.password, false, (user) => { }, (error) => {
+			DBServer.GetInstance ().Login (loadedUser.username, loadedUser.password, false, (user) => { }, (error) => {
 				Logout ();
 			});
 
@@ -68,22 +66,28 @@ public class CurrentUser : MonoBehaviour {
 		}
 	}
 
-	private void ClearCahce () {
+	public void ClearCahce () {
 		WriteToCache ("");
+	}
+
+	public void Login (User userInfo) {
+		/*UpdateService.GetInstance ().Subscribe (UpdateType.UserUpdate, (sender, message) => {
+			RequestUpdate ();
+		});*/
+		SetUserInfo (userInfo);
 	}
 
 	public void Logout () {
 		userInfo = null;
 		pp = null;
 		NetworkService.GetInstance ().DestroyConnection ();
-		ClearCahce ();
 	}
 
 	public User GetUserInfo () {
 		return userInfo;
 	}
 
-	public void SetUserInfo (User userInfo) {
+	private void SetUserInfo (User userInfo) {
 		this.userInfo = userInfo;
 		this.userInfo.active = true;
 		SaveToCache ();

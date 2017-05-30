@@ -17,6 +17,7 @@ public class MenuController : MonoBehaviour, Notifiable {
 		Destroy (GameObject.FindGameObjectWithTag ("NetworkEntity"));
 		Destroy (GameObject.FindGameObjectWithTag ("ChatEntity"));
 		Destroy (GameObject.FindGameObjectWithTag ("UpdateEntity"));
+		CurrentUser.GetInstance ().ClearCahce ();
 		SceneManager.LoadScene ("Login");
 	}
 
