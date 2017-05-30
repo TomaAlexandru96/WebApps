@@ -10,6 +10,9 @@ public class P1_MoveAnim : MonoBehaviour {
 
 	public Direction move;
 
+	public int totHP;
+	public int curHP;
+
 	public enum Direction
 	{
 		Still, Down, Up, Left, Right, UpRight, UpLeft, DownRight, DownLeft  
@@ -28,6 +31,14 @@ public class P1_MoveAnim : MonoBehaviour {
 	void Start() {
 		rb = GetComponent<Rigidbody2D> ();
 		animator = GetComponent<Animator>();
+		totHP = 20;
+		curHP = totHP;
+	}
+
+	void OnCollisionStay2D(Collision2D coll) {
+		if (coll.gameObject.tag == "Enemy") {
+			curHP -= (int)(((coll.gameObject.GetComponent<Enemy> ()).damage)*Time.deltaTime);
+		}
 	}
 
 	void Update() {
