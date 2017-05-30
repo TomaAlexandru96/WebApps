@@ -31,7 +31,7 @@ public class NetworkService : Photon.MonoBehaviour {
 
 	public void OnJoinedLobby () {
 		RoomOptions options = new RoomOptions ();
-		PhotonNetwork.JoinOrCreateRoom (ChatService.GLOBAL_CH, options, TypedLobby.Default);
+		PhotonNetwork.JoinOrCreateRoom (ChatService.GetInstance ().GetPartyCHName (), options, TypedLobby.Default);
 	}
 
 	public void OnJoinedRoom () {

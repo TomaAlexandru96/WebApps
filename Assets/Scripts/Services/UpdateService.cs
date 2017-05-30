@@ -6,7 +6,6 @@ using ExitGames.Client.Photon.Chat;
 public class UpdateService : MonoBehaviour {
 	
 	private static UpdateService instance = null;
-	public const string CH_NAME = "Secret";
 
 	public void Awake () {
 		if (instance == null) {
@@ -21,8 +20,8 @@ public class UpdateService : MonoBehaviour {
 		return instance;
 	}
 
-	public void SendUpdate (string[] to, UpdateType message) {
-		foreach (var target in to) {
+	public void SendUpdate (string[] targets, UpdateType message) {
+		foreach (var target in targets) {
 			ChatService.GetInstance ().SendPrivateMessage (target, message);
 		}
 	}
@@ -32,13 +31,5 @@ public class UpdateService : MonoBehaviour {
 		case UpdateType.UserUpdate: CurrentUser.GetInstance ().RequestUpdate (); break;
 		case UpdateType.PartyRequest: Debug.Log ("Request for party from: " + sender); break;
 		}
-	}
-
-	public void Setup () {
-		ChatService.GetInstance ().Subscribe (new string[]{CH_NAME});
-	}
-
-	public void Teardown () {
-		ChatService.GetInstance ().Unsubscribe (new string[]{CH_NAME});
 	}
 }
