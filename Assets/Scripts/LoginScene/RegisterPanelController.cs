@@ -22,8 +22,9 @@ public class RegisterPanelController : MonoBehaviour {
 
 		User user = new User (username.text, password.text, email.text);
 		DBServer.GetInstance ().Register (user, () => {
-			DBServer.GetInstance ().Login (user.username, user.password, true, (u) => {}, (error) => {Debug.LogError (error);});
-			SceneManager.LoadScene ("Menu");
+			DBServer.GetInstance ().Login (user.username, user.password, false, (u) => {
+				SceneManager.LoadScene ("Menu");
+			}, (error) => {Debug.LogError (error);});
 		}, (errorCode) => {
 			String errorMessage = errorCode + ": ";
 
