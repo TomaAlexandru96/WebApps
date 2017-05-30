@@ -111,7 +111,7 @@ public class ChatService : MonoBehaviour, IChatClientListener {
 
 	public void OnPrivateMessage(string sender, object message, string channelName) {
 		if (!channelName.Split(':')[0].Equals (sender)) {
-			UpdateService.GetInstance ().Recieve (sender, (UpdateType) message);
+			UpdateService.GetInstance ().Recieve (sender, (Dictionary<String, String>) message);
 		}
 	}
 

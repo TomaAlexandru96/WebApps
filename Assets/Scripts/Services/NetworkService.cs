@@ -34,17 +34,15 @@ public class NetworkService : Photon.MonoBehaviour {
 		PhotonNetwork.JoinOrCreateRoom (ChatService.GetInstance ().GetPartyCHName (), options, TypedLobby.Default);
 	}
 
-	public void OnJoinedRoom () {
-		// instantiate party
-		GameObject party = PhotonNetwork.Instantiate (partyPrefabName, new Vector3 (140, -233, 0), Quaternion.identity, 0);
-		party.transform.SetParent (GameObject.FindGameObjectWithTag ("Canvas").transform, false);
-	}
-
 	public void DestroyConnection () {
 		PhotonNetwork.Disconnect ();
 	}
 
 	public void Update () {
 		infoLabel.text = PhotonNetwork.connectionStateDetailed.ToString();
+	}
+
+	public void JoinRoom (string roomName) {
+		PhotonNetwork.JoinRoom (roomName);
 	}
 }
