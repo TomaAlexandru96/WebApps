@@ -8,7 +8,7 @@ public class FriendsEntry : MonoBehaviour {
 	private GameObject optionPanel;
 
 	public void Start() {
-		optionPanel = GameObject.FindGameObjectWithTag ("Menu").transform.GetChild(5).gameObject;
+		optionPanel = GameObject.FindGameObjectWithTag ("Menu").transform.GetChild(3).gameObject;
 		optionPanel.SetActive (false);
 	}
 

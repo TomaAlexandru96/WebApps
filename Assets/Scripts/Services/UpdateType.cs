@@ -1,6 +1,6 @@
 ﻿using System;
 
 public enum UpdateType {
-	UserUpdate, PartyRequest, PartyRequestAccept
+	UserUpdate, PartyRequest, PartyRequestAccept, PartyUpdate
 }
 
