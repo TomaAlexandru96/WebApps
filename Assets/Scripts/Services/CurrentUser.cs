@@ -46,7 +46,8 @@ public class CurrentUser : MonoBehaviour {
 
 			User loadedUser = JsonUtility.FromJson<User> (userInfoJSON);
 
-			DBServer.GetInstance ().Login (loadedUser.username, loadedUser.password, false, (user) => { }, (error) => {
+			DBServer.GetInstance ().Login (loadedUser.username, loadedUser.password, false, (user) => {
+			}, (error) => {
 				Logout ();
 			});
 
