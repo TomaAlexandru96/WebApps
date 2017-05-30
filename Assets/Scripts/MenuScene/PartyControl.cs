@@ -32,15 +32,14 @@ public class PartyControl : MonoBehaviour {
 			partyMembers.AddPlayer (sender);
 			message = UpdateService.CreateMessage (UpdateType.PartyUpdate, 
 								UpdateService.CreateKV ("members", partyMembers));
-			UpdateService.GetInstance ().SendUpdate (partyMembers.partyMembers, message);
+			UpdateService.GetInstance ().SendUpdate (partyMembers.GetMembers (), message);
+			UpdateParty();
 		});
 
 		UpdateService.GetInstance ().Subscribe (UpdateType.PartyUpdate, (sender, message) => {
 			partyMembers = UpdateService.GetData<PartyMembers> (message, "members");
-			ClearParty ();
-			foreach (var member in partyMembers.partyMembers) {
-				AddPlayer (member);
-			}
+
+			UpdateParty();
 		});
 	}
 
@@ -54,6 +53,13 @@ public class PartyControl : MonoBehaviour {
 					Debug.LogError (error);
 				});
 			});	
+		}
+	}
+
+	private void UpdateParty () {
+		ClearParty ();
+		foreach (var member in partyMembers.GetMembers ()) {
+			AddPlayer (member);
 		}
 	}
 
