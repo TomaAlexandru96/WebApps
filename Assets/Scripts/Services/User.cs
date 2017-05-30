@@ -35,8 +35,7 @@ public class User {
 			active == otherUser.active;
 	}
 
-	public override int GetHashCode ()
-	{
+	public override int GetHashCode () {
 		return base.GetHashCode ();
 	}
 }

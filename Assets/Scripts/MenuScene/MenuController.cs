@@ -3,7 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class MenuController : MonoBehaviour {
+public class MenuController : MonoBehaviour, Notifiable {
+
+	public void Notify () {
+		if (!CurrentUser.GetInstance ().IsLoggedIn ()) {
+			Logout ();
+		}
+	}
 
 	public void Logout () {
 		DBServer.GetInstance ().Logout ();
