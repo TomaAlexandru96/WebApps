@@ -20,9 +20,9 @@ public class UpdateService : MonoBehaviour {
 	}
 
 	private void InstantiateSubs () {
-		subscribers.Add (UpdateType.PartyRequest, new List<Action<String, Dictionary<String, String>>> ());
-		subscribers.Add (UpdateType.UserUpdate, new List<Action<String, Dictionary<String, String>>> ());
-		subscribers.Add (UpdateType.PartyRequestAccept, new List<Action<String, Dictionary<String, String>>> ());
+		foreach (UpdateType en in Enum.GetValues (typeof (UpdateType))) {
+			subscribers.Add (en, new List<Action<String, Dictionary<String, String>>> ());	
+		}
 	}
 
 	public static UpdateService GetInstance () {
@@ -59,5 +59,13 @@ public class UpdateService : MonoBehaviour {
 		List<Action<String, Dictionary<String, String>>> functions;
 		subscribers.TryGetValue (ev, out functions);
 		functions.Add (func);
+	}
+
+	public static T GetData<T> (Dictionary<String, String> message, string key) {
+		return JsonUtility.FromJson<T>(message[key]);
+	}
+
+	public static KeyValuePair<string, string> CreateKV<T> (string key, T value) {
+		return new KeyValuePair<string, string> (key, JsonUtility.ToJson (value));
 	}
 }

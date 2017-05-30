@@ -20,7 +20,7 @@ public class ChatTab : MonoBehaviour {
 		GameObject.FindGameObjectWithTag ("Chat").GetComponent<ChatController> ().LoadChat (chName);
 
 		DeactivateButtons ();
-		chatTab.GetComponent<Image> ().color = new Color32 (0, 0, 0, 0);
+		chatTab.GetComponent<Image> ().color = Color.green;
 
 		getChatView ().GetComponent<ScrollRect> ().content = 
 			(RectTransform)getChatView ().GetChild(0).transform.GetChild (chatNum+1);
