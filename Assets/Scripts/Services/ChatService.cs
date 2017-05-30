@@ -46,7 +46,6 @@ public class ChatService : MonoBehaviour, IChatClientListener {
 		while (!Connected) {
 			Connected = chatClient.Connect (APP_ID, NetworkService.GAME_VERSION, av);
 		}
-		UpdateService.GetInstance ().Setup ();
 	}
 
 	private ChatController GetChat () {
@@ -84,7 +83,6 @@ public class ChatService : MonoBehaviour, IChatClientListener {
 	}
 
 	public void OnDisconnected() {
-		UpdateService.GetInstance ().Teardown ();
 	}
 
 	public void Subscribe (string[] chs) {
@@ -112,9 +110,7 @@ public class ChatService : MonoBehaviour, IChatClientListener {
 	}
 
 	public void OnPrivateMessage(string sender, object message, string channelName) {
-		if (channelName.Equals (UpdateService.CH_NAME)) {
-			UpdateService.GetInstance ().Recieve (sender, (UpdateType) message);
-		}
+		UpdateService.GetInstance ().Recieve (sender, (UpdateType) message);
 	}
 
 	public void OnSubscribed(string[] channels, bool[] results) {
