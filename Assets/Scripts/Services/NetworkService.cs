@@ -32,8 +32,6 @@ public class NetworkService : Photon.MonoBehaviour {
 	public void OnJoinedLobby () {
 		RoomOptions options = new RoomOptions ();
 		PhotonNetwork.JoinOrCreateRoom (ChatService.GLOBAL_CH, options, TypedLobby.Default);
-		RoomOptions partyOptions = new RoomOptions () {MaxPlayers = 4};
-		PhotonNetwork.CreateRoom (ChatService.GetInstance ().GetPartyCHName (), partyOptions, TypedLobby.Default);
 	}
 
 	public void OnJoinedRoom () {
