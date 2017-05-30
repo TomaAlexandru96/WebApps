@@ -11,9 +11,12 @@ public class PartyControl : MonoBehaviour {
 
 	public void Start () {
 		AddPlayer (CurrentUser.GetInstance ().GetUserInfo ().username);
+		UpdateService.GetInstance ().Subscribe (UpdateType.PartyRequest, () => {
+			RequestAddPlayer ();
+		});
 	}
 
-	public void RequestAddPlayer () {
+	private void RequestAddPlayer () {
 		RequestAlertController.Create("Who would you wnat to add to the party?", (controller, input) => {
 			DBServer.GetInstance ().FindUser (input, (user) => {
 				UpdateService.GetInstance ().SendUpdate (new string[]{user.username}, UpdateType.PartyRequest);

@@ -18,6 +18,12 @@ public class CurrentUser : MonoBehaviour {
 		}
 	}
 
+	void Start () {
+		UpdateService.GetInstance ().Subscribe (UpdateType.UserUpdate, () => {
+			RequestUpdate ();
+		});
+	}
+
 	public void Subscribe (Notifiable n) {
 		notifiables.Add (n);
 	}
@@ -101,7 +107,7 @@ public class CurrentUser : MonoBehaviour {
 		}
 	}
 
-	public void RequestUpdate () {
+	private void RequestUpdate () {
 		if (IsLoggedIn ()) {
 			DBServer.GetInstance ().FindUser (userInfo.username, (user) => {
 				if (!user.Equals (userInfo)) {
