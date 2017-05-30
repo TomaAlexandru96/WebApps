@@ -15,7 +15,6 @@ public class CurrentUser : MonoBehaviour {
 		if (instance == null) {
 			instance = this;
 			LoadFromCache ();
-			InvokeRepeating ("UpdateUserInfoCoroutine", 0, 5);
 		}
 	}
 
