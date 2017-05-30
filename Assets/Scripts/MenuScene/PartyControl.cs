@@ -11,8 +11,12 @@ public class PartyControl : MonoBehaviour {
 
 	public void Start () {
 		AddPlayer (CurrentUser.GetInstance ().GetUserInfo ().username);
-		UpdateService.GetInstance ().Subscribe (UpdateType.PartyRequest, () => {
-			RequestAddPlayer ();
+		UpdateService.GetInstance ().Subscribe (UpdateType.PartyRequest, (sender) => {
+			ConfirmAlertController.Create ("You have received a party invite from " + sender, (alert) => {
+				alert.Close ();
+			}, (alert) => {
+				alert.Close ();
+			});
 		});
 	}
 
