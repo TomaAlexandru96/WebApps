@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 import psycopg2
+import threading
 import json
 from urllib.parse import urlparse, parse_qs
 from http.server import BaseHTTPRequestHandler, HTTPServer, SimpleHTTPRequestHandler
@@ -20,6 +21,15 @@ except Exception as e:
   print(e)
 
 
+def set_interval(func, sec):
+  def func_wrapper():
+      set_interval(func, sec) 
+      func()  
+  t = threading.Timer(sec, func_wrapper)
+  t.start()
+  return t
+
+
 class DBHTTPHandler(BaseHTTPRequestHandler):
 
   # OPTIONS
@@ -31,10 +41,10 @@ class DBHTTPHandler(BaseHTTPRequestHandler):
   def do_POST(self):
     url = urlparse(self.path)
     data = self.rfile.read(int(self.headers['Content-Length'])).decode('utf-8')
-    if (url.path == "/register"):
+    if (url.path == "/login"):
+      self.handle_login(parse_qs(data))
+    elif (url.path == "/register"):
       self.handle_register(parse_qs(data))
-    elif (url.path == "/set_active"):
-      self.handle_set_active(parse_qs(data))
     elif (url.path == "/request_friend"):
       self.handle_request_friend(parse_qs(data))
     elif (url.path == "/accept_friend_request"):
@@ -48,9 +58,7 @@ class DBHTTPHandler(BaseHTTPRequestHandler):
   # GET
   def do_GET(self):
     url = urlparse(self.path)
-    if (url.path == "/users"):
-      self.handle_users(parse_qs(url.query))
-    elif (url.path == "/find_user"):
+    if (url.path == "/find_user"):
       self.handle_find_user(parse_qs(url.query))
     else:
       self.send_code_only(NOT_FOUND);
@@ -79,11 +87,18 @@ class DBHTTPHandler(BaseHTTPRequestHandler):
 
 
   # login method
-  def handle_users(self, params):
+  def handle_login(self, params):
     user = self.helper_find_user(params['username'][0])
     if (user is None or user['password'] != params['password'][0]):
       self.send_code_only(NOT_ACCEPTABLE)
     else:
+      cursor = conn.cursor()
+      query = '''UPDATE USERS SET ACTIVE = 't'
+                 WHERE USERNAME = '{}'
+              '''.format(user['username'])
+      cursor.execute (query)
+      conn.commit()
+      user['active'] = True
       self.send_JSON(user)
 
   
@@ -134,7 +149,7 @@ class DBHTTPHandler(BaseHTTPRequestHandler):
             '''.format(user['username'][0], user['password'][0], user['email'][0])
     cursor.execute(query)
     conn.commit()
-    self.handle_find_user(user)
+    self.send_code_only(OK)
 
 
   def handle_request_friend(self, data):
@@ -154,20 +169,15 @@ class DBHTTPHandler(BaseHTTPRequestHandler):
       return    
 
 
+    if (user['username'] in requested_friend['friends']):
+      self.send_code_only(NOT_ACCEPTABLE)
+      return    
+
+
     cursor = conn.cursor()
     query = '''UPDATE USERS SET FRIEND_REQUESTS = array_prepend('{}', FRIEND_REQUESTS)
                WHERE USERNAME = '{}'
             '''.format(user['username'], requested_friend['username'])
-    cursor.execute (query)
-    conn.commit()
-    self.send_code_only(OK)
-
-
-  def handle_set_active(self, user):
-    cursor = conn.cursor()
-    query = '''UPDATE USERS SET ACTIVE = '{}'
-               WHERE USERNAME = '{}'
-            '''.format(user['active'][0], user['username'][0])
     cursor.execute (query)
     conn.commit()
     self.send_code_only(OK)
@@ -221,10 +231,18 @@ class DBHTTPHandler(BaseHTTPRequestHandler):
     self.send_code_only(OK)
 
 
+def update_active_status():
+  cursor = conn.cursor()
+  query = '''UPDATE USERS SET ACTIVE = 'f' '''
+  cursor.execute (query)
+  conn.commit()
+
+
 def startServer():
   server_address = ('146.169.46.104', 8081)
   httpd = HTTPServer(server_address, DBHTTPHandler)
-  print ("Serving..")
+  set_interval(update_active_status, 30)
+  print("Serving..")
   httpd.serve_forever()
  
 
