@@ -102,7 +102,6 @@ public class ChatService : MonoBehaviour, IChatClientListener {
 			if (senders [i] == chatClient.UserId) {
 				continue;
 			}
-
 			chatMessages.Add ((String) messages [i]);
 		}
 

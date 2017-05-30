@@ -9,12 +9,12 @@ public class PartyControl : MonoBehaviour {
 	public GameObject playerPrefab;
 	public GameObject addPlayer;
 
+	private PartyMembers partyMembers = new PartyMembers ();
 	private string owner;
-	private List<string> partyMembers = new List<string> ();
 
 	public void Start () {
 		owner = CurrentUser.GetInstance ().GetUserInfo ().username;
-		partyMembers.Add (owner);
+		partyMembers.AddPlayer (owner);
 		AddPlayer (CurrentUser.GetInstance ().GetUserInfo ().username);
 
 		UpdateService.GetInstance ().Subscribe (UpdateType.PartyRequest, (sender, message) => {
@@ -29,23 +29,23 @@ public class PartyControl : MonoBehaviour {
 		});
 
 		UpdateService.GetInstance ().Subscribe (UpdateType.PartyRequestAccept, (sender, message) => {
-			partyMembers.Add (sender);
-			UpdateService.GetInstance ().SendUpdate (partyMembers.ToArray (), 
-				UpdateService.CreateMessage (UpdateType.PartyUpdate,
-					UpdateService.CreateKV ("members", partyMembers)));
+			partyMembers.AddPlayer (sender);
+			message = UpdateService.CreateMessage (UpdateType.PartyUpdate, 
+								UpdateService.CreateKV ("members", partyMembers));
+			UpdateService.GetInstance ().SendUpdate (partyMembers.partyMembers, message);
 		});
 
 		UpdateService.GetInstance ().Subscribe (UpdateType.PartyUpdate, (sender, message) => {
-			partyMembers = UpdateService.GetData<List<string>> (message, "members");
+			partyMembers = UpdateService.GetData<PartyMembers> (message, "members");
 			ClearParty ();
-			foreach (var member in partyMembers) {
+			foreach (var member in partyMembers.partyMembers) {
 				AddPlayer (member);
 			}
 		});
 	}
 
 	private void RequestAddPlayer () {
-		if (owner == CurrentUser.GetInstance ().GetUserInfo ().username && partyMembers.Count < maxSize) {
+		if (owner == CurrentUser.GetInstance ().GetUserInfo ().username && partyMembers.GetSize () < maxSize) {
 			RequestAlertController.Create("Who would you want to add to the party?", (controller, input) => {
 				DBServer.GetInstance ().FindUser (input, (user) => {
 					UpdateService.GetInstance ().SendUpdate (new string[]{user.username}, UpdateService.CreateMessage (UpdateType.PartyRequest));
@@ -64,7 +64,7 @@ public class PartyControl : MonoBehaviour {
 	}
 
 	public void ClearParty () {
-		foreach (var obj in GameObject.FindGameObjectsWithTag ("PlayerParyEntity")) {
+		foreach (var obj in GameObject.FindGameObjectsWithTag ("PlayerPartyEntity")) {
 			DestroyImmediate (obj);
 		}
 	}
