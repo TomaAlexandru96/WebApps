@@ -8,7 +8,7 @@ public class MainPanelController : MonoBehaviour {
 	public GameObject loginPanel;
 	public GameObject registerPanel;
 
-	public void Start () {
+	public void Update () {
 		if (CurrentUser.GetInstance ().IsLoggedIn ()) {
 			SceneManager.LoadScene ("Menu");
 		}
