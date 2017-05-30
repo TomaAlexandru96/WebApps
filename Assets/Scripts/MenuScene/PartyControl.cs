@@ -13,6 +13,17 @@ public class PartyControl : MonoBehaviour {
 		AddPlayer (CurrentUser.GetInstance ().GetUserInfo ().username);
 	}
 
+	public void RequestAddPlayer () {
+		RequestAlertController.Create("Who would you wnat to add to the party?", (controller, input) => {
+			DBServer.GetInstance ().FindUser (input, (user) => {
+				UpdateService.GetInstance ().SendUpdate (new string[]{user.username}, UpdateType.PartyRequest);
+				controller.Close ();
+			}, (error) => {
+				Debug.LogError (error);
+			});
+		});
+	}
+
 	public void AddPlayer(string username) {
 		if (playersInParty < maxPlayers) {
 			GameObject newPlayer = Instantiate (playerPrefab);
@@ -20,5 +31,5 @@ public class PartyControl : MonoBehaviour {
 			newPlayer.GetComponent<PartyEntry> ().ChangeName (username);
 			playersInParty++;
 		}
-	} 
+	}
 }

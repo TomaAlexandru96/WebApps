@@ -102,7 +102,7 @@ public class CurrentUser : MonoBehaviour {
 		}
 	}
 
-	private void UpdateUserInfoCoroutine () {
+	public void RequestUpdate () {
 		if (IsLoggedIn ()) {
 			DBServer.GetInstance ().FindUser (userInfo.username, (user) => {
 				if (!user.Equals (userInfo)) {
