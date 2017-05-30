@@ -2,19 +2,22 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
-public class NetworkService : MonoBehaviour {
+public class NetworkService : Photon.MonoBehaviour {
 
 	public const String GAME_VERSION = "v0.01";
+	public const String partyPrefabName = "Party";
+	public Text infoLabel;
 	private static NetworkService instance = null;
 
-	void Awake () {
+	public void Awake () {
 		if (instance == null) {
 			instance = this;
 			SetupConnection ();
 			DontDestroyOnLoad (gameObject);
 		} else {
-			Destroy (gameObject);
+			DestroyImmediate (gameObject);
 		}
 	}
 
@@ -22,15 +25,28 @@ public class NetworkService : MonoBehaviour {
 		return instance;
 	}
 
-	private void SetupConnection () {
+	public void SetupConnection () {
 		PhotonNetwork.ConnectUsingSettings (GAME_VERSION);
+	}
+
+	public void OnJoinedLobby () {
+		RoomOptions options = new RoomOptions ();
+		PhotonNetwork.JoinOrCreateRoom (ChatService.GLOBAL_CH, options, TypedLobby.Default);
+		RoomOptions partyOptions = new RoomOptions () {MaxPlayers = 4};
+		PhotonNetwork.CreateRoom (ChatService.GetInstance ().GetPartyCHName (), partyOptions, TypedLobby.Default);
+	}
+
+	public void OnJoinedRoom () {
+		// instantiate party
+		GameObject party = PhotonNetwork.Instantiate (partyPrefabName, new Vector3 (140, -233, 0), Quaternion.identity, 0);
+		party.transform.SetParent (GameObject.FindGameObjectWithTag ("Canvas").transform, false);
 	}
 
 	public void DestroyConnection () {
 		PhotonNetwork.Disconnect ();
 	}
 
-	void OnGUI() {
-		GUILayout.Label(PhotonNetwork.connectionStateDetailed.ToString());
+	public void Update () {
+		infoLabel.text = PhotonNetwork.connectionStateDetailed.ToString();
 	}
 }

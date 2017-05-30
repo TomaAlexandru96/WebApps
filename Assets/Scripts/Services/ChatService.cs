@@ -10,13 +10,16 @@ using ExitGames.Client.Photon;
 public class ChatService : MonoBehaviour, IChatClientListener {
 
 	public const String GLOBAL_CH = "General";
-	public const String PARTY_CH = "Party";
 	public const String APP_ID = "0b79eaae-0063-4f99-9212-ed71c61a6375";
 	private bool Connected = false;
 	private static ChatService instance = null;
 	private ChatClient chatClient = null;
 	private String activeCH = GLOBAL_CH;
 	private List<String> chatMessages = new List<String> ();
+
+	public String GetPartyCHName () {
+		return CurrentUser.GetInstance ().GetUserInfo ().username;
+	}
 
 	public void Awake () {
 		if (instance == null) {
@@ -81,7 +84,7 @@ public class ChatService : MonoBehaviour, IChatClientListener {
 
 	public void OnConnected() {
 		CreateNewChat (GLOBAL_CH);
-		CreateNewChat (PARTY_CH);
+		CreateNewChat (GetPartyCHName ());
 	}
 
 	public void OnChatStateChange(ChatState state) {

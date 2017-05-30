@@ -18,7 +18,7 @@ public class ChatController : MonoBehaviour {
 
 	public void Start () {
 		chatTabController.AddChat (ChatService.GLOBAL_CH, false);
-		chatTabController.AddChat (ChatService.PARTY_CH, false);
+		chatTabController.AddChat (CurrentUser.GetInstance ().GetUserInfo ().username, false);
 	}
 
 	public void Update () {

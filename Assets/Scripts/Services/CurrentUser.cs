@@ -9,6 +9,7 @@ public class CurrentUser : MonoBehaviour {
 	public const String userCache = "Assets/cache";
 	private static CurrentUser instance = null;
 	private List<Notifiable> notifiables = new List<Notifiable> ();
+	private PhotonPlayer pp;
 
 	void Awake () {
 		if (instance == null) {
@@ -68,6 +69,8 @@ public class CurrentUser : MonoBehaviour {
 
 	public void Logout () {
 		userInfo = null;
+		pp = null;
+		NetworkService.GetInstance ().DestroyConnection ();
 		ClearCahce ();
 	}
 
@@ -111,6 +114,10 @@ public class CurrentUser : MonoBehaviour {
 				Logout ();
 			});
 		}
+	}
+
+	public void JoinParty () {
+		// pp = new PhotonPlayer ();
 	}
 }
 
