@@ -25,7 +25,7 @@ public class NetworkService : Photon.MonoBehaviour {
 	public void Start () {
 		// got online
 		UpdateService.GetInstance ().SendUpdate (CurrentUser.GetInstance ().GetUserInfo ().friends, 
-			UpdateService.CreateMessage (UpdateType.UserUpdate));
+			UpdateService.CreateMessage (UpdateType.LoginUser));
 	}
 
 	public static NetworkService GetInstance () {

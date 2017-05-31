@@ -6,10 +6,17 @@ using UnityEngine.SceneManagement;
 
 public class MenuController : MonoBehaviour {
 
-	private Action unsub;
+	private Action unsub1;
+	private Action unsub2;
 
 	public void Awake () {
-		unsub = UpdateService.GetInstance ().Subscribe (UpdateType.UserUpdate, (sender, message) => {
+		unsub1 = UpdateService.GetInstance ().Subscribe (UpdateType.LoginUser, (sender, message) => {
+			if (!CurrentUser.GetInstance ().IsLoggedIn ()) {
+				Logout ();
+			}
+		});
+
+		unsub2 = UpdateService.GetInstance ().Subscribe (UpdateType.LogoutUser, (sender, message) => {
 			if (!CurrentUser.GetInstance ().IsLoggedIn ()) {
 				Logout ();
 			}
@@ -20,7 +27,8 @@ public class MenuController : MonoBehaviour {
 	}
 
 	public void OnDestroy () {
-		unsub ();
+		unsub1 ();
+		unsub2 ();
 	}
 
 	public void Logout () {
