@@ -9,6 +9,7 @@ public class Party : MonoBehaviour {
 
 	public GameObject playerPrefab;
 	public GameObject addPlayer;
+	public GameObject leaveParty;
 	public ChatTabController tabController;
 
 	private PartyMembers partyMembers = new PartyMembers ();
@@ -16,6 +17,7 @@ public class Party : MonoBehaviour {
 	private Action unsub1;
 	private Action unsub2;
 	private Action unsub3;
+	private Action unsub4;
 
 	public void Awake () {
 		unsub1 = UpdateService.GetInstance ().Subscribe (UpdateType.PartyRequest, (sender, message) => {
@@ -45,6 +47,16 @@ public class Party : MonoBehaviour {
 
 			UpdateParty();
 		});
+
+		unsub4 = UpdateService.GetInstance ().Subscribe (UpdateType.PartyLeft, (sender, message) => {
+			String userLeft = UpdateService.GetData<String> (message, "user");
+			partyMembers.RemovePlayer (userLeft);
+
+			UpdateService.GetInstance ().SendUpdate (partyMembers.GetMembers (), 
+						UpdateService.CreateMessage (UpdateType.PartyUpdate, UpdateService.CreateKV ("members", partyMembers)));
+
+			UpdateParty();
+		});
 	}
 
 	public void Start () {
@@ -58,9 +70,10 @@ public class Party : MonoBehaviour {
 		unsub1 ();
 		unsub2 ();
 		unsub3 ();
+		unsub4 ();
 	}
 
-	private void RequestAddPlayer () {
+	public void RequestAddPlayer () {
 		if (owner == CurrentUser.GetInstance ().GetUserInfo ().username && partyMembers.GetSize () < maxSize) {
 			RequestAlertController.Create("Who would you want to add to the party?", (controller, input) => {
 				DBServer.GetInstance ().FindUser (input, (user) => {
@@ -86,6 +99,25 @@ public class Party : MonoBehaviour {
 		newPlayer.GetComponent<PartyEntry> ().ChangeName (username);
 	}
 
+	public void RequestLeaveParty () {
+		if (partyMembers.GetSize () <= 1) {
+			return;
+		}
+
+		if (owner == CurrentUser.GetInstance ().GetUserInfo ().username) {
+			// disband party
+			foreach (var member in partyMembers.GetMembers ()) {
+				UpdateService.GetInstance ().SendUpdate (new string[]{owner}, UpdateService.CreateMessage (UpdateType.PartyLeft, 
+					UpdateService.CreateKV ("user", member)));	
+			}
+		}
+		tabController.DestroyChat (owner);
+		UpdateService.GetInstance ().SendUpdate (new string[]{owner}, UpdateService.CreateMessage (UpdateType.PartyLeft, 
+					UpdateService.CreateKV ("user", CurrentUser.GetInstance ().GetUserInfo ().username)));
+		owner = CurrentUser.GetInstance ().GetUserInfo ().username;
+		tabController.SetChat (owner, true);
+	}
+
 	public void ClearParty () {
 		foreach (var obj in GameObject.FindGameObjectsWithTag ("PlayerPartyEntity")) {
 			Destroy (obj);
@@ -93,9 +125,10 @@ public class Party : MonoBehaviour {
 	}
 
 	public void Update () {
-		if (addPlayer == null) {
+		if (addPlayer == null || leaveParty == null) {
 			return;
 		}
 		addPlayer.SetActive (owner == CurrentUser.GetInstance ().GetUserInfo ().username);
+		leaveParty.SetActive (partyMembers.GetSize () > 1);
 	}
 }

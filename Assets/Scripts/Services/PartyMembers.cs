@@ -19,5 +19,9 @@ public class PartyMembers {
 		}
 		return allMembers;
 	}
+
+	public void RemovePlayer (string name) {
+		partyMembers [index--] = name;
+	}
 }
 
