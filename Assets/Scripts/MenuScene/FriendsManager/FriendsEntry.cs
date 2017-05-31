@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -7,17 +8,24 @@ public class FriendsEntry : MonoBehaviour {
 
 	public GameObject friendsPanel;
 	private GameObject optionPanel;
+	private Action unsub;
+
+	public void Awake () {
+		unsub = UpdateService.GetInstance ().Subscribe (UpdateType.UserUpdate, (sender, message) => {
+			if (GetName ().Equals (sender)) {
+				UpdateStatus ();
+			}
+		});
+	}
 
 	public void Start() {
 		optionPanel = GameObject.FindGameObjectWithTag ("Menu").transform.GetChild(3).gameObject;
 		optionPanel.SetActive (false);
 		UpdateStatus ();
+	}
 
-		UpdateService.GetInstance ().Subscribe (UpdateType.UserUpdate, (sender, message) => {
-			if (GetName ().Equals (sender)) {
-				UpdateStatus ();
-			}
-		});
+	public void OnDestroy () {
+		unsub ();
 	}
 
 	public void ShowOptions() {

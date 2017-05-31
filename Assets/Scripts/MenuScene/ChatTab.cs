@@ -38,7 +38,7 @@ public class ChatTab : MonoBehaviour {
 
 	public void CloseTab () {
 		ChatService.GetInstance ().Unsubscribe (new string[]{chName});
-		DestroyImmediate (gameObject);
+		Destroy (gameObject);
 	}
 
 	public void UpdateName (String name, int num) {

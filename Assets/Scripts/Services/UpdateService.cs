@@ -9,6 +9,7 @@ public class UpdateService : MonoBehaviour {
 	private static UpdateService instance = null;
 	private Dictionary<UpdateType, List<Action<String, Dictionary<String, String>>>> subscribers = new Dictionary<UpdateType, List<Action<String, Dictionary<String, String>>>> ();
 	private Queue<KeyValuePair<String[], Dictionary<String, String>>> messagesQueue = new Queue<KeyValuePair<String[], Dictionary<String, String>>> ();
+	private bool started = false;
 
 	public void Awake () {
 		if (instance == null) {
@@ -16,8 +17,12 @@ public class UpdateService : MonoBehaviour {
 			InstantiateSubs ();
 			DontDestroyOnLoad (gameObject);
 		} else {
-			DestroyImmediate (gameObject);
+			Destroy (gameObject);
 		}
+	}
+
+	public void Start () {
+		started = true;
 	}
 
 	private void InstantiateSubs () {
@@ -53,7 +58,7 @@ public class UpdateService : MonoBehaviour {
 		while (messagesQueue.Count != 0) {
 			KeyValuePair<String[], Dictionary<String, String>> messageEntry = messagesQueue.Dequeue ();
 			foreach (var target in messageEntry.Key) {
-				Debug.LogWarning ("Send update of type " + GetData<UpdateType> (messageEntry.Value, "type") + " from " + CurrentUser.GetInstance ().GetUserInfo ().username);
+				Debug.LogWarning ("Send update of type " + GetData<UpdateType> (messageEntry.Value, "type") + " from " + CurrentUser.GetInstance ().GetUserInfo ().username + " to " + target);
 				ChatService.GetInstance ().SendPrivateMessage (target, messageEntry.Value);
 			}
 		}
@@ -64,18 +69,24 @@ public class UpdateService : MonoBehaviour {
 	}
 
 	public void Recieve (string sender, Dictionary<String, String> message) {
-		List<Action<String, Dictionary<String, String>>> functions;
-		subscribers.TryGetValue (JsonUtility.FromJson<UpdateType> (message["type"]), out functions);
-
-		foreach (var func in functions) {
-			func (sender, message);
+		lock (subscribers) {
+			List<Action<String, Dictionary<String, String>>> functions = 
+					subscribers[JsonUtility.FromJson<UpdateType> (message["type"])];
+			foreach (var func in functions) {
+				func (sender, message);
+			}
 		}
 	}
 
-	public void Subscribe (UpdateType ev, Action<String, Dictionary<String, String>> func) {
+	// returns unsubscribe function
+	public Action Subscribe (UpdateType ev, Action<String, Dictionary<String, String>> func) {
 		List<Action<String, Dictionary<String, String>>> functions;
-		subscribers.TryGetValue (ev, out functions);
+		functions = subscribers [ev];
 		functions.Add (func);
+		
+		return () => {
+			functions.Remove (func);
+		};
 	}
 
 	public static T GetData<T> (Dictionary<String, String> message, string key) {

@@ -83,6 +83,8 @@ public class DBServer : MonoBehaviour {
 	public void Logout (Action callback, Action<long> errorcall) {
 		SetActiveStatus (false, () => {
 			callback ();
+			UpdateService.GetInstance ().SendUpdate (CurrentUser.GetInstance ().GetUserInfo ().friends, 
+				UpdateService.CreateMessage (UpdateType.UserUpdate));
 			CurrentUser.GetInstance ().Logout ();
 		}, errorcall);
 	}
