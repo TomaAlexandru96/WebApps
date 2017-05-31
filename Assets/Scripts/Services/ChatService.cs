@@ -72,7 +72,7 @@ public class ChatService : MonoBehaviour, IChatClientListener {
 		chatClient.SendPrivateMessage (target, message);
 	}
 
-	public void SendMessage (String message) {
+	public void SendTextMessage (String message) {
 		if (!message.Equals ("")) {
 			message = "[" + chatClient.UserId + "]: " + message;
 			chatClient.PublishMessage (activeCH, message);

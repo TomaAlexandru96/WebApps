@@ -42,7 +42,7 @@ public class ChatController : MonoBehaviour {
 	}
 
 	public void SendMessage () {
-		ChatService.GetInstance ().SendMessage (input.text);
+		ChatService.GetInstance ().SendTextMessage (input.text);
 		input.text = "";
 		input.Select ();
 		input.ActivateInputField ();	
@@ -50,7 +50,7 @@ public class ChatController : MonoBehaviour {
 
 	public void CreateNewChat (String name) {
 		ChatService.GetInstance ().CreateNewChat (name);
-		GameObject chatPanel = Instantiate (chatPanelPrefab, Vector3.zero, Quaternion.identity);
+		GameObject chatPanel = Instantiate<GameObject> (chatPanelPrefab, Vector3.zero, Quaternion.identity);
 		chatPanel.transform.SetParent (viewport.transform, false);
 		allChatPanels.Add (name, chatPanel);
 		LoadChat (name);
