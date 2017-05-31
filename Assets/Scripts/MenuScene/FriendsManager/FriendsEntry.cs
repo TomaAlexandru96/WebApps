@@ -8,10 +8,24 @@ public class FriendsEntry : MonoBehaviour {
 
 	public GameObject friendsPanel;
 	private GameObject optionPanel;
-	private Action unsub;
+	private Action unsub1;
+	private Action unsub2;
+	private Action unsub3;
 
 	public void Awake () {
-		unsub = UpdateService.GetInstance ().Subscribe (UpdateType.UserUpdate, (sender, message) => {
+		unsub1 = UpdateService.GetInstance ().Subscribe (UpdateType.LoginUser, (sender, message) => {
+			if (GetName ().Equals (sender)) {
+				ChangeStatus (true);
+			}
+		});
+
+		unsub2 = UpdateService.GetInstance ().Subscribe (UpdateType.LogoutUser, (sender, message) => {
+			if (GetName ().Equals (sender)) {
+				ChangeStatus (false);
+			}
+		});
+
+		unsub3 = UpdateService.GetInstance ().Subscribe (UpdateType.UserUpdate, (sender, message) => {
 			if (GetName ().Equals (sender)) {
 				UpdateStatus ();
 			}
@@ -25,7 +39,9 @@ public class FriendsEntry : MonoBehaviour {
 	}
 
 	public void OnDestroy () {
-		unsub ();
+		unsub1 ();
+		unsub2 ();
+		unsub3 ();
 	}
 
 	public void ShowOptions() {
@@ -39,11 +55,15 @@ public class FriendsEntry : MonoBehaviour {
 		}
 	}
 
+	private void ChangeStatus (bool status) {
+		ColorBlock cb = gameObject.GetComponent<Button> ().colors;
+		cb.normalColor = (status ? Color.green : Color.red);
+		gameObject.GetComponent<Button> ().colors = cb;
+	}
+
 	private void UpdateStatus () {
 		DBServer.GetInstance ().FindUser (GetName (), (user) => {
-			ColorBlock cb = gameObject.GetComponent<Button> ().colors;
-			cb.normalColor = (user.active ? Color.green : Color.red);
-			gameObject.GetComponent<Button> ().colors = cb;
+			ChangeStatus (user.active);
 		}, (error) => {
 			Debug.LogError (error);
 		});
