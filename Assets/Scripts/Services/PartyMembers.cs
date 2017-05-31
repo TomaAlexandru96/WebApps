@@ -42,5 +42,14 @@ public class PartyMembers {
 		index = 0;
 		AddPlayer (owner);
 	}
+
+	public bool ContainsPlayer (string player) {
+		for (int q = 0; q < index; q++) {
+			if (partyMembers [q].Equals (player)) {
+				return true;
+			}
+		}
+		return false;
+	}
 }
 
