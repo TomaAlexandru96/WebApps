@@ -7,8 +7,8 @@ using ExitGames.Client.Photon.Chat;
 public class UpdateService : MonoBehaviour {
 	
 	private static UpdateService instance = null;
-	private Dictionary<UpdateType, List<Action<String, Dictionary<String, String>>>> subscribers = new Dictionary<UpdateType, List<Action<String, Dictionary<String, String>>>> ();
-	private Queue<KeyValuePair<String[], Dictionary<String, String>>> messagesQueue = new Queue<KeyValuePair<String[], Dictionary<String, String>>> ();
+	private Dictionary<UpdateType, List<Action<String, Dictionary<String, String>>>> subscribers;
+	private Queue<KeyValuePair<String[], Dictionary<String, String>>> messagesQueue;
 	private bool started = false;
 
 	public void Awake () {
@@ -20,12 +20,16 @@ public class UpdateService : MonoBehaviour {
 	}
 
 	public void StartService () {
+		subscribers = new Dictionary<UpdateType, List<Action<String, Dictionary<String, String>>>> ();
+		messagesQueue = new Queue<KeyValuePair<String[], Dictionary<String, String>>> ();
 		InstantiateSubs ();
 		started = true;
 	}
 
 	public void StopService () {
 		started = false;
+		subscribers = null;
+		messagesQueue = null;
 	}
 
 	private void InstantiateSubs () {
