@@ -22,7 +22,6 @@ public class ChatService : MonoBehaviour, IChatClientListener {
 	}
 
 	public void StartService () {
-		connected = true;
 		ConnectToChatService ();
 	}
 
@@ -39,7 +38,7 @@ public class ChatService : MonoBehaviour, IChatClientListener {
 	}
 
 	public void Update () {
-		if (connected) {
+		if (chatClient != null) {
 			chatClient.Service ();	
 		}
 	}
@@ -69,6 +68,7 @@ public class ChatService : MonoBehaviour, IChatClientListener {
 	}
 
 	public void SendPrivateMessage (string target, object message) {
+		while (!connected) { }
 		chatClient.SendPrivateMessage (target, message);
 	}
 
