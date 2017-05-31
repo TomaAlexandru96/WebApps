@@ -51,7 +51,6 @@ public class PartyControl : MonoBehaviour {
 	}
 
 	public void OnDestroy () {
-		Debug.Log ("Destroy Called");
 		unsub1 ();
 		unsub2 ();
 		unsub3 ();
@@ -90,6 +89,9 @@ public class PartyControl : MonoBehaviour {
 	}
 
 	public void Update () {
+		if (addPlayer == null) {
+			return;
+		}
 		addPlayer.SetActive (owner == CurrentUser.GetInstance ().GetUserInfo ().username);
 	}
 }
