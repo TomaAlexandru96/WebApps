@@ -20,6 +20,7 @@ public class FriendsPanelManager : MonoBehaviour {
 	}
 
 	public void UpdatePanel (float waitTime) {
+		CurrentUser.GetInstance ().RequestUpdate ();
 		UpdateService.GetInstance ().Wait (waitTime);
 		GetAllFriends ();
 		GetAllFriendsRequests ();
