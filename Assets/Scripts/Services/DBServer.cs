@@ -84,7 +84,7 @@ public class DBServer : MonoBehaviour {
 		SetActiveStatus (false, () => {
 			// logout
 			UpdateService.GetInstance ().SendUpdate (CurrentUser.GetInstance ().GetUserInfo ().friends, 
-				UpdateService.CreateMessage (UpdateType.UserUpdate));
+					UpdateService.CreateMessage (UpdateType.UserUpdate));
 			callback ();
 			Debug.Break ();
 			CurrentUser.GetInstance ().Logout ();

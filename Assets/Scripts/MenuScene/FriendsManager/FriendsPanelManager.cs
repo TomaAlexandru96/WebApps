@@ -49,13 +49,21 @@ public class FriendsPanelManager : MonoBehaviour {
 	}
 		
 	public void GetAllFriends () {
-		foreach (Transform child in friendsPanelContent.transform) {
-			GameObject.Destroy(child.gameObject);
-		}
 		String[] friends = CurrentUser.GetInstance().GetUserInfo ().friends;
 		foreach (var friend in friends) {
-			CreateFriend (friend, null);
+			if (!IsFriendInPanel (friend)) {
+				CreateFriend (friend, null);
+			}
 		}
+	}
+
+	private bool IsFriendInPanel (string friend) {
+		foreach (var entry in transform.GetComponentsInChildren<FriendsEntry> ()) {
+			if (entry.GetName ().Equals (friend)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public void GetAllFriendsRequests () {

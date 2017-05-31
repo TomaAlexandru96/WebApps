@@ -46,7 +46,6 @@ public class NetworkService : Photon.MonoBehaviour {
 	}
 
 	public void DestroyConnection () {
-		PhotonNetwork.Disconnect ();
 		unsub ();
 	}
 
