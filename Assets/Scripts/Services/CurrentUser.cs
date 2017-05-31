@@ -22,6 +22,7 @@ public class CurrentUser : MonoBehaviour {
 		if (IsLoggedIn ()) {
 			DBServer.GetInstance ().SetActiveStatus (true, () => {			
 			}, (error) => {
+				Logout ();
 				Debug.LogError (error);
 			});
 		}
