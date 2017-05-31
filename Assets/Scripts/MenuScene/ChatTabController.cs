@@ -12,7 +12,7 @@ public class ChatTabController : MonoBehaviour {
 	private int totalChats = -1;
 
 	public void AddChat () {
-		AddChat ("chat " + totalChats, true);
+		AddChat ("Chat " + totalChats, true);
 	}
 
 	public void AddChat (String name, bool isCloseable) {

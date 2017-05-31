@@ -8,6 +8,7 @@ public class CurrentUser : MonoBehaviour {
 	private User userInfo = null;
 	private Party party;
 	public const String userCache = "Assets/cache";
+	public bool withCaching;
 	private static CurrentUser instance = null;
 
 	public void Awake () {
@@ -20,16 +21,17 @@ public class CurrentUser : MonoBehaviour {
 
 	public void UpdateOnlineStatus () {
 		if (IsLoggedIn ()) {
-			DBServer.GetInstance ().SetActiveStatus (true, () => {			
+			DBServer.GetInstance ().SetActiveStatus (true, () => {
+				RequestUpdate ((user) => {});
 			}, (error) => {
-				Logout ();
+				Logout (true);
 				Debug.LogError (error);
 			});
 		}
 	}
 
 	public void OnApplicationQuit() {
-		DBServer.GetInstance ().Logout (() => { }, (error) => {Debug.LogError (error);});
+		DBServer.GetInstance ().Logout (false, () => { }, (error) => {Debug.LogError (error);});
 	}
 		
 	public static CurrentUser GetInstance () {
@@ -37,11 +39,19 @@ public class CurrentUser : MonoBehaviour {
 	}
 
 	private void SaveToCache () {
+		if (!withCaching) {
+			return;
+		}
+
 		String userJSON = JsonUtility.ToJson (userInfo);
 		WriteToCache (userJSON);
 	}
 
 	private void LoadFromCache () {
+		if (!withCaching) {
+			return;
+		}
+
 		try {
 			StreamReader file = new StreamReader (userCache);
 			String userInfoJSON = file.ReadToEnd ();
@@ -54,7 +64,7 @@ public class CurrentUser : MonoBehaviour {
 
 			DBServer.GetInstance ().Login (loadedUser.username, loadedUser.password, false, (user) => {
 			}, (error) => {
-				Logout ();
+				Logout (true);
 			});
 
 			file.Close ();
@@ -81,10 +91,14 @@ public class CurrentUser : MonoBehaviour {
 		SetUserInfo (userInfo);
 	}
 
-	public void Logout () {
+	public void Logout (bool overwriteCache) {
+		LeaveParty ();
 		userInfo = null;
 		SetParty (null);
 		CancelInvoke ();
+		if (overwriteCache) {
+			ClearCahce ();
+		}
 	}
 
 	public User GetUserInfo () {
@@ -116,7 +130,7 @@ public class CurrentUser : MonoBehaviour {
 				onFinish (user);
 			}, (error) => {
 				Debug.LogError ("Something happened to the user: " + error);
-				Logout ();
+				Logout (true);
 			});
 		}
 	}

@@ -16,16 +16,19 @@ public class ChatService : MonoBehaviour, IChatClientListener {
 	private ChatClient chatClient = null;
 	private String activeCH = GLOBAL_CH;
 	private List<String> chatMessages = new List<String> ();
+	private Action onFinish;
 
 	public String GetPartyCHName () {
 		return CurrentUser.GetInstance ().GetUserInfo ().username;
 	}
 
-	public void StartService () {
+	public void StartService (Action onFinish) {
+		this.onFinish = onFinish;
 		ConnectToChatService ();
 	}
 
 	public void StopService () {
+		this.onFinish = null;
 		connected = false;
 	}
 
@@ -85,11 +88,11 @@ public class ChatService : MonoBehaviour, IChatClientListener {
 		chatClient.Subscribe (new String[]{name});
 	}
 
-	public void DebugReturn(DebugLevel level, string message) {
+	public void DebugReturn (DebugLevel level, string message) {
 		Debug.Log ("DebugReturn: " + message);
 	}
 
-	public void OnDisconnected() {
+	public void OnDisconnected () {
 		connected = false;
 	}
 
@@ -98,9 +101,9 @@ public class ChatService : MonoBehaviour, IChatClientListener {
 	}
 
 	public void OnConnected() {
-		CreateNewChat (GLOBAL_CH);
-		CreateNewChat (GetPartyCHName ());
+		GetChat ().InitDefaultChat ();
 		connected = true;
+		onFinish ();
 	}
 
 	public void OnChatStateChange(ChatState state) {
