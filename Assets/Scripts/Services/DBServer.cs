@@ -50,10 +50,13 @@ public class DBServer : MonoBehaviour {
 		} else {
 			User userData = JsonUtility.FromJson<User> (request.downloadHandler.text);
 			CurrentUser.GetInstance ().Login (userData);
-			callback (userData);
-			ChatService.GetInstance ().StartService ();
 			UpdateService.GetInstance ().StartService ();
-			NetworkService.GetInstance ().StartService ();
+			ChatService.GetInstance ().StartService (() => {
+				NetworkService.GetInstance ().StartService ();
+				UpdateService.GetInstance ().SendUpdate (CurrentUser.GetInstance ().GetUserInfo ().friends, 
+							UpdateService.CreateMessage (UpdateType.LoginUser));
+				callback (userData);
+			});
 		}
 	}
 
@@ -83,19 +86,19 @@ public class DBServer : MonoBehaviour {
 	}
 
 	/* Issues logout request to the DB server */
-	public void Logout (Action callback, Action<long> errorcall) {
-		SetActiveStatus (false, () => {
-			// logout
-			UpdateService.GetInstance ().SendUpdate (CurrentUser.GetInstance ().GetUserInfo ().friends,
+	public void Logout (bool overwriteCaching, Action callback, Action<long> errorcall) {
+		if (CurrentUser.GetInstance ().IsLoggedIn ()) {
+			SetActiveStatus (false, () => {
+				// logout
+				UpdateService.GetInstance ().SendUpdate (CurrentUser.GetInstance ().GetUserInfo ().friends,
 					UpdateService.CreateMessage (UpdateType.LogoutUser));
-			callback ();
-			CurrentUser.GetInstance ().LeaveParty ();
-			CurrentUser.GetInstance ().ClearCahce ();
-			CurrentUser.GetInstance ().Logout ();
-			NetworkService.GetInstance ().StopService ();
-			UpdateService.GetInstance ().StopService ();
-			ChatService.GetInstance ().StopService ();
-		}, errorcall);
+				callback ();
+				CurrentUser.GetInstance ().Logout (overwriteCaching);
+				NetworkService.GetInstance ().StopService ();
+				UpdateService.GetInstance ().StopService ();
+				ChatService.GetInstance ().StopService ();
+			}, errorcall);	
+		}
 	}
 
 	public void SetActiveStatus (bool status, Action callback, Action<long> errorcall) {

@@ -24,8 +24,7 @@ public class MenuController : MonoBehaviour {
 	}
 
 	public void Logout () {
-		DBServer.GetInstance ().Logout (() => {
-			CurrentUser.GetInstance ().ClearCahce ();
+		DBServer.GetInstance ().Logout (true, () => {
 			SceneManager.LoadScene ("Login");	
 		}, (error) => {
 			Debug.LogError (error);
