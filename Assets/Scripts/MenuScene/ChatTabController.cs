@@ -31,8 +31,8 @@ public class ChatTabController : MonoBehaviour {
 	}
 
 	public void SetChat (string chatName, bool status) {
-		foreach (var tab in transform.GetComponentsInChildren<ChatTab> ()) {
-			if (tab.name.Equals (chatName)) {
+		foreach (var tab in content.transform.GetComponentsInChildren<ChatTab> ()) {
+			if (tab.GetName ().Equals (chatName)) {
 				tab.gameObject.SetActive (status);
 				break;
 			}
@@ -40,8 +40,8 @@ public class ChatTabController : MonoBehaviour {
 	}
 
 	public void DestroyChat (string chatName) {
-		foreach (var tab in transform.GetComponentsInChildren<ChatTab> ()) {
-			if (tab.name.Equals (chatName)) {
+		foreach (var tab in content.transform.GetComponentsInChildren<ChatTab> ()) {
+			if (tab.GetName ().Equals (chatName)) {
 				ChatService.GetInstance ().Unsubscribe (new string[]{chatName});
 				Destroy (tab);
 				break;
