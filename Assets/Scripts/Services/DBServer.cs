@@ -50,13 +50,7 @@ public class DBServer : MonoBehaviour {
 		} else {
 			User userData = JsonUtility.FromJson<User> (request.downloadHandler.text);
 			CurrentUser.GetInstance ().Login (userData);
-			UpdateService.GetInstance ().StartService ();
-			ChatService.GetInstance ().StartService (() => {
-				NetworkService.GetInstance ().StartService ();
-				UpdateService.GetInstance ().SendUpdate (CurrentUser.GetInstance ().GetUserInfo ().friends, 
-							UpdateService.CreateMessage (UpdateType.LoginUser));
-				callback (userData);
-			});
+			callback (userData);
 		}
 	}
 
@@ -92,11 +86,8 @@ public class DBServer : MonoBehaviour {
 				// logout
 				UpdateService.GetInstance ().SendUpdate (CurrentUser.GetInstance ().GetUserInfo ().friends,
 					UpdateService.CreateMessage (UpdateType.LogoutUser));
-				callback ();
 				CurrentUser.GetInstance ().Logout (overwriteCaching);
-				NetworkService.GetInstance ().StopService ();
-				UpdateService.GetInstance ().StopService ();
-				ChatService.GetInstance ().StopService ();
+				callback ();
 			}, errorcall);	
 		}
 	}

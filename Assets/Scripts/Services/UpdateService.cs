@@ -7,35 +7,32 @@ using ExitGames.Client.Photon.Chat;
 public class UpdateService : MonoBehaviour {
 	
 	private static UpdateService instance = null;
-	private Dictionary<UpdateType, List<Action<String, Dictionary<String, String>>>> subscribers;
-	private Queue<KeyValuePair<String[], Dictionary<String, String>>> messagesQueue;
+	private Dictionary<UpdateType, List<Action<String, Dictionary<String, String>>>> subscribers = new Dictionary<UpdateType, List<Action<String, Dictionary<String, String>>>> ();
+	private Queue<KeyValuePair<String[], Dictionary<String, String>>> messagesQueue = new Queue<KeyValuePair<String[], Dictionary<String, String>>> ();
 	private bool started = false;
-	private Action unsub;
 
 	public void Awake () {
 		if (instance == null) {
 			instance = this;
+			InstantiateSubs ();
 		} else {
 			Destroy (gameObject);
 		}
 	}
 
 	public void StartService () {
-		subscribers = new Dictionary<UpdateType, List<Action<String, Dictionary<String, String>>>> ();
-		messagesQueue = new Queue<KeyValuePair<String[], Dictionary<String, String>>> ();
-		InstantiateSubs ();
 		started = true;
 
-		unsub = Subscribe (UpdateType.UserUpdate, (sender, message) => {
+		Subscribe (UpdateType.UserUpdate, (sender, message) => {
 			CurrentUser.GetInstance ().RequestUpdate ((user) => {});
 		});
 	}
 
 	public void StopService () {
 		started = false;
-		subscribers = null;
-		messagesQueue = null;
-		unsub ();
+		subscribers = new Dictionary<UpdateType, List<Action<String, Dictionary<String, String>>>> ();
+		messagesQueue = new Queue<KeyValuePair<String[], Dictionary<String, String>>> ();
+		InstantiateSubs ();
 	}
 
 	private void InstantiateSubs () {
