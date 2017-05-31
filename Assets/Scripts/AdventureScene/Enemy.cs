@@ -4,30 +4,93 @@ using UnityEngine;
 
 public class Enemy : MonoBehaviour {
 
-	public int playerDamage;
 	public Transform target;
 	public float speed;
 	public int damage;
+	public int maxHP;
+	private Rigidbody2D rb;
+	public bool attackingPlayer;
+	public float actionTime = 1f;
+	public float nextAction = 0;
+	public Animator animator;
+
 
 	// Use this for initialization
 	void Start () {
+		animator = GetComponent<Animator> ();
+		rb = GetComponent<Rigidbody2D> ();
 		speed = 0.5f;
 		target = GameObject.FindGameObjectWithTag ("Player").transform;
-		damage = 1;
+		SetDamage ();
+		SetMaxHP ();
 	}
-	
+
 	// Update is called once per frame
 	void Update () {
-		MoveEnemy ();
+		Rotate ();
+		//only move if I'm far away from the target
+		if (Vector2.Distance (transform.position, target.position) > 0.5f
+			&& !attackingPlayer) {
+			MoveEnemy ();
+		}
 	}
 
-	public void MoveEnemy () {
-		transform.LookAt(target);
-		transform.Rotate(new Vector3(0,-90,-90), Space.Self);
-
-		//only move if I'm far away from the target
-		if (Vector2.Distance(transform.position,target.position)>1f) {
-			transform.Translate(new Vector3(0, speed * Time.deltaTime, 0));
+	void OnCollisionEnter2D(Collision2D coll) {
+		if (coll.gameObject.tag == "Player") {
+			PlayAttackAnimation ();
+			attackingPlayer = true;
 		}
+	}
+
+	void OnCollisionExit2D(Collision2D coll) {
+		if (coll.gameObject.tag == "Player") {
+			PlayNormalAnimation ();
+			attackingPlayer = false;
+		}
+	}
+
+	void OnCollisionStay2D(Collision2D coll) {
+		if (coll.gameObject.tag == "Player") {
+			if (coll.gameObject.GetComponent<P1_MoveAnim> ().dead) {
+				PlayNormalAnimation ();
+			} else {
+				if (Time.time > nextAction) {
+					nextAction = Time.time + actionTime;
+					coll.gameObject.GetComponent<P1_MoveAnim> ().curHP -= damage;
+					if (coll.gameObject.GetComponent<P1_MoveAnim> ().curHP <= 0) {
+						coll.gameObject.GetComponent<P1_MoveAnim> ().curHP = 0;
+						coll.gameObject.GetComponent<P1_MoveAnim> ().dead = true;
+					}
+				}
+			}
+		}
+	}
+
+	public virtual void SetMaxHP() {
+		// use child function
+	}
+
+	public virtual void SetDamage() {
+		// use child function
+	}
+
+	public virtual void PlayAttackAnimation() {
+		// use child function
+	}
+
+	public virtual void PlayNormalAnimation() {
+		// use child function
+	}
+
+	public virtual void Rotate() {
+		Vector2 relativePos = target.position - transform.position;
+		float angle = Mathf.Atan2(relativePos.y, relativePos.x) * Mathf.Rad2Deg - 90;
+		Quaternion q = Quaternion.AngleAxis(angle, Vector3.forward);
+		transform.rotation = Quaternion.Slerp(transform.rotation, q, Time.deltaTime * 2f);
+	}
+
+	public virtual void MoveEnemy () {
+		Vector3 movement = (target.position - transform.position).normalized * speed;
+		rb.velocity = movement;
 	}
 }

@@ -12,10 +12,13 @@ public class P1_MoveAnim : MonoBehaviour {
 
 	public int totHP;
 	public int curHP;
+	public bool dead = false;
+
+	public Inventory inventory;
 
 	public enum Direction
 	{
-		Still, Down, Up, Left, Right, UpRight, UpLeft, DownRight, DownLeft  
+		Still, Down, Up, Left, Right, UpRight, UpLeft, DownRight, DownLeft, Dead
 	}
 
 	/*int stillHash = Animator.StringToHash("Still");
@@ -35,55 +38,55 @@ public class P1_MoveAnim : MonoBehaviour {
 		curHP = totHP;
 	}
 
-	void OnCollisionStay2D(Collision2D coll) {
-		if (coll.gameObject.tag == "Enemy") {
-			curHP -= (int)(((coll.gameObject.GetComponent<Enemy> ()).damage)*Time.deltaTime);
-		}
-	}
-
 	void Update() {
 
-		//GET INPUT
-		float h = Input.GetAxisRaw ("Horizontal");
+		float h;
+		float v;
 
-		float v = Input.GetAxisRaw ("Vertical");
+		if (!dead) {
+			//GET INPUT
+			h = Input.GetAxisRaw ("Horizontal");
 
-		// MOVEMENT
-		Vector2 movement = new Vector2 (h, v).normalized;
-		rb.velocity = movement * speed;
+			v = Input.GetAxisRaw ("Vertical");
 
+			// MOVEMENT
+			Vector2 movement = new Vector2 (h, v).normalized;
+			rb.velocity = movement * speed;
 
-		// RIGHT
-		if (h > 0.1) {
+			// RIGHT
+			if (h > 0.1) {
 
-			if (v > 0.1) {
-				move = Direction.UpRight;
-			} else if (v < -0.1) {
-				move = Direction.DownRight;
+				if (v > 0.1) {
+					move = Direction.UpRight;
+				} else if (v < -0.1) {
+					move = Direction.DownRight;
+				} else {
+					move = Direction.Right;
+				}
+				// LEFT
+			} else if (h < -0.1) {
+
+				if (v > 0.1) {
+					move = Direction.UpLeft;
+				} else if (v < -0.1) {
+					move = Direction.DownLeft;
+				} else {
+					move = Direction.Left;
+				}
+				// STILL
 			} else {
-				move = Direction.Right;
-			}
-			// LEFT
-		} else if (h < -0.1) {
 
-			if (v > 0.1) {
-				move = Direction.UpLeft;
-			} else if (v < -0.1) {
-				move = Direction.DownLeft;
-			} else {
-				move = Direction.Left;
+				if (v > 0.1) {
+					move = Direction.Up;
+				} else if (v < -0.1) {
+					move = Direction.Down;
+				} else {
+					move = Direction.Still;
+				}
+
 			}
-			// STILL
 		} else {
-
-			if (v > 0.1) {
-				move = Direction.Up;
-			} else if (v < -0.1) {
-				move = Direction.Down;
-			} else {
-				move = Direction.Still;
-			}
-
+			move = Direction.Dead;
 		}
 
 		determineAnimation ();
@@ -121,7 +124,9 @@ public class P1_MoveAnim : MonoBehaviour {
 		case Direction.DownLeft:
 			animator.Play ("P1_DownLeft");
 			break;
-
+		case Direction.Dead:
+			animator.Play ("P1_Dead");
+			break;
 		}
 
 	}
