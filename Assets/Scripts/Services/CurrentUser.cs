@@ -6,9 +6,9 @@ using UnityEngine;
 public class CurrentUser : MonoBehaviour {
 	
 	private User userInfo = null;
+	private Party party;
 	public const String userCache = "Assets/cache";
 	private static CurrentUser instance = null;
-	private PhotonPlayer pp;
 
 	public void Awake () {
 		if (instance == null) {
@@ -83,7 +83,7 @@ public class CurrentUser : MonoBehaviour {
 
 	public void Logout () {
 		userInfo = null;
-		pp = null;
+		SetParty (null);
 		CancelInvoke ();
 	}
 
@@ -122,8 +122,12 @@ public class CurrentUser : MonoBehaviour {
 		}
 	}
 
-	public void JoinParty () {
-		// pp = new PhotonPlayer ();
+	public void SetParty (Party party) {
+		this.party = party;
+	}
+
+	public Party GetParty () {
+		return this.party;
 	}
 }
 

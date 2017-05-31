@@ -29,4 +29,13 @@ public class ChatTabController : MonoBehaviour {
 		int totalTabs = GameObject.FindGameObjectWithTag ("ChatButtons").transform.childCount;
 		GameObject.FindGameObjectWithTag ("ChatButtons").transform.GetChild (totalTabs - 1).GetComponent<ChatTab> ().SelectChat ();
 	}
+
+	public void SetChat (string chatName, bool status) {
+		foreach (var tab in transform.GetComponentsInChildren<ChatTab> ()) {
+			if (tab.name.Equals (chatName)) {
+				tab.gameObject.SetActive (status);
+				break;
+			}
+		}
+	}
 }

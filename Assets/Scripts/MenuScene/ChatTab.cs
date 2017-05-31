@@ -17,13 +17,12 @@ public class ChatTab : MonoBehaviour {
 	}
 
 	public void SelectChat () {
+		getChatView ().GetComponent<ScrollRect> ().content = 
+			(RectTransform)getChatView ().GetChild(0).transform.GetChild (chatNum+1);
 		GameObject.FindGameObjectWithTag ("Chat").GetComponent<ChatController> ().LoadChat (chName);
 
 		DeactivateButtons ();
 		chatTab.GetComponent<Image> ().color = Color.green;
-
-		getChatView ().GetComponent<ScrollRect> ().content = 
-			(RectTransform)getChatView ().GetChild(0).transform.GetChild (chatNum+1);
 	}
 
 	private Transform getChatView() {
