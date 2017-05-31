@@ -37,10 +37,6 @@ public class NetworkService : Photon.MonoBehaviour {
 
 	public void SetupConnection () {
 		PhotonNetwork.ConnectUsingSettings (GAME_VERSION);
-		// set current user events
-		unsub = UpdateService.GetInstance ().Subscribe (UpdateType.UserUpdate, (sender, message) => {
-			CurrentUser.GetInstance ().RequestUpdate ();
-		});
 	}
 
 	public void OnJoinedLobby () {
