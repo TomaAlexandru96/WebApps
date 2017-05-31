@@ -89,6 +89,7 @@ public class DBServer : MonoBehaviour {
 			UpdateService.GetInstance ().SendUpdate (CurrentUser.GetInstance ().GetUserInfo ().friends, 
 					UpdateService.CreateMessage (UpdateType.LogoutUser));
 			callback ();
+			CurrentUser.GetInstance ().LeaveParty ();
 			CurrentUser.GetInstance ().ClearCahce ();
 			CurrentUser.GetInstance ().Logout ();
 			NetworkService.GetInstance ().StopService ();
@@ -113,7 +114,9 @@ public class DBServer : MonoBehaviour {
 		if (request.responseCode != OK_STATUS) {
 			errorcall (request.responseCode);
 		} else {
-			callback ();
+			CurrentUser.GetInstance ().RequestUpdate ((user) => {
+				callback ();	
+			});
 		}
 	}
 
