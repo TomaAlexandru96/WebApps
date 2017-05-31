@@ -50,7 +50,7 @@ public class ChatController : MonoBehaviour {
 
 	public void CreateNewChat (String name) {
 		ChatService.GetInstance ().CreateNewChat (name);
-		GameObject chatPanel = Instantiate<GameObject> (chatPanelPrefab, Vector3.zero, Quaternion.identity);
+		GameObject chatPanel = (GameObject) Instantiate (chatPanelPrefab, Vector3.zero, Quaternion.identity);
 		chatPanel.transform.SetParent (viewport.transform, false);
 		allChatPanels.Add (name, chatPanel);
 		LoadChat (name);
