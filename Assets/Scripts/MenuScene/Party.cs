@@ -3,12 +3,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PartyControl : MonoBehaviour {
+public class Party : MonoBehaviour {
 
 	public const int maxSize = 4;
 
 	public GameObject playerPrefab;
 	public GameObject addPlayer;
+	public ChatTabController tabController;
 
 	private PartyMembers partyMembers = new PartyMembers ();
 	private string owner;
@@ -22,7 +23,9 @@ public class PartyControl : MonoBehaviour {
 				owner = sender;
 				UpdateService.GetInstance ().SendUpdate (new string[]{owner}, 
 					UpdateService.CreateMessage (UpdateType.PartyRequestAccept));
-				
+
+				tabController.AddChat (owner, false);
+				tabController.SetChat (CurrentUser.GetInstance ().GetUserInfo ().username, false);
 				alert.Close ();
 			}, (alert) => {
 				alert.Close ();
@@ -48,6 +51,7 @@ public class PartyControl : MonoBehaviour {
 		owner = CurrentUser.GetInstance ().GetUserInfo ().username;
 		partyMembers.AddPlayer (owner);
 		AddPlayer (CurrentUser.GetInstance ().GetUserInfo ().username);
+		CurrentUser.GetInstance ().SetParty (this);
 	}
 
 	public void OnDestroy () {

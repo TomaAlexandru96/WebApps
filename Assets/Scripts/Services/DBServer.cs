@@ -89,6 +89,7 @@ public class DBServer : MonoBehaviour {
 			UpdateService.GetInstance ().SendUpdate (CurrentUser.GetInstance ().GetUserInfo ().friends, 
 					UpdateService.CreateMessage (UpdateType.LogoutUser));
 			callback ();
+			CurrentUser.GetInstance ().ClearCahce ();
 			CurrentUser.GetInstance ().Logout ();
 			NetworkService.GetInstance ().StopService ();
 			UpdateService.GetInstance ().StopService ();
