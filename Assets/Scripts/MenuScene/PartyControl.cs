@@ -22,6 +22,7 @@ public class PartyControl : MonoBehaviour {
 				owner = sender;
 				UpdateService.GetInstance ().SendUpdate (new string[]{owner}, 
 					UpdateService.CreateMessage (UpdateType.PartyRequestAccept));
+				
 				alert.Close ();
 			}, (alert) => {
 				alert.Close ();
@@ -50,6 +51,7 @@ public class PartyControl : MonoBehaviour {
 	}
 
 	public void OnDestroy () {
+		Debug.Log ("Destroy Called");
 		unsub1 ();
 		unsub2 ();
 		unsub3 ();
