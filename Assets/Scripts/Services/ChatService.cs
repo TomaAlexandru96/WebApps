@@ -60,7 +60,7 @@ public class ChatService : MonoBehaviour, IChatClientListener {
 
 	public void ChangeChanel (String name) {
 		activeCH = name;
-		GetChat ().UpdateViewport (chatMessages);
+		GetChat ().UpdateViewport (chatMessages, activeCH);
 	}
 
 	public void Unsubscribe (string[] chs) {
@@ -77,7 +77,7 @@ public class ChatService : MonoBehaviour, IChatClientListener {
 			message = "[" + chatClient.UserId + "]: " + message;
 			chatClient.PublishMessage (activeCH, message);
 			chatMessages.Add (message);
-			GetChat ().UpdateViewport (chatMessages);
+			GetChat ().UpdateViewport (chatMessages, activeCH);
 		}
 	}
 
@@ -114,7 +114,7 @@ public class ChatService : MonoBehaviour, IChatClientListener {
 			chatMessages.Add ((String) messages [i]);
 		}
 
-		GetChat ().UpdateViewport (chatMessages);
+		GetChat ().UpdateViewport (chatMessages, channelName);
 	}
 
 	public void OnPrivateMessage(string sender, object message, string channelName) {
