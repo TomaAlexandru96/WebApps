@@ -42,8 +42,13 @@ public class UpdateService : MonoBehaviour {
 
 	public void SendUpdate (string[] targets, Dictionary<String, String> message) {
 		foreach (var target in targets) {
+			Debug.LogWarning ("Send update of type " + GetData<UpdateType> (message, "type") + " from " + CurrentUser.GetInstance ().GetUserInfo ().username);
 			ChatService.GetInstance ().SendPrivateMessage (target, message);
 		}
+	}
+
+	public IEnumerator Wait (float seconds) {
+		yield return new WaitForSeconds (seconds);
 	}
 
 	public void Recieve (string sender, Dictionary<String, String> message) {

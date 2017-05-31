@@ -11,6 +11,9 @@ public class ConfirmAlertController : MonoBehaviour {
 	public Text question;
 
 	public void Update () {
+		if (Input.GetKeyUp (KeyCode.Escape)) {
+			Close ();
+		}
 	}
 
 	public void Close () {

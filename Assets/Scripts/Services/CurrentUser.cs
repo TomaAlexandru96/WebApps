@@ -8,24 +8,29 @@ public class CurrentUser : MonoBehaviour {
 	private User userInfo = null;
 	public const String userCache = "Assets/cache";
 	private static CurrentUser instance = null;
-	private List<Notifiable> notifiables = new List<Notifiable> ();
 	private PhotonPlayer pp;
 
-	void Awake () {
+	public void Awake () {
 		if (instance == null) {
 			instance = this;
+			InvokeRepeating ("UpdateOnlineStatus", 0, 60);
 			LoadFromCache ();
 		}
 	}
 
-	void OnApplicationQuit() {
-		DBServer.GetInstance ().Logout ();
+	public void UpdateOnlineStatus () {
+		if (IsLoggedIn ()) {
+			DBServer.GetInstance ().SetActiveStatus (true, () => {			
+			}, (error) => {
+				Debug.LogError (error);
+			});
+		}
 	}
 
-	public void Subscribe (Notifiable n) {
-		notifiables.Add (n);
+	public void OnApplicationQuit() {
+		DBServer.GetInstance ().Logout (() => {}, (error) => {Debug.LogError (error);});
 	}
-
+		
 	public static CurrentUser GetInstance () {
 		return instance;
 	}
@@ -72,15 +77,13 @@ public class CurrentUser : MonoBehaviour {
 	}
 
 	public void Login (User userInfo) {
-		/*UpdateService.GetInstance ().Subscribe (UpdateType.UserUpdate, (sender, message) => {
-			RequestUpdate ();
-		});*/
 		SetUserInfo (userInfo);
 	}
 
 	public void Logout () {
 		userInfo = null;
 		pp = null;
+		CancelInvoke ();
 		NetworkService.GetInstance ().DestroyConnection ();
 	}
 
@@ -106,18 +109,11 @@ public class CurrentUser : MonoBehaviour {
 		}
 	}
 
-	private void NotifyAll () {
-		foreach (var n in notifiables) {
-			n.Notify ();
-		}
-	}
-
-	private void RequestUpdate () {
+	public void RequestUpdate () {
 		if (IsLoggedIn ()) {
 			DBServer.GetInstance ().FindUser (userInfo.username, (user) => {
 				if (!user.Equals (userInfo)) {
 					SetUserInfo (user);
-					NotifyAll ();
 				}
 			}, (error) => {
 				Debug.LogError ("Something happened to the user: " + error);

@@ -11,7 +11,7 @@ public class ChatService : MonoBehaviour, IChatClientListener {
 
 	public const String GLOBAL_CH = "General";
 	public const String APP_ID = "0b79eaae-0063-4f99-9212-ed71c61a6375";
-	private bool Connected = false;
+	private bool connected = false;
 	private static ChatService instance = null;
 	private ChatClient chatClient = null;
 	private String activeCH = GLOBAL_CH;
@@ -43,8 +43,8 @@ public class ChatService : MonoBehaviour, IChatClientListener {
 		chatClient = new ChatClient (this);
 		ExitGames.Client.Photon.Chat.AuthenticationValues av = new ExitGames.Client.Photon.Chat.AuthenticationValues ();
 		av.UserId = CurrentUser.GetInstance ().GetUserInfo ().username;
-		while (!Connected) {
-			Connected = chatClient.Connect (APP_ID, NetworkService.GAME_VERSION, av);
+		while (!connected) {
+			connected = chatClient.Connect (APP_ID, NetworkService.GAME_VERSION, av);
 		}
 	}
 
@@ -109,9 +109,7 @@ public class ChatService : MonoBehaviour, IChatClientListener {
 	}
 
 	public void OnPrivateMessage(string sender, object message, string channelName) {
-		if (!channelName.Split(':')[0].Equals (sender)) {
-			UpdateService.GetInstance ().Recieve (sender, (Dictionary<String, String>) message);
-		}
+		UpdateService.GetInstance ().Recieve (sender, (Dictionary<String, String>) message);
 	}
 
 	public void OnSubscribed(string[] channels, bool[] results) {
