@@ -23,7 +23,7 @@ public class LoginPanelController : MonoBehaviour {
 		}, (errorCode) => {
 			String errorMessage = errorCode + ": ";
 			switch (errorCode) {
-			case DBServer.NOT_FOUND_STATUS: errorMessage += "Username or password combination wrong!\n";break;
+			case DBServer.NOT_ACCEPTABLE_STATUS: errorMessage += "Username or password combination wrong!\n";break;
 			default: errorMessage += "Could not connect to the server!\n";break;
 			}
 
