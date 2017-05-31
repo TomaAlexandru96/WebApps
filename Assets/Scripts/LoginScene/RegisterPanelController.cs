@@ -12,6 +12,7 @@ public class RegisterPanelController : MonoBehaviour {
 	public InputField password;
 	public InputField confirmPassword;
 	public GameObject mainPanel;
+	public GameObject chooseAvatar;
 	public Text errorLabel;
 
 	/* Used by register button to issue aregister query to the DB */
@@ -22,9 +23,12 @@ public class RegisterPanelController : MonoBehaviour {
 
 		User user = new User (username.text, password.text, email.text);
 		DBServer.GetInstance ().Register (user, () => {
-			DBServer.GetInstance ().Login (user.username, user.password, false, (u) => {
-				SceneManager.LoadScene ("Menu");
-			}, (error) => {Debug.LogError (error);});
+			DBServer.GetInstance ().Login (user.username, user.password, false, (newUser) => {
+				this.gameObject.SetActive (false);
+				chooseAvatar.gameObject.SetActive (true);
+			}, (error) => {
+				Debug.LogError (error);
+			});
 		}, (errorCode) => {
 			String errorMessage = errorCode + ": ";
 
