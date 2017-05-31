@@ -45,6 +45,8 @@ class DBHTTPHandler(BaseHTTPRequestHandler):
       self.handle_login(parse_qs(data))
     elif (url.path == "/register"):
       self.handle_register(parse_qs(data))
+    elif (url.path == "/update_active_status"):
+      self.handle_update_active_status(parse_qs(data))
     elif (url.path == "/request_friend"):
       self.handle_request_friend(parse_qs(data))
     elif (url.path == "/accept_friend_request"):
@@ -93,7 +95,7 @@ class DBHTTPHandler(BaseHTTPRequestHandler):
       self.send_code_only(NOT_ACCEPTABLE)
     else:
       cursor = conn.cursor()
-      query = '''UPDATE USERS SET ACTIVE = 't'
+      query = '''UPDATE USERS SET ACTIVE = 't', LAST_TIME_ACTIVE = NOW()
                  WHERE USERNAME = '{}'
               '''.format(user['username'])
       cursor.execute (query)
@@ -102,6 +104,21 @@ class DBHTTPHandler(BaseHTTPRequestHandler):
       self.send_JSON(user)
 
   
+  def handle_update_active_status(self, data):
+    user = self.helper_find_user(data['username'][0])
+    if (user is None):
+      self.send_code_only(NOT_FOUND)
+    else:
+      user['active'] = data['active'][0]
+      cursor = conn.cursor()
+      query = '''UPDATE USERS SET ACTIVE = '{}', LAST_TIME_ACTIVE = NOW()
+                 WHERE USERNAME = '{}'
+              '''.format(user['active'], user['username'])
+      cursor.execute (query)
+      conn.commit()
+      self.send_JSON(user)
+
+
   def handle_find_user(self, params):
     user = self.helper_find_user(params['username'][0])
     if (user is None):
@@ -233,7 +250,8 @@ class DBHTTPHandler(BaseHTTPRequestHandler):
 
 def update_active_status():
   cursor = conn.cursor()
-  query = '''UPDATE USERS SET ACTIVE = 'f' '''
+  query = '''UPDATE USERS SET ACTIVE = 'f' 
+             WHERE EXTRACT(EPOCH FROM NOW() - LAST_TIME_ACTIVE) > 90'''
   cursor.execute (query)
   conn.commit()
 
@@ -241,7 +259,7 @@ def update_active_status():
 def startServer():
   server_address = ('146.169.46.104', 8081)
   httpd = HTTPServer(server_address, DBHTTPHandler)
-  set_interval(update_active_status, 30)
+  set_interval(update_active_status, 90)
   print("Serving..")
   httpd.serve_forever()
  
