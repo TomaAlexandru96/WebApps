@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Text.RegularExpressions;
-using System.Net.Mail;
 using UnityEngine;
 
 public class Validator {

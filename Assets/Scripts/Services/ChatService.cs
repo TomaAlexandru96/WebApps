@@ -11,7 +11,7 @@ public class ChatService : MonoBehaviour, IChatClientListener {
 
 	public const String GLOBAL_CH = "General";
 	public const String APP_ID = "0b79eaae-0063-4f99-9212-ed71c61a6375";
-	private bool connected = false;
+	public bool connected = false;
 	private static ChatService instance = null;
 	private ChatClient chatClient = null;
 	private String activeCH = GLOBAL_CH;
@@ -43,9 +43,7 @@ public class ChatService : MonoBehaviour, IChatClientListener {
 		chatClient = new ChatClient (this);
 		ExitGames.Client.Photon.Chat.AuthenticationValues av = new ExitGames.Client.Photon.Chat.AuthenticationValues ();
 		av.UserId = CurrentUser.GetInstance ().GetUserInfo ().username;
-		while (!connected) {
-			connected = chatClient.Connect (APP_ID, NetworkService.GAME_VERSION, av);
-		}
+		chatClient.Connect (APP_ID, NetworkService.GAME_VERSION, av);
 	}
 
 	private ChatController GetChat () {
@@ -83,6 +81,7 @@ public class ChatService : MonoBehaviour, IChatClientListener {
 	}
 
 	public void OnDisconnected() {
+		connected = false;
 	}
 
 	public void Subscribe (string[] chs) {
@@ -92,6 +91,7 @@ public class ChatService : MonoBehaviour, IChatClientListener {
 	public void OnConnected() {
 		CreateNewChat (GLOBAL_CH);
 		CreateNewChat (GetPartyCHName ());
+		connected = true;
 	}
 
 	public void OnChatStateChange(ChatState state) {
