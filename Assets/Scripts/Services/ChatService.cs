@@ -21,25 +21,34 @@ public class ChatService : MonoBehaviour, IChatClientListener {
 		return CurrentUser.GetInstance ().GetUserInfo ().username;
 	}
 
+	public void StartService () {
+		connected = true;
+		ConnectToChatService ();
+	}
+
+	public void StopService () {
+		connected = false;
+	}
+
 	public void Awake () {
 		if (instance == null) {
 			instance = this;
-			ConnectToChatService ();
-			DontDestroyOnLoad (gameObject);
 		} else {
 			Destroy (gameObject);
 		}
 	}
 
 	public void Update () {
-		chatClient.Service ();
+		if (connected) {
+			chatClient.Service ();	
+		}
 	}
 
 	public static ChatService GetInstance () {
 		return instance;
 	}
 
-	public void ConnectToChatService () {
+	private void ConnectToChatService () {
 		chatClient = new ChatClient (this);
 		ExitGames.Client.Photon.Chat.AuthenticationValues av = new ExitGames.Client.Photon.Chat.AuthenticationValues ();
 		av.UserId = CurrentUser.GetInstance ().GetUserInfo ().username;

@@ -14,15 +14,18 @@ public class UpdateService : MonoBehaviour {
 	public void Awake () {
 		if (instance == null) {
 			instance = this;
-			InstantiateSubs ();
-			DontDestroyOnLoad (gameObject);
 		} else {
 			Destroy (gameObject);
 		}
 	}
 
-	public void Start () {
+	public void StartService () {
+		InstantiateSubs ();
 		started = true;
+	}
+
+	public void StopService () {
+		started = false;
 	}
 
 	private void InstantiateSubs () {
@@ -71,19 +74,21 @@ public class UpdateService : MonoBehaviour {
 	}
 
 	public void Recieve (string sender, Dictionary<String, String> message) {
-		lock (subscribers) {
-			List<Action<String, Dictionary<String, String>>> functions = 
-					subscribers[JsonUtility.FromJson<UpdateType> (message["type"])];
-			if (sender.Equals (CurrentUser.GetInstance ().GetUserInfo ().username)) {
-				return;
-			}
-			Debug.LogWarning ("Received update of type " + GetData<UpdateType> (message, "type") + " from " + sender);
-			for (int i = 0; i < functions.Count; i++) {
-				Action<String, Dictionary<String, String>> func = functions [i];
-				// doesn't work
-				if (func != null) {
-					func (sender, message);
-				}
+		if (!CurrentUser.GetInstance ().IsLoggedIn ()) {
+			return;
+		}
+
+		List<Action<String, Dictionary<String, String>>> functions = 
+				subscribers[JsonUtility.FromJson<UpdateType> (message["type"])];
+		if (sender.Equals (CurrentUser.GetInstance ().GetUserInfo ().username)) {
+			return;
+		}
+		Debug.LogWarning ("Received update of type " + GetData<UpdateType> (message, "type") + " from " + sender);
+		for (int i = 0; i < functions.Count; i++) {
+			Action<String, Dictionary<String, String>> func = functions [i];
+			// doesn't work
+			if (func != null) {
+				func (sender, message);
 			}
 		}
 	}

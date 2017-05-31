@@ -51,6 +51,9 @@ public class DBServer : MonoBehaviour {
 			User userData = JsonUtility.FromJson<User> (request.downloadHandler.text);
 			CurrentUser.GetInstance ().Login (userData);
 			callback (userData);
+			ChatService.GetInstance ().StartService ();
+			UpdateService.GetInstance ().StartService ();
+			NetworkService.GetInstance ().StartService ();
 		}
 	}
 
@@ -87,6 +90,9 @@ public class DBServer : MonoBehaviour {
 					UpdateService.CreateMessage (UpdateType.LogoutUser));
 			callback ();
 			CurrentUser.GetInstance ().Logout ();
+			NetworkService.GetInstance ().StopService ();
+			UpdateService.GetInstance ().StopService ();
+			ChatService.GetInstance ().StopService ();
 		}, errorcall);
 	}
 

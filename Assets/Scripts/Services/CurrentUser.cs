@@ -85,7 +85,6 @@ public class CurrentUser : MonoBehaviour {
 		userInfo = null;
 		pp = null;
 		CancelInvoke ();
-		NetworkService.GetInstance ().DestroyConnection ();
 	}
 
 	public User GetUserInfo () {

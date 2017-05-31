@@ -15,17 +15,20 @@ public class NetworkService : Photon.MonoBehaviour {
 	public void Awake () {
 		if (instance == null) {
 			instance = this;
-			SetupConnection ();
-			DontDestroyOnLoad (gameObject);
 		} else {
 			Destroy (gameObject);
 		}
 	}
 
-	public void Start () {
+	public void StartService () {
+		SetupConnection ();
 		// got online
 		UpdateService.GetInstance ().SendUpdate (CurrentUser.GetInstance ().GetUserInfo ().friends, 
 			UpdateService.CreateMessage (UpdateType.LoginUser));
+	}
+
+	public void StopService () {
+		DestroyConnection ();
 	}
 
 	public static NetworkService GetInstance () {
@@ -45,7 +48,8 @@ public class NetworkService : Photon.MonoBehaviour {
 		PhotonNetwork.JoinOrCreateRoom (ChatService.GetInstance ().GetPartyCHName (), options, TypedLobby.Default);
 	}
 
-	public void DestroyConnection () {
+	private void DestroyConnection () {
+		PhotonNetwork.Disconnect ();
 		unsub ();
 	}
 
