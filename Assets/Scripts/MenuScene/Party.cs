@@ -110,10 +110,6 @@ public class Party : MonoBehaviour {
 	}
 
 	public void RequestLeaveParty () {
-		if (partyMembers.GetSize () <= 1) {
-			return;
-		}
-
 		if (owner == CurrentUser.GetInstance ().GetUserInfo ().username) {
 			// disband party
 			foreach (var member in partyMembers.GetMembers ()) {
@@ -125,6 +121,8 @@ public class Party : MonoBehaviour {
 		UpdateService.GetInstance ().SendUpdate (new string[]{owner}, UpdateService.CreateMessage (UpdateType.PartyLeft, 
 					UpdateService.CreateKV ("user", CurrentUser.GetInstance ().GetUserInfo ().username)));
 		owner = CurrentUser.GetInstance ().GetUserInfo ().username;
+		partyMembers.RemoveAllButOwner (owner);
+		UpdateParty ();
 		tabController.SetChat (owner, true);
 	}
 
