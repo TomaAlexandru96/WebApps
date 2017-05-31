@@ -18,6 +18,7 @@ public class Party : MonoBehaviour {
 	private Action unsub2;
 	private Action unsub3;
 	private Action unsub4;
+	private Action unsub5;
 
 	public void Awake () {
 		unsub1 = UpdateService.GetInstance ().Subscribe (UpdateType.PartyRequest, (sender, message) => {
@@ -57,6 +58,14 @@ public class Party : MonoBehaviour {
 
 			UpdateParty();
 		});
+
+		unsub5 = UpdateService.GetInstance ().Subscribe (UpdateType.UserUpdate, (sender, message) => {
+			CurrentUser.GetInstance ().RequestUpdate ((user) => {
+				if (!CurrentUser.GetInstance ().IsLoggedIn ()) {
+					RequestLeaveParty ();		
+				}
+			});
+		});
 	}
 
 	public void Start () {
@@ -71,6 +80,7 @@ public class Party : MonoBehaviour {
 		unsub2 ();
 		unsub3 ();
 		unsub4 ();
+		unsub5 ();
 	}
 
 	public void RequestAddPlayer () {
