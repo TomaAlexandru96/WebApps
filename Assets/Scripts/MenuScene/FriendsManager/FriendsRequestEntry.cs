@@ -23,6 +23,8 @@ public class FriendsRequestEntry : MonoBehaviour {
 			GameObject image = Instantiate (friendRequestEntry.transform.GetChild (1).gameObject, Vector3.zero, Quaternion.identity);
 
 			friendsPanel.transform.GetComponent<FriendsPanelManager> ().CreateFriend (GetName (), image);
+			UpdateService.GetInstance ().SendUpdate (new string[]{GetName ()}, 
+						UpdateService.CreateMessage (UpdateType.UserUpdate));
 			Destroy (friendRequestEntry);
 		}, (error) => {
 			Debug.LogError (error);
