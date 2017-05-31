@@ -8,6 +8,7 @@ public class UpdateService : MonoBehaviour {
 	
 	private static UpdateService instance = null;
 	private Dictionary<UpdateType, List<Action<String, Dictionary<String, String>>>> subscribers = new Dictionary<UpdateType, List<Action<String, Dictionary<String, String>>>> ();
+	private Queue<KeyValuePair<String[], Dictionary<String, String>>> messagesQueue = new Queue<KeyValuePair<String[], Dictionary<String, String>>> ();
 
 	public void Awake () {
 		if (instance == null) {
@@ -41,9 +42,20 @@ public class UpdateService : MonoBehaviour {
 	}
 
 	public void SendUpdate (string[] targets, Dictionary<String, String> message) {
-		foreach (var target in targets) {
-			Debug.LogWarning ("Send update of type " + GetData<UpdateType> (message, "type") + " from " + CurrentUser.GetInstance ().GetUserInfo ().username);
-			ChatService.GetInstance ().SendPrivateMessage (target, message);
+		messagesQueue.Enqueue (new KeyValuePair<string[], Dictionary<string, string>> (targets, message));
+	}
+
+	private void SendQueueItems () {
+		if (ChatService.GetInstance () == null || !ChatService.GetInstance ().connected) {
+			return;
+		}
+
+		while (messagesQueue.Count != 0) {
+			KeyValuePair<String[], Dictionary<String, String>> messageEntry = messagesQueue.Dequeue ();
+			foreach (var target in messageEntry.Key) {
+				Debug.LogWarning ("Send update of type " + GetData<UpdateType> (messageEntry.Value, "type") + " from " + CurrentUser.GetInstance ().GetUserInfo ().username);
+				ChatService.GetInstance ().SendPrivateMessage (target, messageEntry.Value);
+			}
 		}
 	}
 
@@ -72,5 +84,9 @@ public class UpdateService : MonoBehaviour {
 
 	public static KeyValuePair<string, string> CreateKV<T> (string key, T value) {
 		return new KeyValuePair<string, string> (key, JsonUtility.ToJson (value));
+	}
+
+	public void Update () {
+		SendQueueItems ();
 	}
 }
