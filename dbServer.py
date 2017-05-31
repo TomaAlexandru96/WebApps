@@ -131,7 +131,6 @@ class DBHTTPHandler(BaseHTTPRequestHandler):
 
   def handle_choose_character(self, params):
     user =self.helper_find_user(params['username'][0])
-    print(params['username'][0])
     if (user is None):
       self.send_code_only(NOT_FOUND)
       return
@@ -144,7 +143,7 @@ class DBHTTPHandler(BaseHTTPRequestHandler):
     cursor.execute(query1)
     conn.commit()
     query2 = '''
-		UPDATE USERS SET CHARACTER_NAME = {}
+		UPDATE USERS SET CHARACTER_NAME = '{}'
 		WHERE USERNAME = '{}'
  		'''.format(params['characterName'][0], params['username'][0])
     cursor.execute(query2)
