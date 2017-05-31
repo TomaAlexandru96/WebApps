@@ -48,6 +48,7 @@ public class UpdateService : MonoBehaviour {
 
 	public void SendUpdate (string[] targets, Dictionary<String, String> message) {
 		messagesQueue.Enqueue (new KeyValuePair<string[], Dictionary<string, string>> (targets, message));
+		SendQueueItems ();
 	}
 
 	private void SendQueueItems () {
@@ -58,10 +59,13 @@ public class UpdateService : MonoBehaviour {
 		while (messagesQueue.Count != 0) {
 			KeyValuePair<String[], Dictionary<String, String>> messageEntry = messagesQueue.Dequeue ();
 			foreach (var target in messageEntry.Key) {
-				Debug.LogWarning ("Send update of type " + GetData<UpdateType> (messageEntry.Value, "type") + " from " + CurrentUser.GetInstance ().GetUserInfo ().username + " to " + target);
-				ChatService.GetInstance ().SendPrivateMessage (target, messageEntry.Value);
+				if (!CurrentUser.GetInstance ().GetUserInfo ().username.Equals (target)) {
+					Debug.LogWarning ("Send update of type " + GetData<UpdateType> (messageEntry.Value, "type") + " from " + CurrentUser.GetInstance ().GetUserInfo ().username + " to " + target);
+					ChatService.GetInstance ().SendPrivateMessage (target, messageEntry.Value);
+				}
 			}
 		}
+		messagesQueue = new Queue<KeyValuePair<String[], Dictionary<String, String>>> ();
 	}
 
 	public IEnumerator Wait (float seconds) {
@@ -69,11 +73,14 @@ public class UpdateService : MonoBehaviour {
 	}
 
 	public void Recieve (string sender, Dictionary<String, String> message) {
-		lock (subscribers) {
-			List<Action<String, Dictionary<String, String>>> functions = 
-					subscribers[JsonUtility.FromJson<UpdateType> (message["type"])];
-			foreach (var func in functions) {
-				func (sender, message);
+		if (!sender.Equals (CurrentUser.GetInstance ().GetUserInfo ().username)) {
+			Debug.LogWarning ("receive from " + sender + " to " + CurrentUser.GetInstance ().GetUserInfo ().username);
+			lock (subscribers) {
+				List<Action<String, Dictionary<String, String>>> functions = 
+					subscribers [JsonUtility.FromJson<UpdateType> (message ["type"])];
+				foreach (var func in functions) {
+					func (sender, message);
+				}
 			}
 		}
 	}
@@ -98,6 +105,6 @@ public class UpdateService : MonoBehaviour {
 	}
 
 	public void Update () {
-		SendQueueItems ();
+//		SendQueueItems ();
 	}
 }
