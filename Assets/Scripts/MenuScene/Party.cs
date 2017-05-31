@@ -103,6 +103,9 @@ public class Party : MonoBehaviour {
 		foreach (var member in partyMembers.GetMembers ()) {
 			AddPlayer (member);
 		}
+		Debug.Log (owner);
+		tabController.SetChat (CurrentUser.GetInstance ().GetUserInfo ().username, false);
+		tabController.SetChat (owner, true);
 	}
 
 	public void AddPlayer(string username) {
@@ -115,15 +118,12 @@ public class Party : MonoBehaviour {
 		if (owner == CurrentUser.GetInstance ().GetUserInfo ().username) {
 			// disband party
 			UpdateService.GetInstance ().SendUpdate (partyMembers.GetMembers (), UpdateService.CreateMessage (UpdateType.PartyDisbaned));
-			partyMembers.RemoveAllButOwner (owner);
 		}
-		tabController.DestroyChat (owner);
 		UpdateService.GetInstance ().SendUpdate (new string[]{owner}, UpdateService.CreateMessage (UpdateType.PartyLeft, 
 					UpdateService.CreateKV ("user", CurrentUser.GetInstance ().GetUserInfo ().username)));
 		owner = CurrentUser.GetInstance ().GetUserInfo ().username;
 		partyMembers.RemoveAllButOwner (owner);
 		UpdateParty ();
-		tabController.SetChat (owner, true);
 	}
 
 	public void ClearParty () {

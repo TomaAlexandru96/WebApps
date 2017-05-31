@@ -27,7 +27,7 @@ public class FriendsEntry : MonoBehaviour {
 
 		unsub3 = UpdateService.GetInstance ().Subscribe (UpdateType.UserUpdate, (sender, message) => {
 			if (GetName ().Equals (sender)) {
-				UpdateStatus ();
+				UpdateStatus (1f);
 			}
 		});
 	}
@@ -35,7 +35,7 @@ public class FriendsEntry : MonoBehaviour {
 	public void Start() {
 		optionPanel = GameObject.FindGameObjectWithTag ("Menu").transform.GetChild(3).gameObject;
 		optionPanel.SetActive (false);
-		UpdateStatus ();
+		UpdateStatus (0f);
 	}
 
 	public void OnDestroy () {
@@ -61,7 +61,8 @@ public class FriendsEntry : MonoBehaviour {
 		gameObject.GetComponent<Button> ().colors = cb;
 	}
 
-	private void UpdateStatus () {
+	private void UpdateStatus (float delay) {
+		UpdateService.GetInstance ().Wait (delay);
 		DBServer.GetInstance ().FindUser (GetName (), (user) => {
 			ChangeStatus (user.active);
 		}, (error) => {
