@@ -59,7 +59,16 @@ public class FriendsPanelManager : MonoBehaviour {
 	}
 
 	private bool IsFriendInPanel (string friend) {
-		foreach (var entry in transform.GetComponentsInChildren<FriendsEntry> ()) {
+		foreach (var entry in friendsPanelContent.transform.GetComponentsInChildren<FriendsEntry> ()) {
+			if (entry.GetName ().Equals (friend)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private bool IsFriendRequestInPanel (string friend) {
+		foreach (var entry in friendsRequestPanel.transform.GetComponentsInChildren<FriendsRequestEntry> ()) {
 			if (entry.GetName ().Equals (friend)) {
 				return true;
 			}
@@ -73,7 +82,9 @@ public class FriendsPanelManager : MonoBehaviour {
 		}
 		String[] friend_requests = CurrentUser.GetInstance().GetUserInfo ().friend_requests;
 		foreach (var f_r in friend_requests) {
-			CreateFriendRequest (f_r, null);
+			if (!IsFriendRequestInPanel (f_r)) {
+				CreateFriendRequest (f_r, null);
+			}
 		}
 	}
 }
