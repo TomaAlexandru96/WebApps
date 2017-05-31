@@ -63,7 +63,7 @@ public class Party : MonoBehaviour {
 		unsub5 = UpdateService.GetInstance ().Subscribe (UpdateType.UserUpdate, (sender, message) => {
 			CurrentUser.GetInstance ().RequestUpdate ((user) => {
 				if (!CurrentUser.GetInstance ().IsLoggedIn ()) {
-					RequestLeaveParty ();		
+					RequestLeaveParty ();	
 				}
 			});
 		});
@@ -97,7 +97,9 @@ public class Party : MonoBehaviour {
 		if (owner == CurrentUser.GetInstance ().GetUserInfo ().username && partyMembers.GetSize () < maxSize) {
 			RequestAlertController.Create("Who would you want to add to the party?", (controller, input) => {
 				DBServer.GetInstance ().FindUser (input, (user) => {
-					UpdateService.GetInstance ().SendUpdate (new string[]{user.username}, UpdateService.CreateMessage (UpdateType.PartyRequest));
+					if (!partyMembers.ContainsPlayer (user.username)) {
+						UpdateService.GetInstance ().SendUpdate (new string[]{user.username}, UpdateService.CreateMessage (UpdateType.PartyRequest));
+					}
 					controller.Close ();
 				}, (error) => {
 					Debug.LogError (error);
