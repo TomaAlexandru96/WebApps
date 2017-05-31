@@ -59,10 +59,8 @@ public class UpdateService : MonoBehaviour {
 		while (messagesQueue.Count != 0) {
 			KeyValuePair<String[], Dictionary<String, String>> messageEntry = messagesQueue.Dequeue ();
 			foreach (var target in messageEntry.Key) {
-				if (!CurrentUser.GetInstance ().GetUserInfo ().username.Equals (target)) {
-					Debug.LogWarning ("Send update of type " + GetData<UpdateType> (messageEntry.Value, "type") + " from " + CurrentUser.GetInstance ().GetUserInfo ().username + " to " + target);
-					ChatService.GetInstance ().SendPrivateMessage (target, messageEntry.Value);
-				}
+				Debug.LogWarning ("Send update of type " + GetData<UpdateType> (messageEntry.Value, "type") + " from " + CurrentUser.GetInstance ().GetUserInfo ().username + " to " + target);
+				ChatService.GetInstance ().SendPrivateMessage (target, messageEntry.Value);
 			}
 		}
 		messagesQueue = new Queue<KeyValuePair<String[], Dictionary<String, String>>> ();
@@ -106,6 +104,6 @@ public class UpdateService : MonoBehaviour {
 	}
 
 	public void Update () {
-//		SendQueueItems ();
+		SendQueueItems ();
 	}
 }
