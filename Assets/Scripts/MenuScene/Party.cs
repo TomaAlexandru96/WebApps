@@ -19,6 +19,7 @@ public class Party : MonoBehaviour {
 	private Action unsub3;
 	private Action unsub4;
 	private Action unsub5;
+	private Action unsub6;
 
 	public void Awake () {
 		unsub1 = UpdateService.GetInstance ().Subscribe (UpdateType.PartyRequest, (sender, message) => {
@@ -66,6 +67,14 @@ public class Party : MonoBehaviour {
 				}
 			});
 		});
+
+		unsub6 = UpdateService.GetInstance ().Subscribe (UpdateType.PartyDisbaned, (sender, message) => {
+			CurrentUser.GetInstance ().RequestUpdate ((user) => {
+				owner = CurrentUser.GetInstance ().GetUserInfo ().username;
+				partyMembers.RemoveAllButOwner (owner);
+				UpdateParty ();
+			});
+		});
 	}
 
 	public void Start () {
@@ -81,6 +90,7 @@ public class Party : MonoBehaviour {
 		unsub3 ();
 		unsub4 ();
 		unsub5 ();
+		unsub6 ();
 	}
 
 	public void RequestAddPlayer () {
@@ -112,10 +122,8 @@ public class Party : MonoBehaviour {
 	public void RequestLeaveParty () {
 		if (owner == CurrentUser.GetInstance ().GetUserInfo ().username) {
 			// disband party
-			foreach (var member in partyMembers.GetMembers ()) {
-				UpdateService.GetInstance ().SendUpdate (new string[]{owner}, UpdateService.CreateMessage (UpdateType.PartyLeft, 
-					UpdateService.CreateKV ("user", member)));	
-			}
+			UpdateService.GetInstance ().SendUpdate (partyMembers.GetMembers (), UpdateService.CreateMessage (UpdateType.PartyDisbaned));
+			partyMembers.RemoveAllButOwner (owner);
 		}
 		tabController.DestroyChat (owner);
 		UpdateService.GetInstance ().SendUpdate (new string[]{owner}, UpdateService.CreateMessage (UpdateType.PartyLeft, 
