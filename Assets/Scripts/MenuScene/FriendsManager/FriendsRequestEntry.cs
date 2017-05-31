@@ -14,7 +14,7 @@ public class FriendsRequestEntry : MonoBehaviour {
 		friendsPanel = GameObject.FindGameObjectWithTag ("Friends");
 	}
 
-	private string GetName () {
+	public string GetName () {
 		return friendRequestEntry.transform.GetChild (0).GetComponent<Text> ().text;
 	}
 
