@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -11,13 +12,12 @@ public class PartyControl : MonoBehaviour {
 
 	private PartyMembers partyMembers = new PartyMembers ();
 	private string owner;
+	private Action unsub1;
+	private Action unsub2;
+	private Action unsub3;
 
-	public void Start () {
-		owner = CurrentUser.GetInstance ().GetUserInfo ().username;
-		partyMembers.AddPlayer (owner);
-		AddPlayer (CurrentUser.GetInstance ().GetUserInfo ().username);
-
-		UpdateService.GetInstance ().Subscribe (UpdateType.PartyRequest, (sender, message) => {
+	public void Awake () {
+		unsub1 = UpdateService.GetInstance ().Subscribe (UpdateType.PartyRequest, (sender, message) => {
 			ConfirmAlertController.Create ("You have received a party invite from " + sender, (alert) => {
 				owner = sender;
 				UpdateService.GetInstance ().SendUpdate (new string[]{owner}, 
@@ -28,19 +28,31 @@ public class PartyControl : MonoBehaviour {
 			});
 		});
 
-		UpdateService.GetInstance ().Subscribe (UpdateType.PartyRequestAccept, (sender, message) => {
+		unsub2 = UpdateService.GetInstance ().Subscribe (UpdateType.PartyRequestAccept, (sender, message) => {
 			partyMembers.AddPlayer (sender);
 			message = UpdateService.CreateMessage (UpdateType.PartyUpdate, 
-								UpdateService.CreateKV ("members", partyMembers));
+				UpdateService.CreateKV ("members", partyMembers));
 			UpdateService.GetInstance ().SendUpdate (partyMembers.GetMembers (), message);
 			UpdateParty();
 		});
 
-		UpdateService.GetInstance ().Subscribe (UpdateType.PartyUpdate, (sender, message) => {
+		unsub3 = UpdateService.GetInstance ().Subscribe (UpdateType.PartyUpdate, (sender, message) => {
 			partyMembers = UpdateService.GetData<PartyMembers> (message, "members");
 
 			UpdateParty();
 		});
+	}
+
+	public void Start () {
+		owner = CurrentUser.GetInstance ().GetUserInfo ().username;
+		partyMembers.AddPlayer (owner);
+		AddPlayer (CurrentUser.GetInstance ().GetUserInfo ().username);
+	}
+
+	public void OnDestroy () {
+		unsub1 ();
+		unsub2 ();
+		unsub3 ();
 	}
 
 	private void RequestAddPlayer () {
@@ -71,7 +83,7 @@ public class PartyControl : MonoBehaviour {
 
 	public void ClearParty () {
 		foreach (var obj in GameObject.FindGameObjectsWithTag ("PlayerPartyEntity")) {
-			DestroyImmediate (obj);
+			Destroy (obj);
 		}
 	}
 

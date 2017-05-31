@@ -10,6 +10,7 @@ public class NetworkService : Photon.MonoBehaviour {
 	public const String partyPrefabName = "Party";
 	public Text infoLabel;
 	private static NetworkService instance = null;
+	private Action unsub;
 
 	public void Awake () {
 		if (instance == null) {
@@ -17,8 +18,13 @@ public class NetworkService : Photon.MonoBehaviour {
 			SetupConnection ();
 			DontDestroyOnLoad (gameObject);
 		} else {
-			DestroyImmediate (gameObject);
+			Destroy (gameObject);
 		}
+	}
+
+	public void Start () {
+		//UpdateService.GetInstance ().SendUpdate (CurrentUser.GetInstance ().GetUserInfo ().friends, 
+		//	UpdateService.CreateMessage (UpdateType.UserUpdate));
 	}
 
 	public static NetworkService GetInstance () {
@@ -28,11 +34,9 @@ public class NetworkService : Photon.MonoBehaviour {
 	public void SetupConnection () {
 		PhotonNetwork.ConnectUsingSettings (GAME_VERSION);
 		// set current user events
-		UpdateService.GetInstance ().Subscribe (UpdateType.UserUpdate, (sender, message) => {
+		unsub = UpdateService.GetInstance ().Subscribe (UpdateType.UserUpdate, (sender, message) => {
 			CurrentUser.GetInstance ().RequestUpdate ();
 		});
-		UpdateService.GetInstance ().SendUpdate (CurrentUser.GetInstance ().GetUserInfo ().friends, 
-			UpdateService.CreateMessage (UpdateType.UserUpdate));
 	}
 
 	public void OnJoinedLobby () {
@@ -42,6 +46,7 @@ public class NetworkService : Photon.MonoBehaviour {
 
 	public void DestroyConnection () {
 		PhotonNetwork.Disconnect ();
+		unsub ();
 		UpdateService.GetInstance ().SendUpdate (CurrentUser.GetInstance ().GetUserInfo ().friends, 
 			UpdateService.CreateMessage (UpdateType.UserUpdate));
 	}

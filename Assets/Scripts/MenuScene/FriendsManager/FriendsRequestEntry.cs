@@ -23,7 +23,7 @@ public class FriendsRequestEntry : MonoBehaviour {
 			GameObject image = Instantiate (friendRequestEntry.transform.GetChild (1).gameObject, Vector3.zero, Quaternion.identity);
 
 			friendsPanel.transform.GetComponent<FriendsPanelManager> ().CreateFriend (GetName (), image);
-			DestroyImmediate (friendRequestEntry);
+			Destroy (friendRequestEntry);
 		}, (error) => {
 			Debug.LogError (error);
 		});
@@ -31,7 +31,7 @@ public class FriendsRequestEntry : MonoBehaviour {
 
 	public void RejectRequest() {
 		DBServer.GetInstance ().RejectFriendRequest (GetName (), () => {
-			DestroyImmediate (friendRequestEntry);	
+			Destroy (friendRequestEntry);	
 		}, (error) => {
 			Debug.LogError (error);
 		});
