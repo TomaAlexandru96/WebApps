@@ -52,7 +52,7 @@ public class UpdateService : MonoBehaviour {
 	}
 
 	private void SendQueueItems () {
-		if (ChatService.GetInstance () == null || !ChatService.GetInstance ().connected) {
+		if (ChatService.GetInstance () == null || !ChatService.GetInstance ().connected || ! started) {
 			return;
 		}
 
@@ -73,14 +73,15 @@ public class UpdateService : MonoBehaviour {
 	}
 
 	public void Recieve (string sender, Dictionary<String, String> message) {
-		if (!sender.Equals (CurrentUser.GetInstance ().GetUserInfo ().username)) {
-			Debug.LogWarning ("receive from " + sender + " to " + CurrentUser.GetInstance ().GetUserInfo ().username);
-			lock (subscribers) {
-				List<Action<String, Dictionary<String, String>>> functions = 
-					subscribers [JsonUtility.FromJson<UpdateType> (message ["type"])];
-				foreach (var func in functions) {
-					func (sender, message);
+		lock (subscribers) {
+			List<Action<String, Dictionary<String, String>>> functions = 
+					subscribers[JsonUtility.FromJson<UpdateType> (message["type"])];
+			for (int i = 0; i < functions.Count; i++) {
+				Action<String, Dictionary<String, String>> func = functions [i];
+				if (func == null || sender.Equals (CurrentUser.GetInstance ().GetUserInfo ().username)) {
+					continue;
 				}
+				func (sender, message);
 			}
 		}
 	}
