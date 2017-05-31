@@ -27,10 +27,15 @@ public class ChatController : MonoBehaviour {
 		}
 	}
 
-	public void UpdateViewport (List<String> chatMessages) {
+	public void UpdateViewport (List<String> chatMessages, string channel) {
+		GameObject resultPanel;
+		if (!allChatPanels.TryGetValue (channel, out resultPanel)) {
+			Debug.LogError ("No chat named: " + channel);
+		}
+
 		while (chatMessages.Count != 0) {
 			GameObject newMessageObj = Instantiate (messagePrefab);
-			newMessageObj.transform.SetParent (activePanel.transform);
+			newMessageObj.transform.SetParent (resultPanel.transform);
 			newMessageObj.GetComponentInChildren<Text> ().text = chatMessages [0];
 			chatMessages.RemoveAt (0);
 		}
