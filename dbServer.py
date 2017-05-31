@@ -5,7 +5,7 @@ import threading
 import json
 from urllib.parse import urlparse, parse_qs
 from http.server import BaseHTTPRequestHandler, HTTPServer, SimpleHTTPRequestHandler
- 
+
 NOT_FOUND = 404
 OK = 200
 NOT_ACCEPTABLE = 406
@@ -23,8 +23,8 @@ except Exception as e:
 
 def set_interval(func, sec):
   def func_wrapper():
-      set_interval(func, sec) 
-      func()  
+      set_interval(func, sec)
+      func()
   t = threading.Timer(sec, func_wrapper)
   t.start()
   return t
@@ -53,10 +53,12 @@ class DBHTTPHandler(BaseHTTPRequestHandler):
       self.handle_accept_friend_request(parse_qs(data))
     elif (url.path == "/reject_friend_request"):
       self.handle_reject_friend_request(parse_qs(data))
+    elif (url.path == "/chooseCharacter"):
+      self.handle_choose_character(parse_qs(data))
     else:
       self.send_code_only(NOT_FOUND);
 
- 
+
   # GET
   def do_GET(self):
     url = urlparse(self.path)
@@ -103,7 +105,7 @@ class DBHTTPHandler(BaseHTTPRequestHandler):
       user['active'] = True
       self.send_JSON(user)
 
-  
+
   def handle_update_active_status(self, data):
     user = self.helper_find_user(data['username'][0])
     if (user is None):
@@ -127,9 +129,32 @@ class DBHTTPHandler(BaseHTTPRequestHandler):
       self.send_JSON(user)
 
 
+  def handle_choose_character(self, params):
+    user =self.helper_find_user(params['username'][0])
+    print(params['username'][0])
+    if (user is None):
+      self.send_code_only(NOT_FOUND)
+      return
+
+    cursor = conn.cursor();
+    query1 = '''
+		INSERT INTO CHARACTERS (CHARACTER_NAME, CHARACTER_TYPE)
+		VALUES ( '{}', '{}')
+ 		'''.format(params['characterName'][0], params['characterID'][0])
+    cursor.execute(query1)
+    conn.commit()
+    query2 = '''
+		UPDATE USERS SET CHARACTER_NAME = {}
+		WHERE USERNAME = '{}'
+ 		'''.format(params['characterName'][0], params['username'][0])
+    cursor.execute(query2)
+    conn.commit()
+
+    self.handle_find_user(params)
+
   def helper_find_user(self, u_name):
     cursor = conn.cursor()
-    query = '''SELECT * 
+    query = '''SELECT *
                FROM USERS
                WHERE USERNAME = '{}'
             '''.format(u_name);
@@ -146,7 +171,7 @@ class DBHTTPHandler(BaseHTTPRequestHandler):
       user['active'] = response[4]
       user['friends'] = response[5]
       return user
- 
+
 
   def handle_register(self, user):
     cursor = conn.cursor()
@@ -161,7 +186,7 @@ class DBHTTPHandler(BaseHTTPRequestHandler):
       return
 
     cursor = conn.cursor()
-    query = '''INSERT INTO USERS (USERNAME, PASSWORD, EMAIL) 
+    query = '''INSERT INTO USERS (USERNAME, PASSWORD, EMAIL)
                VALUES ('{}', '{}', '{}')
             '''.format(user['username'][0], user['password'][0], user['email'][0])
     cursor.execute(query)
@@ -175,20 +200,20 @@ class DBHTTPHandler(BaseHTTPRequestHandler):
     if (user is None or requested_friend is None):
       self.send_code_only(NOT_FOUND)
       return
-  
+
     if (user['username'] == requested_friend['username']):
       self.send_code_only(CONFLICT)
       return
 
-    
+
     if (user['username'] in requested_friend['friend_requests']):
       self.send_code_only(NOT_ACCEPTABLE)
-      return    
+      return
 
 
     if (user['username'] in requested_friend['friends']):
       self.send_code_only(NOT_ACCEPTABLE)
-      return    
+      return
 
 
     cursor = conn.cursor()
@@ -250,20 +275,19 @@ class DBHTTPHandler(BaseHTTPRequestHandler):
 
 def update_active_status():
   cursor = conn.cursor()
-  query = '''UPDATE USERS SET ACTIVE = 'f' 
+  query = '''UPDATE USERS SET ACTIVE = 'f'
              WHERE EXTRACT(EPOCH FROM NOW() - LAST_TIME_ACTIVE) > 90'''
   cursor.execute (query)
   conn.commit()
 
 
 def startServer():
-  server_address = ('146.169.46.104', 8081)
+  server_address = ('146.169.46.104', 8000)
   httpd = HTTPServer(server_address, DBHTTPHandler)
   set_interval(update_active_status, 90)
   print("Serving..")
   httpd.serve_forever()
- 
+
 
 if __name__ == "__main__":
   startServer()
-
