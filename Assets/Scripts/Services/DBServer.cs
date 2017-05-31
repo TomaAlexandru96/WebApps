@@ -29,7 +29,6 @@ public class DBServer : MonoBehaviour {
 	public void Login (String username, String password, bool withEncription,
 											Action<User> callback, Action<long> errorcall) {
 		StartCoroutine (LoginHelper (username, password, withEncription, callback, errorcall));
-		Debug.Log (CurrentUser.GetInstance ());
 	}
 
 	private IEnumerator<AsyncOperation> LoginHelper (String username, String password, bool withEncription,
@@ -81,8 +80,31 @@ public class DBServer : MonoBehaviour {
 	}
 
 	/* Issues logout request to the DB server */
-	public void Logout () {
-		CurrentUser.GetInstance ().Logout ();
+	public void Logout (Action callback, Action<long> errorcall) {
+		SetActiveStatus (false, () => {
+			callback ();
+			CurrentUser.GetInstance ().Logout ();
+		}, errorcall);
+	}
+
+	public void SetActiveStatus (bool status, Action callback, Action<long> errorcall) {
+		StartCoroutine (SetActiveStatusHelper(status, callback, errorcall));
+	}
+
+	private IEnumerator<AsyncOperation> SetActiveStatusHelper (bool status, Action callback, Action<long> errorcall) {
+		WWWForm form = new WWWForm ();
+		form.AddField ("username", CurrentUser.GetInstance ().GetUserInfo ().username);
+		form.AddField ("active", status.ToString());
+
+		UnityWebRequest request = UnityWebRequest.Post (DBServerAddr + "/update_active_status", form);
+
+		yield return request.Send ();
+
+		if (request.responseCode != OK_STATUS) {
+			errorcall (request.responseCode);
+		} else {
+			callback ();
+		}
 	}
 
 	public void FindUser (String username, Action<User> callback, Action<long> errorcall) {

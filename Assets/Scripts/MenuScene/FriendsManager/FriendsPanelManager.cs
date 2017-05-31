@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class FriendsPanelManager : MonoBehaviour, Notifiable {
+public class FriendsPanelManager : MonoBehaviour {
 
 	private GameObject friendsPanelContent;
 	private GameObject friendsRequestPanel;
@@ -16,15 +16,16 @@ public class FriendsPanelManager : MonoBehaviour, Notifiable {
 		friendsPanelContent = GameObject.FindGameObjectWithTag ("Friends").transform.GetChild (1).GetChild(0).GetChild(0).gameObject;
 		friendsRequestPanel = GameObject.FindGameObjectWithTag ("Friends").transform.GetChild (2).GetChild(0).GetChild(0).gameObject;
 
-		Notify ();
-		CurrentUser.GetInstance ().Subscribe (this);
+		UpdateService.GetInstance ().Subscribe (UpdateType.UserUpdate, (sender, message) => {
+			GetAllFriends ();
+			GetAllFriendsRequests ();
+		});
 	}
 
 	public void CreateFriend (string name, GameObject image) {
 		GameObject newFriendEntry = Instantiate (friendsEntry, Vector3.zero, Quaternion.identity);
 		newFriendEntry.transform.SetParent (friendsPanelContent.transform, false);
-		newFriendEntry.transform.GetChild (0).GetComponent<Text> ().text = name;
-		Destroy (newFriendEntry.transform.GetChild (1).gameObject);
+		newFriendEntry.GetComponent<FriendsEntry> ().SetName (name);
 		//image.transform.SetParent (newFriendEntry.transform, false);
 	}
 
@@ -32,13 +33,7 @@ public class FriendsPanelManager : MonoBehaviour, Notifiable {
 		GameObject newfriendRequestEntry = Instantiate (friendRequestEntry, Vector3.zero, Quaternion.identity);
 		newfriendRequestEntry.transform.SetParent (friendsRequestPanel.transform, false);
 		newfriendRequestEntry.transform.GetChild (0).GetComponent<Text> ().text = name;
-		Destroy (newfriendRequestEntry.transform.GetChild (1).gameObject);
 		//image.transform.SetParent (newfriendRequestEntry.transform, false);
-	}
-
-	public void Notify () {
-		GetAllFriends ();
-		GetAllFriendsRequests ();
 	}
 		
 	public void GetAllFriends () {

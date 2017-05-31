@@ -27,6 +27,12 @@ public class NetworkService : Photon.MonoBehaviour {
 
 	public void SetupConnection () {
 		PhotonNetwork.ConnectUsingSettings (GAME_VERSION);
+		// set current user events
+		UpdateService.GetInstance ().Subscribe (UpdateType.UserUpdate, (sender, message) => {
+			CurrentUser.GetInstance ().RequestUpdate ();
+		});
+		UpdateService.GetInstance ().SendUpdate (CurrentUser.GetInstance ().GetUserInfo ().friends, 
+			UpdateService.CreateMessage (UpdateType.UserUpdate));
 	}
 
 	public void OnJoinedLobby () {
@@ -36,6 +42,8 @@ public class NetworkService : Photon.MonoBehaviour {
 
 	public void DestroyConnection () {
 		PhotonNetwork.Disconnect ();
+		UpdateService.GetInstance ().SendUpdate (CurrentUser.GetInstance ().GetUserInfo ().friends, 
+			UpdateService.CreateMessage (UpdateType.UserUpdate));
 	}
 
 	public void Update () {

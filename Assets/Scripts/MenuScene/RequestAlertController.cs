@@ -39,6 +39,8 @@ public class RequestAlertController : MonoBehaviour {
 			Submit ();
 			input.Select ();
 			input.ActivateInputField ();
+		} else if (Input.GetKeyUp (KeyCode.Escape)) {
+			Close ();
 		}
 	}
 }
