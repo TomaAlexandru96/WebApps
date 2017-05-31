@@ -51,15 +51,17 @@ public class Enemy : MonoBehaviour {
 
 	void OnCollisionStay2D(Collision2D coll) {
 		if (coll.gameObject.tag == "Player") {
-			if (coll.gameObject.GetComponent<P1_MoveAnim> ().dead) {
+			P1_MoveAnim player = coll.gameObject.GetComponent<P1_MoveAnim> ();
+			if (player.dead) {
 				PlayNormalAnimation ();
 			} else {
 				if (Time.time > nextAction) {
+					player.Damaged ();
 					nextAction = Time.time + actionTime;
-					coll.gameObject.GetComponent<P1_MoveAnim> ().curHP -= damage;
-					if (coll.gameObject.GetComponent<P1_MoveAnim> ().curHP <= 0) {
-						coll.gameObject.GetComponent<P1_MoveAnim> ().curHP = 0;
-						coll.gameObject.GetComponent<P1_MoveAnim> ().dead = true;
+					player.curHP -= damage;
+					if (player.curHP <= 0) {
+						player.curHP = 0;
+						player.dead = true;
 					}
 				}
 			}
