@@ -21,7 +21,35 @@ public class PartyMembers {
 	}
 
 	public void RemovePlayer (string name) {
-		partyMembers [index--] = name;
+		for (int i = 0; i < index; i++) {
+			if (partyMembers[i].Equals (name)) {
+				partyMembers [i] = null;
+				Shift (i);
+				break;
+			}
+		}
+		index--;
+	}
+
+	private void Shift (int i) {
+		for (int q = i; q < index - 1; q++) {
+			partyMembers [q] = partyMembers [q + 1];
+		}
+	}
+
+	public void RemoveAllButOwner (string owner) {
+		partyMembers = new string[Party.maxSize];
+		index = 0;
+		AddPlayer (owner);
+	}
+
+	public bool ContainsPlayer (string player) {
+		for (int q = 0; q < index; q++) {
+			if (partyMembers [q].Equals (player)) {
+				return true;
+			}
+		}
+		return false;
 	}
 }
 

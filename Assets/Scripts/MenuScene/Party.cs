@@ -19,6 +19,7 @@ public class Party : MonoBehaviour {
 	private Action unsub3;
 	private Action unsub4;
 	private Action unsub5;
+	private Action unsub6;
 
 	public void Awake () {
 		unsub1 = UpdateService.GetInstance ().Subscribe (UpdateType.PartyRequest, (sender, message) => {
@@ -62,8 +63,16 @@ public class Party : MonoBehaviour {
 		unsub5 = UpdateService.GetInstance ().Subscribe (UpdateType.UserUpdate, (sender, message) => {
 			CurrentUser.GetInstance ().RequestUpdate ((user) => {
 				if (!CurrentUser.GetInstance ().IsLoggedIn ()) {
-					RequestLeaveParty ();		
+					RequestLeaveParty ();	
 				}
+			});
+		});
+
+		unsub6 = UpdateService.GetInstance ().Subscribe (UpdateType.PartyDisbaned, (sender, message) => {
+			CurrentUser.GetInstance ().RequestUpdate ((user) => {
+				owner = CurrentUser.GetInstance ().GetUserInfo ().username;
+				partyMembers.RemoveAllButOwner (owner);
+				UpdateParty ();
 			});
 		});
 	}
@@ -81,13 +90,16 @@ public class Party : MonoBehaviour {
 		unsub3 ();
 		unsub4 ();
 		unsub5 ();
+		unsub6 ();
 	}
 
 	public void RequestAddPlayer () {
 		if (owner == CurrentUser.GetInstance ().GetUserInfo ().username && partyMembers.GetSize () < maxSize) {
 			RequestAlertController.Create("Who would you want to add to the party?", (controller, input) => {
 				DBServer.GetInstance ().FindUser (input, (user) => {
-					UpdateService.GetInstance ().SendUpdate (new string[]{user.username}, UpdateService.CreateMessage (UpdateType.PartyRequest));
+					if (!partyMembers.ContainsPlayer (user.username) && user.active) {
+						UpdateService.GetInstance ().SendUpdate (new string[]{user.username}, UpdateService.CreateMessage (UpdateType.PartyRequest));
+					}
 					controller.Close ();
 				}, (error) => {
 					Debug.LogError (error);
@@ -110,21 +122,17 @@ public class Party : MonoBehaviour {
 	}
 
 	public void RequestLeaveParty () {
-		if (partyMembers.GetSize () <= 1) {
-			return;
-		}
-
 		if (owner == CurrentUser.GetInstance ().GetUserInfo ().username) {
 			// disband party
-			foreach (var member in partyMembers.GetMembers ()) {
-				UpdateService.GetInstance ().SendUpdate (new string[]{owner}, UpdateService.CreateMessage (UpdateType.PartyLeft, 
-					UpdateService.CreateKV ("user", member)));	
-			}
+			UpdateService.GetInstance ().SendUpdate (partyMembers.GetMembers (), UpdateService.CreateMessage (UpdateType.PartyDisbaned));
+			partyMembers.RemoveAllButOwner (owner);
 		}
 		tabController.DestroyChat (owner);
 		UpdateService.GetInstance ().SendUpdate (new string[]{owner}, UpdateService.CreateMessage (UpdateType.PartyLeft, 
 					UpdateService.CreateKV ("user", CurrentUser.GetInstance ().GetUserInfo ().username)));
 		owner = CurrentUser.GetInstance ().GetUserInfo ().username;
+		partyMembers.RemoveAllButOwner (owner);
+		UpdateParty ();
 		tabController.SetChat (owner, true);
 	}
 

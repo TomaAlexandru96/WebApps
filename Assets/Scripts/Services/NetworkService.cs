@@ -10,7 +10,6 @@ public class NetworkService : Photon.MonoBehaviour {
 	public const String partyPrefabName = "Party";
 	public Text infoLabel;
 	private static NetworkService instance = null;
-	private Action unsub;
 
 	public void Awake () {
 		if (instance == null) {
@@ -46,7 +45,6 @@ public class NetworkService : Photon.MonoBehaviour {
 
 	private void DestroyConnection () {
 		PhotonNetwork.Disconnect ();
-		unsub ();
 	}
 
 	public void OnGui () {

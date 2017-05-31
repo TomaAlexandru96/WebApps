@@ -13,7 +13,7 @@ public class Inventory {
 
 	public void AddItem(Item item) {
 
-		Item newItem = new Item(item.name, item.damage, item.defense); 
+		Item newItem = new Item(item.name, item.damage, item.defense, item.longRange); 
 
 		items.Add(newItem);
 	}

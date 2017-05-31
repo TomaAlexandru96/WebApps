@@ -15,6 +15,8 @@ public class P1_MoveAnim : MonoBehaviour {
 	public bool dead = false;
 
 	public Inventory inventory;
+	public Item weapon;
+	public float startAttack;
 
 	public enum Direction
 	{
@@ -36,15 +38,34 @@ public class P1_MoveAnim : MonoBehaviour {
 		animator = GetComponent<Animator>();
 		totHP = 20;
 		curHP = totHP;
+		weapon = new Item ("Sword", 3, 2, false);
 	}
 
 	void Update() {
+
+		if (startAttack + 0.5 < Time.time) {
+			startAttack = Time.time;
+			GetComponent<SpriteRenderer> ().color = UnityEngine.Color.white;
+		}
 
 		float h;
 		float v;
 
 		if (!dead) {
-			//GET INPUT
+
+			// GET ATTACK INPUT
+			/*if (Input.GetMouseButtonDown ()) {
+				Vector3 pz = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+				pz.z = 0;
+				if (weapon.longRange) {
+					// for now do nothing
+				} else {
+					collider.isTouchingLayers ();
+				}
+
+			}*/
+
+			// GET MOVEMENT INPUT
 			h = Input.GetAxisRaw ("Horizontal");
 
 			v = Input.GetAxisRaw ("Vertical");
@@ -130,4 +151,10 @@ public class P1_MoveAnim : MonoBehaviour {
 		}
 
 	}
+
+	public void Damaged() {
+		GetComponent<SpriteRenderer> ().color = UnityEngine.Color.red;
+		startAttack = Time.time;
+	}
+
 }
