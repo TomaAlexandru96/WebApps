@@ -23,8 +23,9 @@ public class NetworkService : Photon.MonoBehaviour {
 	}
 
 	public void Start () {
-		//UpdateService.GetInstance ().SendUpdate (CurrentUser.GetInstance ().GetUserInfo ().friends, 
-		//	UpdateService.CreateMessage (UpdateType.UserUpdate));
+		// got online
+		UpdateService.GetInstance ().SendUpdate (CurrentUser.GetInstance ().GetUserInfo ().friends, 
+			UpdateService.CreateMessage (UpdateType.UserUpdate));
 	}
 
 	public static NetworkService GetInstance () {
@@ -47,8 +48,6 @@ public class NetworkService : Photon.MonoBehaviour {
 	public void DestroyConnection () {
 		PhotonNetwork.Disconnect ();
 		unsub ();
-		UpdateService.GetInstance ().SendUpdate (CurrentUser.GetInstance ().GetUserInfo ().friends, 
-			UpdateService.CreateMessage (UpdateType.UserUpdate));
 	}
 
 	public void Update () {
