@@ -109,12 +109,11 @@ public class CurrentUser : MonoBehaviour {
 		}
 	}
 
-	public void RequestUpdate () {
+	public void RequestUpdate (Action<User> onFinish) {
 		if (IsLoggedIn ()) {
 			DBServer.GetInstance ().FindUser (userInfo.username, (user) => {
-				if (!user.Equals (userInfo)) {
-					SetUserInfo (user);
-				}
+				SetUserInfo (user);
+				onFinish (user);
 			}, (error) => {
 				Debug.LogError ("Something happened to the user: " + error);
 				Logout ();
@@ -128,6 +127,12 @@ public class CurrentUser : MonoBehaviour {
 
 	public Party GetParty () {
 		return this.party;
+	}
+
+	public void LeaveParty () {
+		if (this.party != null) {
+			this.party.RequestLeaveParty ();
+		}
 	}
 }
 

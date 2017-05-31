@@ -38,4 +38,14 @@ public class ChatTabController : MonoBehaviour {
 			}
 		}
 	}
+
+	public void DestroyChat (string chatName) {
+		foreach (var tab in transform.GetComponentsInChildren<ChatTab> ()) {
+			if (tab.name.Equals (chatName)) {
+				ChatService.GetInstance ().Unsubscribe (new string[]{chatName});
+				Destroy (tab);
+				break;
+			}
+		}
+	}
 }
