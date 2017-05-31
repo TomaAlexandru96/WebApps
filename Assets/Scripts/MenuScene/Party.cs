@@ -97,7 +97,7 @@ public class Party : MonoBehaviour {
 		if (owner == CurrentUser.GetInstance ().GetUserInfo ().username && partyMembers.GetSize () < maxSize) {
 			RequestAlertController.Create("Who would you want to add to the party?", (controller, input) => {
 				DBServer.GetInstance ().FindUser (input, (user) => {
-					if (!partyMembers.ContainsPlayer (user.username)) {
+					if (!partyMembers.ContainsPlayer (user.username) && user.active) {
 						UpdateService.GetInstance ().SendUpdate (new string[]{user.username}, UpdateService.CreateMessage (UpdateType.PartyRequest));
 					}
 					controller.Close ();
