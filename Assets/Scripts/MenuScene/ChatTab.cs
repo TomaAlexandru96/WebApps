@@ -45,4 +45,8 @@ public class ChatTab : MonoBehaviour {
 		chatNum = num;
 		transform.GetChild (0).GetComponent<Text> ().text = name;
 	}
+
+	public string GetName () {
+		return chName;
+	}
 }
