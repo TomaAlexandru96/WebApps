@@ -82,10 +82,11 @@ public class DBServer : MonoBehaviour {
 	/* Issues logout request to the DB server */
 	public void Logout (Action callback, Action<long> errorcall) {
 		SetActiveStatus (false, () => {
-			callback ();
 			// logout
 			UpdateService.GetInstance ().SendUpdate (CurrentUser.GetInstance ().GetUserInfo ().friends, 
 				UpdateService.CreateMessage (UpdateType.UserUpdate));
+			callback ();
+			Debug.Break ();
 			CurrentUser.GetInstance ().Logout ();
 		}, errorcall);
 	}

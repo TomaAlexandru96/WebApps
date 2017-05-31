@@ -50,8 +50,8 @@ public class NetworkService : Photon.MonoBehaviour {
 		unsub ();
 	}
 
-	public void Update () {
-		infoLabel.text = PhotonNetwork.connectionStateDetailed.ToString();
+	public void OnGui () {
+		GUILayout.Label(PhotonNetwork.connectionStateDetailed.ToString());
 	}
 
 	public void JoinRoom (string roomName) {

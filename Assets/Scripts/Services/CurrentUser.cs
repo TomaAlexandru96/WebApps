@@ -29,7 +29,7 @@ public class CurrentUser : MonoBehaviour {
 	}
 
 	public void OnApplicationQuit() {
-		DBServer.GetInstance ().Logout (() => {}, (error) => {Debug.LogError (error);});
+		DBServer.GetInstance ().Logout (() => { }, (error) => {Debug.LogError (error);});
 	}
 		
 	public static CurrentUser GetInstance () {

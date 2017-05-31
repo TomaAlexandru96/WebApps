@@ -74,12 +74,16 @@ public class UpdateService : MonoBehaviour {
 		lock (subscribers) {
 			List<Action<String, Dictionary<String, String>>> functions = 
 					subscribers[JsonUtility.FromJson<UpdateType> (message["type"])];
+			if (sender.Equals (CurrentUser.GetInstance ().GetUserInfo ().username)) {
+				return;
+			}
+			Debug.LogWarning ("Received update of type " + GetData<UpdateType> (message, "type") + " from " + sender);
 			for (int i = 0; i < functions.Count; i++) {
 				Action<String, Dictionary<String, String>> func = functions [i];
-				if (func == null || sender.Equals (CurrentUser.GetInstance ().GetUserInfo ().username)) {
-					continue;
+				// doesn't work
+				if (func != null) {
+					func (sender, message);
 				}
-				func (sender, message);
 			}
 		}
 	}
