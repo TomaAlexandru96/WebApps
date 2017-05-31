@@ -1,7 +1,8 @@
 ﻿using System;
+using UnityEngine;
 
 public class User {
-	
+
 	public String username;
 	public String password;
 	public String email;
@@ -39,4 +40,3 @@ public class User {
 		return base.GetHashCode ();
 	}
 }
-

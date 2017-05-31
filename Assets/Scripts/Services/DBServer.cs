@@ -6,7 +6,7 @@ using UnityEngine.Networking;
 
 public class DBServer : MonoBehaviour {
 
-	public const String DBServerAddr = "http://146.169.46.104:8081";
+	public const String DBServerAddr = "http://146.169.46.104:8000";
 	public const long OK_STATUS = 200;
 	public const long NOT_ACCEPTABLE_STATUS = 406;
 	public const long NOT_FOUND_STATUS = 404;
@@ -21,7 +21,7 @@ public class DBServer : MonoBehaviour {
 	public static DBServer GetInstance () {
 		return DBServer.instance;
 	}
-		
+
 	/*  Issues login request to the DB server
 		if no user is found for the following entries
 		than it returns null
@@ -34,7 +34,7 @@ public class DBServer : MonoBehaviour {
 	private IEnumerator<AsyncOperation> LoginHelper (String username, String password, bool withEncription,
 										Action<User> callback, Action<long> errorcall) {
 		if (withEncription) {
-			password = DBServer.Encrypt (password);	
+			password = DBServer.Encrypt (password);
 		}
 
 		WWWForm form = new WWWForm ();
@@ -86,7 +86,7 @@ public class DBServer : MonoBehaviour {
 	public void Logout (Action callback, Action<long> errorcall) {
 		SetActiveStatus (false, () => {
 			// logout
-			UpdateService.GetInstance ().SendUpdate (CurrentUser.GetInstance ().GetUserInfo ().friends, 
+			UpdateService.GetInstance ().SendUpdate (CurrentUser.GetInstance ().GetUserInfo ().friends,
 					UpdateService.CreateMessage (UpdateType.LogoutUser));
 			callback ();
 			CurrentUser.GetInstance ().LeaveParty ();
@@ -115,7 +115,7 @@ public class DBServer : MonoBehaviour {
 			errorcall (request.responseCode);
 		} else {
 			CurrentUser.GetInstance ().RequestUpdate ((user) => {
-				callback ();	
+				callback ();
 			});
 		}
 	}
@@ -187,6 +187,29 @@ public class DBServer : MonoBehaviour {
 		form.AddField ("requested_friend", username);
 
 		UnityWebRequest request = UnityWebRequest.Post (DBServerAddr + "/reject_friend_request", form);
+
+		yield return request.Send ();
+
+		if (request.responseCode != OK_STATUS) {
+			errorcall (request.responseCode);
+		} else {
+			callback ();
+		}
+	}
+
+	public void ChooseCharacter (User user, String characterName, int id, Action callback, Action<long> errorcall) {
+		StartCoroutine (ChooseCharacterHelper (user, characterName, id, callback, errorcall));
+	}
+
+	public IEnumerator<AsyncOperation> ChooseCharacterHelper (User user, String characterName, int id,
+																Action callback, Action<long> errorcall) {
+
+		WWWForm form = new WWWForm ();
+		form.AddField ("username", user.username);
+		form.AddField ("characterName", characterName);
+		form.AddField ("characterID", id);
+
+		UnityWebRequest request = UnityWebRequest.Post (DBServerAddr + "/chooseCharacter", form);
 
 		yield return request.Send ();
 
