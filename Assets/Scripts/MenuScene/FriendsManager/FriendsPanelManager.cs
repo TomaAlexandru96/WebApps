@@ -78,9 +78,6 @@ public class FriendsPanelManager : MonoBehaviour {
 	}
 
 	public void GetAllFriendsRequests () {
-		foreach (Transform child in friendsRequestPanel.transform) {
-			GameObject.Destroy(child.gameObject);
-		}
 		String[] friend_requests = CurrentUser.GetInstance().GetUserInfo ().friend_requests;
 		foreach (var f_r in friend_requests) {
 			if (!IsFriendRequestInPanel (f_r)) {
