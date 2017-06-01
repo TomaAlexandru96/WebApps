@@ -76,6 +76,7 @@ public class Party : MonoBehaviour {
 	}
 
 	public void OnDestroy () {
+		Debug.Log ("Destroyed");
 		unsub1 ();
 		unsub2 ();
 		unsub3 ();
@@ -138,5 +139,9 @@ public class Party : MonoBehaviour {
 		}
 		addPlayer.SetActive (owner == CurrentUser.GetInstance ().GetUserInfo ().username);
 		leaveParty.SetActive (partyMembers.GetSize () > 1);
+	}
+
+	public PartyMembers getPartyMembers () {
+		return partyMembers;
 	}
 }
