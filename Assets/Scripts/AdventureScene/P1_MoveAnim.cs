@@ -18,11 +18,6 @@ public class P1_MoveAnim : MonoBehaviour {
 	public Item weapon;
 	public float startAttack;
 
-	public enum Direction
-	{
-		Still, Down, Up, Left, Right, UpRight, UpLeft, DownRight, DownLeft, Dead
-	}
-
 	/*int stillHash = Animator.StringToHash("Still");
 	int upHash = Animator.StringToHash("Up");
 	int downHash = Animator.StringToHash("Down");
@@ -154,7 +149,7 @@ public class P1_MoveAnim : MonoBehaviour {
 		startAttack = Time.time;
 	}
 		
-	void OnCollisionStay2D(Collision2D coll) {
+	/*void OnCollisionStay2D(Collision2D coll) {
 		if (coll.gameObject.tag == "Enemy") {
 			Enemy enemy = coll.gameObject.GetComponent<Enemy> ();
 			if (Input.GetMouseButtonDown(0)) {
@@ -165,6 +160,6 @@ public class P1_MoveAnim : MonoBehaviour {
 				}
 			}
 		}
-	}
+	}*/
 
 }
