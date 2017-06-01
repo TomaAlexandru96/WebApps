@@ -25,7 +25,7 @@ public class ChatController : MonoBehaviour, IPointerEnterHandler, IPointerExitH
 	}
 
 	public void Start () {
-		GetComponent<CanvasGroup> ().alpha = 0;
+		GetComponent<CanvasGroup> ().alpha = 0.2f;
 	}
 
 	public void Update () {
@@ -39,7 +39,7 @@ public class ChatController : MonoBehaviour, IPointerEnterHandler, IPointerExitH
 	}
 
 	public void OnPointerExit(PointerEventData eventData) {
-		GetComponent<CanvasGroup> ().alpha = 0;
+		GetComponent<CanvasGroup> ().alpha = 0.2f;
 	}
 
 	public void UpdateViewport (List<String> chatMessages, string channel) {
