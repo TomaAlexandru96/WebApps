@@ -12,7 +12,7 @@ echo "Attempting to build $project for WebGL"
   -silent-crashes \
   -logFile $(pwd)/unity.log \
   -projectPath $(pwd) \
-  -buildTarget webgl \
+  -buildOSXUniversalPlayer "$(pwd)/Build/osx/$project.app" \
   -quit
 
 echo 'Logs from build'
