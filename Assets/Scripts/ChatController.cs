@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class ChatController : MonoBehaviour {
+public class ChatController : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler {
 
 	public GameObject messagePrefab;
 	public GameObject chatPanelPrefab;
@@ -21,10 +21,22 @@ public class ChatController : MonoBehaviour {
 		chatTabController.AddChat (CurrentUser.GetInstance ().GetUserInfo ().username, false);
 	}
 
+	public void Start () {
+		GetComponent<CanvasGroup> ().alpha = 0;
+	}
+
 	public void Update () {
 		if (Input.GetKeyUp (KeyCode.Return)) {
 			SendMessage ();
 		}
+	}
+
+	public void OnPointerEnter(PointerEventData eventData) {
+		GetComponent<CanvasGroup> ().alpha = 1;
+	}
+
+	public void OnPointerExit(PointerEventData eventData) {
+		GetComponent<CanvasGroup> ().alpha = 0;
 	}
 
 	public void UpdateViewport (List<String> chatMessages, string channel) {
