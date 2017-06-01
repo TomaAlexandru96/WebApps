@@ -21,7 +21,7 @@ public class ConfirmAlertController : MonoBehaviour {
 	}
 
 	public static GameObject Create (String question, Action<ConfirmAlertController> onYes, Action<ConfirmAlertController> onNo) {
-		GameObject newAlert = Instantiate (Resources.Load<GameObject> ("Prefabs/MenuUI/ConfirmPanel"), Vector3.zero, Quaternion.identity);
+		GameObject newAlert = (GameObject) Instantiate (Resources.Load<GameObject> ("Prefabs/MenuUI/ConfirmPanel"), Vector3.zero, Quaternion.identity);
 
 		newAlert.GetComponent<ConfirmAlertController> ().question.text = question;
 		newAlert.GetComponent<ConfirmAlertController> ().onYes = onYes;

@@ -25,7 +25,7 @@ public class RequestAlertController : MonoBehaviour {
 	}
 
 	public static GameObject Create (String question, Action<RequestAlertController, String> onSubmit) {
-		GameObject newAlert = Instantiate (Resources.Load<GameObject> ("Prefabs/MenuUI/RequestFriendPanel"), Vector3.zero, Quaternion.identity);
+		GameObject newAlert = (GameObject) Instantiate (Resources.Load<GameObject> ("Prefabs/MenuUI/RequestFriendPanel"), Vector3.zero, Quaternion.identity);
 
 		newAlert.GetComponent<RequestAlertController> ().question.text = question;
 		newAlert.GetComponent<RequestAlertController> ().onSubmit = onSubmit;

@@ -16,7 +16,7 @@ public class ChatTabController : MonoBehaviour {
 	}
 
 	public void AddChat (String name, bool isCloseable) {
-		GameObject newTab = Instantiate (tabPrefab);
+		GameObject newTab = (GameObject) Instantiate (tabPrefab);
 		newTab.transform.SetParent (content.transform);
 		newTab.GetComponent <ChatTab> ().UpdateName (name, totalChats);
 		newTab.GetComponent <ChatTab> ().isCloseable = isCloseable;

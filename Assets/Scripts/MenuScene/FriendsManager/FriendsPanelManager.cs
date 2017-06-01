@@ -37,13 +37,13 @@ public class FriendsPanelManager : MonoBehaviour {
 	}
 
 	public void CreateFriend (string name) {
-		GameObject newFriendEntry = Instantiate (friendsEntry, Vector3.zero, Quaternion.identity);
+		GameObject newFriendEntry = (GameObject) Instantiate (friendsEntry, Vector3.zero, Quaternion.identity);
 		newFriendEntry.transform.SetParent (friendsPanelContent.transform, false);
 		newFriendEntry.GetComponent<FriendsEntry> ().SetName (name);
 	}
 
 	public void CreateFriendRequest (string name) {
-		GameObject newfriendRequestEntry = Instantiate (friendRequestEntry, Vector3.zero, Quaternion.identity);
+		GameObject newfriendRequestEntry = (GameObject) Instantiate (friendRequestEntry, Vector3.zero, Quaternion.identity);
 		newfriendRequestEntry.transform.SetParent (friendsRequestPanel.transform, false);
 		newfriendRequestEntry.GetComponent<FriendsRequestEntry> ().SetName (name);
 	}
