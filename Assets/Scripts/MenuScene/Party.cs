@@ -23,12 +23,16 @@ public class Party : MonoBehaviour {
 	public void Awake () {
 		unsub1 = UpdateService.GetInstance ().Subscribe (UpdateType.PartyRequest, (sender, message) => {
 			ConfirmAlertController.Create ("You have received a party invite from " + sender, (alert) => {
-				owner = sender;
-				UpdateService.GetInstance ().SendUpdate (new string[]{owner}, 
-					UpdateService.CreateMessage (UpdateType.PartyRequestAccept));
+					owner = sender;
+				if(!partyMembers.ContainsPlayer(sender)){
+					UpdateService.GetInstance ().SendUpdate (new string[]{owner}, 
+						UpdateService.CreateMessage (UpdateType.PartyRequestAccept));
 
-				tabController.AddChat (owner, false);
-				tabController.SetChat (CurrentUser.GetInstance ().GetUserInfo ().username, false);
+					tabController.AddChat (owner, false);
+					tabController.SetChat (CurrentUser.GetInstance ().GetUserInfo ().username, false);
+				} else {
+					Debug.Log("Duplicate invite");
+				}
 				alert.Close ();
 			}, (alert) => {
 				alert.Close ();
@@ -76,7 +80,6 @@ public class Party : MonoBehaviour {
 	}
 
 	public void OnDestroy () {
-		Debug.Log ("Destroyed");
 		unsub1 ();
 		unsub2 ();
 		unsub3 ();
