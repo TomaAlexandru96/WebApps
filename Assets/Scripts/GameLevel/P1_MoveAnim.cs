@@ -54,16 +54,13 @@ public class P1_MoveAnim : MonoBehaviour {
 		if (!dead) {
 
 			// GET ATTACK INPUT
-			/*if (Input.GetMouseButtonDown ()) {
+			if (Input.GetMouseButtonDown(0)) {
 				Vector3 pz = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 				pz.z = 0;
 				if (weapon.longRange) {
 					// for now do nothing
-				} else {
-					collider.isTouchingLayers ();
 				}
-
-			}*/
+			}
 
 			// GET MOVEMENT INPUT
 			h = Input.GetAxisRaw ("Horizontal");
@@ -155,6 +152,19 @@ public class P1_MoveAnim : MonoBehaviour {
 	public void Damaged() {
 		GetComponent<SpriteRenderer> ().color = UnityEngine.Color.red;
 		startAttack = Time.time;
+	}
+		
+	void OnCollisionStay2D(Collision2D coll) {
+		if (coll.gameObject.tag == "Enemy") {
+			Enemy enemy = coll.gameObject.GetComponent<Enemy> ();
+			if (Input.GetMouseButtonDown(0)) {
+				RaycastHit2D hit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector2.zero);
+
+				if(hit.collider != null) {
+					Debug.Log ("Target Position: " + hit.collider.gameObject.transform.position);
+				}
+			}
+		}
 	}
 
 }
