@@ -10,4 +10,12 @@ public class PartyEntry : MonoBehaviour {
 	public void ChangeName (string username) {
 		usernameText.text = username;
 	}
+
+	public void Start () {
+		DBServer.GetInstance ().FindUser (usernameText.text, (user) => {
+			transform.GetChild (0).GetComponentInChildren <Image> ().sprite = user.character.GetImage ();
+		}, (error) => {
+			Debug.LogError (error);
+		});
+	}
 }

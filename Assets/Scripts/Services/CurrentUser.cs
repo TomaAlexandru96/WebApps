@@ -8,7 +8,7 @@ public class CurrentUser : MonoBehaviour {
 	private User userInfo = null;
 	private Party party;
 	public const String userCache = "Assets/cache";
-	public bool withCaching;
+	private bool withCaching = true;
 	private static CurrentUser instance = null;
 
 	public void Awake () {
@@ -147,6 +147,10 @@ public class CurrentUser : MonoBehaviour {
 		if (this.party != null) {
 			this.party.RequestLeaveParty ();
 		}
+	}
+
+	public void SetWithCache (bool value) {
+		this.withCaching = value;
 	}
 }
 

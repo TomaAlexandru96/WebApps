@@ -7,6 +7,7 @@ using UnityEngine.UI;
 public class FriendsEntry : MonoBehaviour {
 
 	public GameObject friendsPanel;
+	public Image avatar;
 	private GameObject optionPanel;
 	private Action unsub1;
 	private Action unsub2;
@@ -64,7 +65,9 @@ public class FriendsEntry : MonoBehaviour {
 	private void UpdateStatus (float delay) {
 		UpdateService.GetInstance ().Wait (delay);
 		DBServer.GetInstance ().FindUser (GetName (), (user) => {
+			Debug.Log (user);
 			ChangeStatus (user.active);
+			avatar.sprite = user.character.GetImage ();
 		}, (error) => {
 			Debug.LogError (error);
 		});
