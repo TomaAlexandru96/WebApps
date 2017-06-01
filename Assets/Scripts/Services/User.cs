@@ -1,6 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
+[System.Serializable]
 public class User {
 
 	public String username;
@@ -9,6 +10,7 @@ public class User {
 	public String[] friends;
 	public String[] friend_requests;
 	public bool active;
+	public Character character;
 
 	public User (String username, String password, String email) {
 		this.username = username;
@@ -17,8 +19,8 @@ public class User {
 	}
 
 	public override String ToString () {
-		return String.Format ("[username: {0}, password: {1}, email: {2}, friends: {3}, friend_requests: {4}, active: {5}]",
-			username, password, email, friends.ToString (), friend_requests.ToString (), active.ToString ());
+		return String.Format ("[username: {0}, \npassword: {1}, \nemail: {2}, \nfriends: {3}, \nfriend_requests: {4}, \nactive: {5}, \ncharacter: {6}]\n",
+			username, password, email, friends.ToString (), friend_requests.ToString (), active.ToString (), character.ToString ());
 	}
 
 	public override bool Equals (object other) {

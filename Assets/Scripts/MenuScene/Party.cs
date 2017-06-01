@@ -103,7 +103,7 @@ public class Party : MonoBehaviour {
 		foreach (var member in partyMembers.GetMembers ()) {
 			AddPlayer (member);
 		}
-		Debug.Log (owner);
+
 		tabController.SetChat (CurrentUser.GetInstance ().GetUserInfo ().username, false);
 		tabController.SetChat (owner, true);
 	}

@@ -36,25 +36,23 @@ public class FriendsPanelManager : MonoBehaviour {
 		unsub ();
 	}
 
-	public void CreateFriend (string name, GameObject image) {
+	public void CreateFriend (string name) {
 		GameObject newFriendEntry = Instantiate (friendsEntry, Vector3.zero, Quaternion.identity);
 		newFriendEntry.transform.SetParent (friendsPanelContent.transform, false);
 		newFriendEntry.GetComponent<FriendsEntry> ().SetName (name);
-		//image.transform.SetParent (newFriendEntry.transform, false);
 	}
 
-	public void CreateFriendRequest (string name, GameObject image) {
+	public void CreateFriendRequest (string name) {
 		GameObject newfriendRequestEntry = Instantiate (friendRequestEntry, Vector3.zero, Quaternion.identity);
 		newfriendRequestEntry.transform.SetParent (friendsRequestPanel.transform, false);
-		newfriendRequestEntry.transform.GetChild (0).GetComponent<Text> ().text = name;
-		//image.transform.SetParent (newfriendRequestEntry.transform, false);
+		newfriendRequestEntry.GetComponent<FriendsRequestEntry> ().SetName (name);
 	}
 		
 	public void GetAllFriends () {
 		String[] friends = CurrentUser.GetInstance().GetUserInfo ().friends;
 		foreach (var friend in friends) {
 			if (!IsFriendInPanel (friend)) {
-				CreateFriend (friend, null);
+				CreateFriend (friend);
 			}
 		}
 	}
@@ -81,7 +79,7 @@ public class FriendsPanelManager : MonoBehaviour {
 		String[] friend_requests = CurrentUser.GetInstance().GetUserInfo ().friend_requests;
 		foreach (var f_r in friend_requests) {
 			if (!IsFriendRequestInPanel (f_r)) {
-				CreateFriendRequest (f_r, null);
+				CreateFriendRequest (f_r);
 			}
 		}
 	}
