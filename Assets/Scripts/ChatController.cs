@@ -16,6 +16,9 @@ public class ChatController : MonoBehaviour, IPointerEnterHandler, IPointerExitH
 	private GameObject activePanel;
 	private Dictionary<String, GameObject> allChatPanels = new Dictionary<String, GameObject> ();
 
+	public Action unsub7;
+	public Action unsub8;
+
 	public void InitDefaultChat () {
 		chatTabController.AddChat (ChatService.GLOBAL_CH, false);
 		chatTabController.AddChat (CurrentUser.GetInstance ().GetUserInfo ().username, false);
@@ -79,5 +82,32 @@ public class ChatController : MonoBehaviour, IPointerEnterHandler, IPointerExitH
 			
 		activePanel.SetActive (true);
 		ChatService.GetInstance ().ChangeChanel (name);
+	}
+
+	public void  Awake () {
+		unsub7 = UpdateService.GetInstance ().Subscribe (UpdateType.ChatRequest, (sender, message) => {
+			ConfirmAlertController.Create ("You have received a chat invite from " + sender, (alert) => {
+//				if(!partyMembers.ContainsPlayer(sender)){
+				UpdateService.GetInstance ().SendUpdate (new string[]{sender}, 
+						UpdateService.CreateMessage (UpdateType.ChatRequestAccept));
+					
+				chatTabController.AddChat ("common" + sender, true);
+//				} else {
+//					Debug.Log("Duplicate invite");
+//				}
+				alert.Close ();
+			}, (alert) => {
+				alert.Close ();
+			});
+		});
+
+		unsub8 = UpdateService.GetInstance ().Subscribe (UpdateType.ChatRequestAccept, (sender, message) => {
+			chatTabController.AddChat ("common" + CurrentUser.GetInstance().GetUserInfo().username, true);
+		});
+	}
+
+	public void OnDestroy() {
+		unsub7 ();
+		unsub8 ();
 	}
 }
