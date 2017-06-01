@@ -109,7 +109,7 @@ public class Party : MonoBehaviour {
 	}
 
 	public void AddPlayer(string username) {
-		GameObject newPlayer = Instantiate (playerPrefab);
+		GameObject newPlayer = (GameObject) Instantiate (playerPrefab);
 		newPlayer.transform.SetParent (transform);
 		newPlayer.GetComponent<PartyEntry> ().ChangeName (username);
 	}

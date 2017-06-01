@@ -34,7 +34,7 @@ public class ChatController : MonoBehaviour {
 		}
 
 		while (chatMessages.Count != 0) {
-			GameObject newMessageObj = Instantiate (messagePrefab);
+			GameObject newMessageObj = (GameObject) Instantiate (messagePrefab);
 			newMessageObj.transform.SetParent (resultPanel.transform);
 			newMessageObj.GetComponentInChildren<Text> ().text = chatMessages [0];
 			chatMessages.RemoveAt (0);
