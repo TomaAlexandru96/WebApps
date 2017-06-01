@@ -53,6 +53,7 @@ public class FriendsEntry : MonoBehaviour {
 			Vector3 friendPos = friendsPanel.transform.position;
 			Vector3 OptionPos = optionPanel.transform.position;
 			optionPanel.transform.position = new Vector3 (OptionPos.x, friendPos.y-30, OptionPos.z);
+			optionPanel.transform.GetComponent<OptionScript> ().SetFriendEntity (friendsPanel);
 		}
 	}
 
