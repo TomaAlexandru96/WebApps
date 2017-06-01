@@ -1,8 +1,8 @@
 language: objective-c
-deploy:
-  provider: heroku
-  api_key:
-    secure: Dt8r9clK60FyUNgqy053aEDGDpbqV4awD01ZFSLz6bPsS8UQfOGz30QXwt8txdniLnbX49vCRMo4VPUKe8c6qqTR0o9xZ8s75S5MXF6knHied9JNUBIaqehpZpbTZu30DqIRr+pSFuhNJs48+h5+3J4ebQelwiHVILDixibrlQ0jFE1Rpbs+Egh93Xa+VvbRtvm+V7sd8cB4hdlLkykVjlV2EOxS9p3ugyAyaoibRXppTgk4aXpo9FRdMQ0f8No6PaYbeQAMQ8JLkZO/b5k8RFJZwm2aFt3UzrlKwi2/T/yIRhXqBED9BxXU/lVcrK3oqVJa0dDW2LUx/zdhswfrPPik3o+AzCtcwLBwswVh8G4zZkLdCi7yflMX5WFTKhMjNOX7/AG8id3QjACyGlzozoLpdg3HvPlo3DBOSEWjUj0ltsPxKf8idCm5tFX+pmW1UMoIZXsiId6N7tjGkLgH1K0b7bYRu4RfopDJ2bkkyBv2pwxwvENu8uU+euMHexECJ5vJ8Fj57Tecdn4kY7ugkMgTeoCQmrtOzYiDiIH6LazJ0vus+tK2I62ExdPNR2djv5yxH6NN6/zTc7cO7vHOndisiKw3Za+wySgQttlsPhFb4dbJ+qZ7UJ2hxyIJX/9wp1ZklByIyJHWgF41ZM03+LqKo8u98GdDSSTHvaGDZ5g=
-  app: rocky-escarpment-14650
-  on:
-    repo: TomaAlexandru96/WebApps
+osx_image: xcode61
+rvm:
+- 2.1.2
+install:
+- ./Scripts/install.sh
+script:
+- ./Scripts/build.sh
