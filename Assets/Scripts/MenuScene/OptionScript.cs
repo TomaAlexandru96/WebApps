@@ -33,6 +33,15 @@ public class OptionScript : MonoBehaviour {
 	}
 
 	public void InviteToChat() {
+		Debug.Log ("Inviting to chat");
 		UpdateInfo ();
+		DBServer.GetInstance ().FindUser (playerName, (user) => {
+			//			if (!partyMembers.ContainsPlayer (user.username) && user.active) {
+			UpdateService.GetInstance ().SendUpdate (new string[]{playerName}, UpdateService.CreateMessage (UpdateType.ChatRequest));
+			//			}
+		}, (error) => {
+			Debug.LogError (error);
+		});
+		OptionPanel.SetActive (false);
 	}
 }
