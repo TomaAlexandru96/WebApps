@@ -1,8 +1,2 @@
-language: objective-c
-osx_image: xcode61
-rvm:
-- 2.1.2
-install:
-- sudo ./Scripts/install.sh
-script:
-- sudo ./Scripts/build.sh
+"language": "objective-c",
+  "os": "osx"
