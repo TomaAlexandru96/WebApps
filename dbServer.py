@@ -154,7 +154,7 @@ class DBHTTPHandler(BaseHTTPRequestHandler):
   def helper_find_user(self, u_name):
     cursor = conn.cursor()
     query = '''SELECT *
-               FROM USERS
+               FROM USERS LEFT JOIN CHARACTERS ON USERS.CHARACTER_NAME = CHARACTERS.CHARACTER_NAME
                WHERE USERNAME = '{}'
             '''.format(u_name);
     cursor.execute(query)
@@ -163,12 +163,16 @@ class DBHTTPHandler(BaseHTTPRequestHandler):
       return None
     else:
       user = {}
+      character = {}
       user['username'] = response[0]
       user['password'] = response[1]
       user['email'] = response[2]
       user['friend_requests'] = response[3]
       user['active'] = response[4]
       user['friends'] = response[5]
+      user['character'] = character
+      character['name'] = response[8]
+      character['type'] = response[9]
       return user
 
 
