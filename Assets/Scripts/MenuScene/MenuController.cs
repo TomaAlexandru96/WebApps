@@ -6,7 +6,9 @@ using UnityEngine.SceneManagement;
 
 public class MenuController : MonoBehaviour {
 
+	public Party party;
 	private Action unsub;
+	private Action unsub1;
 
 	public void Awake () {
 		// start services 
@@ -22,10 +24,15 @@ public class MenuController : MonoBehaviour {
 				Logout ();
 			}
 		});
+
+		unsub1 = UpdateService.GetInstance ().Subscribe (UpdateType.PartyRequest, (sender, message) => {
+			party.OnReceivedInvite (sender);
+		});
 	}
 
 	public void OnDestroy () {
 		unsub ();
+		unsub1 ();
 	}
 
 	public void Logout () {
