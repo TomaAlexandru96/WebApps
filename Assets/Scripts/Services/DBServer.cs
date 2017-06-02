@@ -4,10 +4,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.Experimental;
+using System.Security.Cryptography.X509Certificates;
+using System.Net.Security;
 
 public class DBServer : MonoBehaviour {
 
-	public const String DBServerAddr = "https://146.169.46.104:8000";
+	public const String DBServerAddr = "https://cloud-vm-46-104.doc.ic.ac.uk:8000";
 	public const long OK_STATUS = 200;
 	public const long NOT_ACCEPTABLE_STATUS = 406;
 	public const long NOT_FOUND_STATUS = 404;
@@ -218,4 +220,11 @@ public class DBServer : MonoBehaviour {
 	private static String Encrypt(String message) {
 		return Convert.ToBase64String (Encoding.Unicode.GetBytes (message));
 	}
+
+	private static bool TrustCertificate(object sender, X509Certificate x509Certificate, X509Chain x509Chain, SslPolicyErrors sslPolicyErrors)
+	{
+		// all Certificates are accepted
+		return true;
+	}
+		
 }
