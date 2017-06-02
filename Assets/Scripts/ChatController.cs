@@ -21,7 +21,6 @@ public class ChatController : MonoBehaviour, IPointerEnterHandler, IPointerExitH
 
 	public void InitDefaultChat () {
 		chatTabController.AddChat (ChatService.GLOBAL_CH, false);
-		chatTabController.AddChat (CurrentUser.GetInstance ().GetUserInfo ().username, false);
 	}
 
 	public void Start () {
@@ -91,7 +90,7 @@ public class ChatController : MonoBehaviour, IPointerEnterHandler, IPointerExitH
 				UpdateService.GetInstance ().SendUpdate (new string[]{sender}, 
 						UpdateService.CreateMessage (UpdateType.ChatRequestAccept));
 					
-				chatTabController.AddChat ("common" + sender, true);
+				chatTabController.AddChat (CurrentUser.GetInstance().GetUserInfo().username + ":" + sender, true);
 //				} else {
 //					Debug.Log("Duplicate invite");
 //				}
@@ -102,7 +101,7 @@ public class ChatController : MonoBehaviour, IPointerEnterHandler, IPointerExitH
 		});
 
 		unsub8 = UpdateService.GetInstance ().Subscribe (UpdateType.ChatRequestAccept, (sender, message) => {
-			chatTabController.AddChat ("common" + CurrentUser.GetInstance().GetUserInfo().username, true);
+			chatTabController.AddChat (sender + ":" + CurrentUser.GetInstance().GetUserInfo().username, true);
 		});
 	}
 

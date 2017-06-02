@@ -12,7 +12,17 @@ public class ChatTabController : MonoBehaviour {
 	private int totalChats = -1;
 
 	public void AddChat () {
-		AddChat ("Chat " + totalChats, true);
+		RequestAlertController.Create ("Who do you want to chat with?", (alert, input) => {
+			DBServer.GetInstance ().FindUser (input, (user) => {
+				if (user.active) {
+					UpdateService.GetInstance ().SendUpdate (new string[]{input}, UpdateService.CreateMessage (UpdateType.ChatRequest));
+					// AddChat ("Chat " + totalChats, true);
+				}
+				alert.Close ();
+			}, (error) => {
+				Debug.LogError (error);
+			});	
+		});
 	}
 
 	public void AddChat (String name, bool isCloseable) {
