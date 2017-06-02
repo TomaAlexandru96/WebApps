@@ -21,54 +21,79 @@ public class Party : MonoBehaviour {
 	private Action unsub5;
 
 	public void Awake () {
-		unsub1 = UpdateService.GetInstance ().Subscribe (UpdateType.PartyRequest, (sender, message) => {
-			ConfirmAlertController.Create ("You have received a party invite from " + sender, (alert) => {
-					owner = sender;
-				if(!partyMembers.ContainsPlayer(sender)){
-					UpdateService.GetInstance ().SendUpdate (new string[]{owner}, 
-						UpdateService.CreateMessage (UpdateType.PartyRequestAccept));
-
-					tabController.AddChat (owner, false);
-					tabController.SetChat (CurrentUser.GetInstance ().GetUserInfo ().username, false);
-				} else {
-					Debug.Log("Duplicate invite");
-				}
-				alert.Close ();
-			}, (alert) => {
-				alert.Close ();
-			});
-		});
-
 		unsub2 = UpdateService.GetInstance ().Subscribe (UpdateType.PartyRequestAccept, (sender, message) => {
-			partyMembers.AddPlayer (sender);
-			message = UpdateService.CreateMessage (UpdateType.PartyUpdate, 
-				UpdateService.CreateKV ("members", partyMembers));
-			UpdateService.GetInstance ().SendUpdate (partyMembers.GetMembers (), message);
-			UpdateParty();
+			OnPartyAccept (sender);
 		});
 
 		unsub3 = UpdateService.GetInstance ().Subscribe (UpdateType.PartyUpdate, (sender, message) => {
-			partyMembers = UpdateService.GetData<PartyMembers> (message, "members");
-
-			UpdateParty();
+			OnPartyUpdate (UpdateService.GetData<PartyMembers> (message, "members"));
 		});
 
 		unsub4 = UpdateService.GetInstance ().Subscribe (UpdateType.PartyLeft, (sender, message) => {
-			String userLeft = UpdateService.GetData<String> (message, "user");
-			partyMembers.RemovePlayer (userLeft);
-
-			UpdateService.GetInstance ().SendUpdate (partyMembers.GetMembers (), 
-						UpdateService.CreateMessage (UpdateType.PartyUpdate, UpdateService.CreateKV ("members", partyMembers)));
-
-			UpdateParty();
+			OnPartyMemberLeft (UpdateService.GetData<String> (message, "user"));
 		});
 
 		unsub5 = UpdateService.GetInstance ().Subscribe (UpdateType.PartyDisbaned, (sender, message) => {
-			CurrentUser.GetInstance ().RequestUpdate ((user) => {
-				owner = CurrentUser.GetInstance ().GetUserInfo ().username;
-				partyMembers.RemoveAllButOwner (owner);
-				UpdateParty ();
-			});
+			DisbandParty ();
+		});
+	}
+
+	public void OnReceivedInvite (string from) {
+		ConfirmAlertController.Create ("You have received a party invite from " + from, (alert) => {
+			owner = from;
+			if(!partyMembers.ContainsPlayer(from)){
+				UpdateService.GetInstance ().SendUpdate (new string[]{owner}, 
+					UpdateService.CreateMessage (UpdateType.PartyRequestAccept));
+
+				tabController.AddChat (owner, false);
+				tabController.SetChat (CurrentUser.GetInstance ().GetUserInfo ().username, false);
+
+				MoveToPartyPanel ();
+
+			} else {
+				Debug.Log("Duplicate invite");
+			}
+			alert.Close ();
+		}, (alert) => {
+			alert.Close ();
+		});
+	}
+
+	public void MoveToPartyPanel () {
+		transform.parent.gameObject.SetActive (true);
+	}
+
+	public void MoveToMenuPanel () {
+		gameObject.SetActive (false);
+	}
+
+	public void OnPartyAccept (string from) {
+		partyMembers.AddPlayer (from);
+		var message = UpdateService.CreateMessage (UpdateType.PartyUpdate, 
+							UpdateService.CreateKV ("members", partyMembers));
+		UpdateService.GetInstance ().SendUpdate (partyMembers.GetMembers (), message);
+		UpdateParty();
+	}
+
+	public void OnPartyUpdate (PartyMembers newPartyMembers) {
+		this.partyMembers = newPartyMembers;
+		UpdateParty();
+	}
+
+	public void OnPartyMemberLeft (string userLeft) {
+		partyMembers.RemovePlayer (userLeft);
+
+		UpdateService.GetInstance ().SendUpdate (partyMembers.GetMembers (), 
+			UpdateService.CreateMessage (UpdateType.PartyUpdate, UpdateService.CreateKV ("members", partyMembers)));
+
+		UpdateParty();
+	}
+
+	public void DisbandParty () {
+		CurrentUser.GetInstance ().RequestUpdate ((user) => {
+			owner = CurrentUser.GetInstance ().GetUserInfo ().username;
+			partyMembers.RemoveAllButOwner (owner);
+			UpdateParty ();
 		});
 	}
 
