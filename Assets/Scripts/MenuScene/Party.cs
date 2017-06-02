@@ -14,7 +14,6 @@ public class Party : MonoBehaviour {
 
 	private PartyMembers partyMembers = new PartyMembers ();
 	private string owner;
-	private Action unsub1;
 	private Action unsub2;
 	private Action unsub3;
 	private Action unsub4;
@@ -105,7 +104,6 @@ public class Party : MonoBehaviour {
 	}
 
 	public void OnDestroy () {
-		unsub1 ();
 		unsub2 ();
 		unsub3 ();
 		unsub4 ();
