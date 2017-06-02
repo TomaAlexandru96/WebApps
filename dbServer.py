@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 
+import ssl
 import psycopg2
 import threading
 import json
@@ -287,6 +288,9 @@ def update_active_status():
 def startServer():
   server_address = ('146.169.46.104', 8000)
   httpd = HTTPServer(server_address, DBHTTPHandler)
+  #context = ssl._create_unverified_context()
+  httpd.socket = ssl.wrap_socket (httpd.socket, keyfile= '/tmp/crt.pem', certfile='/tmp/newcert.crt', server_side=True)
+  #httpd.socket = context.wrap_socket(httpd.socket)
   set_interval(update_active_status, 90)
   print("Serving..")
   httpd.serve_forever()
