@@ -17,7 +17,7 @@ public class PlayerStats {
 		level = 1;
 		maxHP = 20;
 		switch (type) {
-		case PlayerType.BackEndDev: 
+		case PlayerType.FrontEndDev: 
 			javascript = 8;
 			html = 8;
 			python = 2;
@@ -25,7 +25,7 @@ public class PlayerStats {
 			mySQL = 2;
 			git = 5;
 			break;
-		case PlayerType.FrontEndDev:
+		case PlayerType.BackEndDev:
 			javascript = 2;
 			html = 2;
 			python = 8;
@@ -34,6 +34,14 @@ public class PlayerStats {
 			git = 5;
 			break;
 		case PlayerType.FullStackDev:
+			javascript = 5;
+			html = 5;
+			python = 5;
+			java = 5;
+			mySQL = 5;
+			git = 5;
+			break;
+		case PlayerType.ProductManager:
 			javascript = 5;
 			html = 5;
 			python = 5;
