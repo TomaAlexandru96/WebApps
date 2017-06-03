@@ -16,7 +16,6 @@ public class Party : MonoBehaviour {
 	private Action unsub2;
 	private Action unsub3;
 	private Action unsub4;
-	private Action unsub5;
 
 	public void Awake () {
 		unsub2 = UpdateService.GetInstance ().Subscribe (UpdateType.PartyRequestAccept, (sender, message) => {
@@ -28,11 +27,11 @@ public class Party : MonoBehaviour {
 		});
 
 		unsub4 = UpdateService.GetInstance ().Subscribe (UpdateType.PartyLeft, (sender, message) => {
-			UpdateParty ();
-		});
-
-		unsub5 = UpdateService.GetInstance ().Subscribe (UpdateType.PartyDisbaned, (sender, message) => {
-			UpdateParty ();
+			if (CurrentUser.GetInstance ().GetUserInfo ().party.GetSize () == 0) {
+				menuController.SwtichToMenuView ();
+			} else {
+				UpdateParty ();	
+			}
 		});
 	}
 
@@ -40,7 +39,6 @@ public class Party : MonoBehaviour {
 		unsub2 ();
 		unsub3 ();
 		unsub4 ();
-		unsub5 ();
 	}
 
 	public void RequestAddPlayer () {
