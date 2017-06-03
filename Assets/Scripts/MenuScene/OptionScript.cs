@@ -20,7 +20,7 @@ public class OptionScript : MonoBehaviour {
 	} 
 
 	public void InviteToParty() {
-		UpdateInfo ();
+		/*UpdateInfo ();
 		PartyMembers partyMembers = Party.transform.GetComponent<Party> ().getPartyMembers ();
 		DBServer.GetInstance ().FindUser (playerName, (user) => {
 			if (!partyMembers.ContainsPlayer (user.username) && user.active) {
@@ -29,7 +29,7 @@ public class OptionScript : MonoBehaviour {
 		}, (error) => {
 			Debug.LogError (error);
 		});
-		OptionPanel.SetActive (false);
+		OptionPanel.SetActive (false);*/
 	}
 
 	public void InviteToChat() {
