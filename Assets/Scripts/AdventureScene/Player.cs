@@ -13,6 +13,7 @@ public class Player {
 		stats = new PlayerStats (PlayerType.FrontEndDev);
 		currentHP = stats.maxHP;
 		exp = 0;
+		Debug.Log ("life : " + currentHP);
 	}
 
 }
