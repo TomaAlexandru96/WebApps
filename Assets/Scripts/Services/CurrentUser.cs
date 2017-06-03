@@ -6,7 +6,6 @@ using UnityEngine;
 public class CurrentUser : MonoBehaviour {
 	
 	private User userInfo = null;
-	private Party party;
 	public const String userCache = "Assets/cache";
 	private bool withCaching = true;
 	private static CurrentUser instance = null;
@@ -92,9 +91,7 @@ public class CurrentUser : MonoBehaviour {
 	}
 
 	public void Logout (bool overwriteCache) {
-		LeaveParty ();
 		userInfo = null;
-		SetParty (null);
 		CancelInvoke ();
 		if (overwriteCache) {
 			ClearCahce ();
@@ -135,22 +132,13 @@ public class CurrentUser : MonoBehaviour {
 		}
 	}
 
-	public void SetParty (Party party) {
-		this.party = party;
-	}
-
-	public Party GetParty () {
-		return this.party;
-	}
-
-	public void LeaveParty () {
-		if (this.party != null) {
-			this.party.RequestLeaveParty ();
-		}
-	}
-
 	public void SetWithCache (bool value) {
 		this.withCaching = value;
 	}
+
+	public bool IsInParty () {
+		return userInfo.party.ContainsPlayer (userInfo.username);
+	}
+		
 }
 
