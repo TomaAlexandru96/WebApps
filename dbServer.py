@@ -160,7 +160,6 @@ class DBHTTPHandler(BaseHTTPRequestHandler):
     if (user is None):
       self.send_code_only(NOT_FOUND)
     elif (user['party']['owner'] != user['username']):
-      print ("smth")
       query = '''UPDATE PARTIES SET MEMBERS = array_remove(MEMBERS::varchar(50)[], ARRAY['{}']::varchar(50)[]) 
                  WHERE OWNER = '{}'
               '''.format(user['username'], user['party']['owner'])
