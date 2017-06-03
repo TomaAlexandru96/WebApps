@@ -84,14 +84,34 @@ public class DBServer : MonoBehaviour {
 
 	/* Issues logout request to the DB server */
 	public void Logout (bool overwriteCaching, Action callback, Action<long> errorcall) {
-		if (CurrentUser.GetInstance ().IsLoggedIn ()) {
-			SetActiveStatus (false, () => {
-				// logout
-				UpdateService.GetInstance ().SendUpdate (CurrentUser.GetInstance ().GetUserInfo ().friends,
-					UpdateService.CreateMessage (UpdateType.LogoutUser));
-				CurrentUser.GetInstance ().Logout (overwriteCaching);
-				callback ();
-			}, errorcall);	
+		StartCoroutine (LogoutHelper (overwriteCaching, callback, errorcall));
+	}
+
+	private IEnumerator<AsyncOperation> LogoutHelper (bool overwriteCaching, Action callback, Action<long> errorcall) {
+		WWWForm form = new WWWForm ();
+		form.AddField ("username", CurrentUser.GetInstance ().GetUserInfo ().username);
+
+		UnityWebRequest request = UnityWebRequest.Post (DBServerAddr + "/logout", form);
+
+		yield return request.Send ();
+
+		if (request.responseCode != OK_STATUS) {
+			errorcall (request.responseCode);
+		} else {
+			string[] targets = CurrentUser.GetInstance ().GetUserInfo ().friends;
+				
+			if (CurrentUser.GetInstance ().IsInParty ()) {
+				targets = new string[CurrentUser.GetInstance ().GetUserInfo ().friends.Length + 
+					CurrentUser.GetInstance ().GetUserInfo ().party.partyMembers.Length];
+				CurrentUser.GetInstance ().GetUserInfo ().friends.CopyTo (targets, 0);
+				CurrentUser.GetInstance ().GetUserInfo ().party.partyMembers.CopyTo (targets, 
+					CurrentUser.GetInstance ().GetUserInfo ().friends.Length);
+			}
+
+			UpdateService.GetInstance ().SendUpdate (targets,
+							UpdateService.CreateMessage (UpdateType.LogoutUser));
+			CurrentUser.GetInstance ().Logout (overwriteCaching);
+			callback ();
 		}
 	}
 
@@ -213,7 +233,9 @@ public class DBServer : MonoBehaviour {
 		if (request.responseCode != OK_STATUS) {
 			errorcall (request.responseCode);
 		} else {
-			callback ();
+			CurrentUser.GetInstance ().RequestUpdate ((userInfo) => {
+				callback ();
+			});
 		}
 	}
 
@@ -221,10 +243,71 @@ public class DBServer : MonoBehaviour {
 		return Convert.ToBase64String (Encoding.Unicode.GetBytes (message));
 	}
 
-	private static bool TrustCertificate(object sender, X509Certificate x509Certificate, X509Chain x509Chain, SslPolicyErrors sslPolicyErrors)
-	{
-		// all Certificates are accepted
-		return true;
+	public void CreateParty (String owner, Action callback, Action<long> errorcall) {
+		StartCoroutine (CreatePartyHelper (owner, callback, errorcall));
+	}
+
+	private IEnumerator<AsyncOperation> CreatePartyHelper (String owner, Action callback, Action<long> errorcall) {
+		WWWForm form = new WWWForm ();
+		form.AddField ("owner", owner);
+
+		UnityWebRequest request = UnityWebRequest.Post (DBServerAddr + "/create_party", form);
+
+		yield return request.Send ();
+
+		if (request.responseCode != OK_STATUS) {
+			errorcall (request.responseCode);
+		} else {
+			CurrentUser.GetInstance ().RequestUpdate ((user) => {
+				callback ();
+			});
+		}
 	}
 		
+	public void JoinParty (String owner, String username, Action callback, Action<long> errorcall) {
+		StartCoroutine (JoinPartyHelper (owner, username, callback, errorcall));
+	}
+
+	private IEnumerator<AsyncOperation> JoinPartyHelper (String owner, String username, Action callback, Action<long> errorcall) {
+		WWWForm form = new WWWForm ();
+		form.AddField ("owner", owner);
+		form.AddField ("username", username);
+
+		UnityWebRequest request = UnityWebRequest.Post (DBServerAddr + "/join_party", form);
+
+		yield return request.Send ();
+
+		if (request.responseCode != OK_STATUS) {
+			errorcall (request.responseCode);
+		} else {
+			CurrentUser.GetInstance ().RequestUpdate ((user) => {
+				UpdateService.GetInstance ().SendUpdate (new string[]{CurrentUser.GetInstance ().GetUserInfo ().party.owner},
+						UpdateService.CreateMessage (UpdateType.PartyRequestAccept));
+				callback ();
+			});
+		}
+	}
+
+	public void LeaveParty (String username, Action callback, Action<long> errorcall) {
+		StartCoroutine (LeavePartyHelper (username, callback, errorcall));
+	}
+
+	private IEnumerator<AsyncOperation> LeavePartyHelper (String username, Action callback, Action<long> errorcall) {
+		WWWForm form = new WWWForm ();
+		form.AddField ("username", username);
+
+		UnityWebRequest request = UnityWebRequest.Post (DBServerAddr + "/leave_party", form);
+
+		yield return request.Send ();
+
+		if (request.responseCode != OK_STATUS) {
+			errorcall (request.responseCode);
+		} else {
+			UpdateService.GetInstance ().SendUpdate (CurrentUser.GetInstance ().GetUserInfo ().party.partyMembers, 
+								UpdateService.CreateMessage (UpdateType.PartyLeft));
+			CurrentUser.GetInstance ().RequestUpdate ((user) => {
+				callback ();
+			});
+		}
+	}
 }

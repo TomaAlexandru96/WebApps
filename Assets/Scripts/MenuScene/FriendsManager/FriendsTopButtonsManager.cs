@@ -11,13 +11,13 @@ public class FriendsTopButtonsManager : MonoBehaviour {
 	public void ActivateFriendsPanel () {
 		friendsPanel.SetActive (true);
 		friendRequestsPanel.SetActive (false);
-		manager.UpdatePanel (0.1f);
+		manager.UpdatePanel ();
 	}
 
 	public void ActivateFriendRequestsPanel () {
 		friendsPanel.SetActive (false);
 		friendRequestsPanel.SetActive (true);
-		manager.UpdatePanel (0.1f);
+		manager.UpdatePanel ();
 	}
 
 	public void RequestSendFriendRequset () {

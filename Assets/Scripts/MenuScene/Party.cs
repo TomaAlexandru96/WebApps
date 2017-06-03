@@ -10,107 +10,41 @@ public class Party : MonoBehaviour {
 	public GameObject playerPrefab;
 	public GameObject addPlayer;
 	public GameObject leaveParty;
+	public MenuController menuController;
 	public ChatTabController tabController;
 
-	private PartyMembers partyMembers = new PartyMembers ();
-	private string owner;
 	private Action unsub2;
 	private Action unsub3;
 	private Action unsub4;
-	private Action unsub5;
 
 	public void Awake () {
 		unsub2 = UpdateService.GetInstance ().Subscribe (UpdateType.PartyRequestAccept, (sender, message) => {
-			OnPartyAccept (sender);
+			UpdateParty ();
 		});
 
-		unsub3 = UpdateService.GetInstance ().Subscribe (UpdateType.PartyUpdate, (sender, message) => {
-			OnPartyUpdate (UpdateService.GetData<PartyMembers> (message, "members"));
+		unsub3 = UpdateService.GetInstance ().Subscribe (UpdateType.LogoutUser, (sender, message) => {
+			UpdateParty ();
 		});
 
 		unsub4 = UpdateService.GetInstance ().Subscribe (UpdateType.PartyLeft, (sender, message) => {
-			OnPartyMemberLeft (UpdateService.GetData<String> (message, "user"));
-		});
-
-		unsub5 = UpdateService.GetInstance ().Subscribe (UpdateType.PartyDisbaned, (sender, message) => {
-			DisbandParty ();
-		});
-	}
-
-	public void OnReceivedInvite (string from) {
-		ConfirmAlertController.Create ("You have received a party invite from " + from, (alert) => {
-			owner = from;
-			if(!partyMembers.ContainsPlayer(from)){
-				UpdateService.GetInstance ().SendUpdate (new string[]{owner}, 
-					UpdateService.CreateMessage (UpdateType.PartyRequestAccept));
-
-				tabController.AddChat (owner, false);
-				tabController.SetChat (CurrentUser.GetInstance ().GetUserInfo ().username, false);
-
-				MoveToPartyPanel ();
-
+			if (CurrentUser.GetInstance ().GetUserInfo ().party.GetSize () == 0) {
+				menuController.SwtichToMenuView ();
 			} else {
-				Debug.Log("Duplicate invite");
+				UpdateParty ();	
 			}
-			alert.Close ();
-		}, (alert) => {
-			alert.Close ();
 		});
-	}
-
-	public void MoveToPartyPanel () {
-		transform.parent.gameObject.SetActive (true);
-	}
-
-	public void MoveToMenuPanel () {
-		gameObject.SetActive (false);
-	}
-
-	public void OnPartyAccept (string from) {
-		partyMembers.AddPlayer (from);
-		var message = UpdateService.CreateMessage (UpdateType.PartyUpdate, 
-							UpdateService.CreateKV ("members", partyMembers));
-		UpdateService.GetInstance ().SendUpdate (partyMembers.GetMembers (), message);
-		UpdateParty();
-	}
-
-	public void OnPartyUpdate (PartyMembers newPartyMembers) {
-		this.partyMembers = newPartyMembers;
-		UpdateParty();
-	}
-
-	public void OnPartyMemberLeft (string userLeft) {
-		partyMembers.RemovePlayer (userLeft);
-
-		UpdateService.GetInstance ().SendUpdate (partyMembers.GetMembers (), 
-			UpdateService.CreateMessage (UpdateType.PartyUpdate, UpdateService.CreateKV ("members", partyMembers)));
-
-		UpdateParty();
-	}
-
-	public void DisbandParty () {
-		CurrentUser.GetInstance ().RequestUpdate ((user) => {
-			owner = CurrentUser.GetInstance ().GetUserInfo ().username;
-			partyMembers.RemoveAllButOwner (owner);
-			UpdateParty ();
-		});
-	}
-
-	public void Start () {
-		owner = CurrentUser.GetInstance ().GetUserInfo ().username;
-		partyMembers.AddPlayer (owner);
-		AddPlayer (CurrentUser.GetInstance ().GetUserInfo ().username);
-		CurrentUser.GetInstance ().SetParty (this);
 	}
 
 	public void OnDestroy () {
 		unsub2 ();
 		unsub3 ();
 		unsub4 ();
-		unsub5 ();
 	}
 
 	public void RequestAddPlayer () {
+		var owner = CurrentUser.GetInstance ().GetUserInfo ().party.owner;
+		var partyMembers = CurrentUser.GetInstance ().GetUserInfo ().party;
+
 		if (owner == CurrentUser.GetInstance ().GetUserInfo ().username && partyMembers.GetSize () < maxSize) {
 			RequestAlertController.Create("Who would you want to add to the party?", (controller, input) => {
 				DBServer.GetInstance ().FindUser (input, (user) => {
@@ -125,32 +59,27 @@ public class Party : MonoBehaviour {
 		}
 	}
 
-	private void UpdateParty () {
-		ClearParty ();
-		foreach (var member in partyMembers.GetMembers ()) {
-			AddPlayer (member);
-		}
-
-		tabController.SetChat (CurrentUser.GetInstance ().GetUserInfo ().username, false);
-		tabController.SetChat (owner, true);
-	}
-
-	public void AddPlayer(string username) {
+	private void AddPlayer (string username) {
 		GameObject newPlayer = (GameObject) Instantiate (playerPrefab);
 		newPlayer.transform.SetParent (transform);
 		newPlayer.GetComponent<PartyEntry> ().ChangeName (username);
 	}
 
 	public void RequestLeaveParty () {
-		if (owner == CurrentUser.GetInstance ().GetUserInfo ().username) {
-			// disband party
-			UpdateService.GetInstance ().SendUpdate (partyMembers.GetMembers (), UpdateService.CreateMessage (UpdateType.PartyDisbaned));
+		string owner = CurrentUser.GetInstance ().GetUserInfo ().party.owner;
+		DBServer.GetInstance ().LeaveParty (CurrentUser.GetInstance ().GetUserInfo ().username, () => {
+			menuController.SwtichToMenuView ();
+			tabController.DestroyChat (owner);
+		}, (error) => {
+			Debug.LogError (error);
+		});
+	}
+
+	private void UpdateParty () {
+		ClearParty ();
+		foreach (var member in CurrentUser.GetInstance ().GetUserInfo ().party.partyMembers) {
+			AddPlayer (member);
 		}
-		UpdateService.GetInstance ().SendUpdate (new string[]{owner}, UpdateService.CreateMessage (UpdateType.PartyLeft, 
-					UpdateService.CreateKV ("user", CurrentUser.GetInstance ().GetUserInfo ().username)));
-		owner = CurrentUser.GetInstance ().GetUserInfo ().username;
-		partyMembers.RemoveAllButOwner (owner);
-		UpdateParty ();
 	}
 
 	public void ClearParty () {
@@ -159,15 +88,31 @@ public class Party : MonoBehaviour {
 		}
 	}
 
-	public void Update () {
-		if (addPlayer == null || leaveParty == null) {
-			return;
-		}
-		addPlayer.SetActive (owner == CurrentUser.GetInstance ().GetUserInfo ().username);
-		leaveParty.SetActive (partyMembers.GetSize () > 1);
+	public void Join () {
+		menuController.SwitchToPartyView ();
+		UpdateParty ();
+		tabController.AddChat (CurrentUser.GetInstance ().GetUserInfo ().party.owner, false);
 	}
 
-	public PartyMembers getPartyMembers () {
-		return partyMembers;
+	public void OnReceivedInvite (string from) {
+		ConfirmAlertController.Create ("You have received a party invite from " + from, (alert) => {
+			if(!CurrentUser.GetInstance ().GetUserInfo ().party.ContainsPlayer(from)) {
+				DBServer.GetInstance ().JoinParty (from, CurrentUser.GetInstance ().GetUserInfo ().username, () => {
+					Join ();
+				}, (error) => {
+					Debug.LogError(error);
+				});
+			} else {
+				Debug.Log("Duplicate invite");
+			}
+			alert.Close ();
+		}, (alert) => {
+			alert.Close ();
+		});
+	}
+
+	public void Update () {
+		var owner = CurrentUser.GetInstance ().GetUserInfo ().party.owner;
+		addPlayer.SetActive (owner == CurrentUser.GetInstance ().GetUserInfo ().username);
 	}
 }
