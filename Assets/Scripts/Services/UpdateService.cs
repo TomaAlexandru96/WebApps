@@ -77,9 +77,17 @@ public class UpdateService : MonoBehaviour {
 	}
 
 	public void Recieve (string sender, Dictionary<String, String> message) {
-		Action sendMessages = () => {
+		if (!CurrentUser.GetInstance ().IsLoggedIn ()) {
+			return;
+		}
+
+		if (sender.Equals (CurrentUser.GetInstance ().GetUserInfo ().username)) {
+			return;
+		}
+			
+		CurrentUser.GetInstance ().RequestUpdate ((userInfo) => {
 			List<Action<String, Dictionary<String, String>>> functions = 
-					subscribers[JsonUtility.FromJson<UpdateType> (message["type"])];
+				subscribers[JsonUtility.FromJson<UpdateType> (message["type"])];
 			Debug.LogWarning ("Received update of type " + GetData<UpdateType> (message, "type") + " from " + sender);
 			for (int i = 0; i < functions.Count; i++) {
 				Action<String, Dictionary<String, String>> func = functions [i];
@@ -88,23 +96,7 @@ public class UpdateService : MonoBehaviour {
 					func (sender, message);
 				}
 			}
-		};
-
-		if (!CurrentUser.GetInstance ().IsLoggedIn ()) {
-			return;
-		}
-
-		if (sender.Equals (CurrentUser.GetInstance ().GetUserInfo ().username)) {
-			return;
-		}
-
-		if (JsonUtility.FromJson<UpdateType> (message ["type"]) == UpdateType.UserUpdate) {
-			CurrentUser.GetInstance ().RequestUpdate ((userInfo) => {
-				sendMessages ();	
-			});
-		} else {
-			sendMessages ();
-		}
+		});
 	}
 
 	// returns unsubscribe function
