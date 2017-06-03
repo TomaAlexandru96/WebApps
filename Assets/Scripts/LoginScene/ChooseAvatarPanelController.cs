@@ -28,4 +28,12 @@ public class ChooseAvatarPanelController : MonoBehaviour {
 		}); 
 		
 	}
+
+	public void AvatarChosen(int num) {
+		foreach (GameObject avatar in avatars) {
+			avatar.transform.GetComponent<Image> ().color = new Color32 (200, 200, 200, 100);
+		}
+		Debug.Log ("Avatar " + num);
+		avatars [num].transform.GetComponent<Image> ().color = new Color32 (255, 255, 255, 255);
+	}
 }
