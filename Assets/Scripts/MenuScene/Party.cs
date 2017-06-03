@@ -66,8 +66,10 @@ public class Party : MonoBehaviour {
 	}
 
 	public void RequestLeaveParty () {
+		string owner = CurrentUser.GetInstance ().GetUserInfo ().party.owner;
 		DBServer.GetInstance ().LeaveParty (CurrentUser.GetInstance ().GetUserInfo ().username, () => {
 			menuController.SwtichToMenuView ();
+			tabController.DestroyChat (owner);
 		}, (error) => {
 			Debug.LogError (error);
 		});
@@ -89,6 +91,7 @@ public class Party : MonoBehaviour {
 	public void Join () {
 		menuController.SwitchToPartyView ();
 		UpdateParty ();
+		tabController.AddChat (CurrentUser.GetInstance ().GetUserInfo ().party.owner, false);
 	}
 
 	public void OnReceivedInvite (string from) {
