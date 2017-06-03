@@ -5,14 +5,13 @@ public class P1_MoveAnim : MonoBehaviour {
 	Animator animator;
 
 	public float speed;
-
-	private Rigidbody2D rb; 
-
 	public Direction move;
+	public PlayerStats stats;
 
-	public int totHP;
-	public int curHP;
+	private Rigidbody2D rb;
+
 	public bool dead = false;
+	public int curHP; 
 
 	public Inventory inventory;
 	public Item weapon;
@@ -31,8 +30,8 @@ public class P1_MoveAnim : MonoBehaviour {
 	void Start() {
 		rb = GetComponent<Rigidbody2D> ();
 		animator = GetComponent<Animator>();
-		totHP = 20;
-		curHP = totHP;
+		stats = new PlayerStats (PlayerType.FrontEndDev);
+		curHP = stats.maxHP;
 		weapon = new Item ("Sword", 3, 2, false);
 	}
 
@@ -149,17 +148,28 @@ public class P1_MoveAnim : MonoBehaviour {
 		startAttack = Time.time;
 	}
 		
-	/*void OnCollisionStay2D(Collision2D coll) {
+	void OnCollisionStay2D(Collision2D coll) {
 		if (coll.gameObject.tag == "Enemy") {
-			Enemy enemy = coll.gameObject.GetComponent<Enemy> ();
 			if (Input.GetMouseButtonDown(0)) {
 				RaycastHit2D hit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector2.zero);
-
 				if(hit.collider != null) {
-					Debug.Log ("Target Position: " + hit.collider.gameObject.transform.position);
+					
+					HitEnemy (hit.collider.gameObject);
 				}
 			}
 		}
-	}*/
+	}
+
+	private void HitEnemy(GameObject enemy) {
+		switch (enemy.name) {
+		case "EnemyGit":
+			enemy.transform.GetComponent <Enemy> ().GetHit (stats.git);
+			break;
+		case "EnemyJS":
+			enemy.transform.GetComponent <Enemy> ().GetHit (stats.javascript);
+			break;
+		}
+
+	}
 
 }
