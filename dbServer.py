@@ -160,13 +160,15 @@ class DBHTTPHandler(BaseHTTPRequestHandler):
     if (user is None):
       self.send_code_only(NOT_FOUND)
     elif (user['party']['owner'] != user['username']):
-      query = '''UPDATE PARTIES SET MEMEBERS = array_remove(MEMBERS::varchar(50)[], ARRAY['{}']::varchar(50)[]) 
+      print ("smth")
+      query = '''UPDATE PARTIES SET MEMBERS = array_remove(MEMBERS::varchar(50)[], ARRAY['{}']::varchar(50)[]) 
                  WHERE OWNER = '{}'
               '''.format(user['username'], user['party']['owner'])
       self.send_db_query(query)
       query = '''UPDATE USERS SET PARTY = NULL
                  WHERE USERNAME = '{}'
               '''.format(user['username'])
+      self.send_db_query(query)
       self.send_code_only(OK)
     else:
       query = '''DELETE FROM PARTIES WHERE OWNER = '{}'
@@ -193,6 +195,8 @@ class DBHTTPHandler(BaseHTTPRequestHandler):
       query = '''UPDATE USERS SET PARTY = '{}'
                  WHERE USERNAME = '{}'
               '''.format(owner['username'], user['username'])
+      self.send_db_query(query)
+      self.send_code_only(OK)
 
 
   def handle_update_active_status(self, data):
