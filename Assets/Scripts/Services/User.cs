@@ -11,6 +11,7 @@ public class User {
 	public String[] friend_requests;
 	public bool active;
 	public Character character;
+	public PartyMembers party;
 
 	public User (String username, String password, String email) {
 		this.username = username;
@@ -19,8 +20,8 @@ public class User {
 	}
 
 	public override String ToString () {
-		return String.Format ("[username: {0}, \npassword: {1}, \nemail: {2}, \nfriends: {3}, \nfriend_requests: {4}, \nactive: {5}, \ncharacter: {6}]\n",
-			username, password, email, friends.ToString (), friend_requests.ToString (), active.ToString (), character.ToString ());
+		return String.Format ("[username: {0}, \npassword: {1}, \nemail: {2}, \nfriends: {3}, \nfriend_requests: {4}, \nactive: {5}, \ncharacter: {6}, \nparty: {7}]\n",
+			username, password, email, friends.ToString (), friend_requests.ToString (), active.ToString (), character.ToString (), party.ToString ());
 	}
 
 	public override bool Equals (object other) {

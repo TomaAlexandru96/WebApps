@@ -22,10 +22,6 @@ public class UpdateService : MonoBehaviour {
 
 	public void StartService () {
 		started = true;
-
-		Subscribe (UpdateType.UserUpdate, (sender, message) => {
-			CurrentUser.GetInstance ().RequestUpdate ((user) => {});
-		});
 	}
 
 	public void StopService () {
@@ -81,22 +77,33 @@ public class UpdateService : MonoBehaviour {
 	}
 
 	public void Recieve (string sender, Dictionary<String, String> message) {
+		Action sendMessages = () => {
+			List<Action<String, Dictionary<String, String>>> functions = 
+					subscribers[JsonUtility.FromJson<UpdateType> (message["type"])];
+			Debug.LogWarning ("Received update of type " + GetData<UpdateType> (message, "type") + " from " + sender);
+			for (int i = 0; i < functions.Count; i++) {
+				Action<String, Dictionary<String, String>> func = functions [i];
+				// doesn't work
+				if (func != null) {
+					func (sender, message);
+				}
+			}
+		};
+
 		if (!CurrentUser.GetInstance ().IsLoggedIn ()) {
 			return;
 		}
 
-		List<Action<String, Dictionary<String, String>>> functions = 
-				subscribers[JsonUtility.FromJson<UpdateType> (message["type"])];
 		if (sender.Equals (CurrentUser.GetInstance ().GetUserInfo ().username)) {
 			return;
 		}
-		Debug.LogWarning ("Received update of type " + GetData<UpdateType> (message, "type") + " from " + sender);
-		for (int i = 0; i < functions.Count; i++) {
-			Action<String, Dictionary<String, String>> func = functions [i];
-			// doesn't work
-			if (func != null) {
-				func (sender, message);
-			}
+
+		if (JsonUtility.FromJson<UpdateType> (message ["type"]) == UpdateType.UserUpdate) {
+			CurrentUser.GetInstance ().RequestUpdate ((userInfo) => {
+				sendMessages ();	
+			});
+		} else {
+			sendMessages ();
 		}
 	}
 

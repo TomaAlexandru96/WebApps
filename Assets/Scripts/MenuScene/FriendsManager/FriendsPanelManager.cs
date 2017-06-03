@@ -15,21 +15,19 @@ public class FriendsPanelManager : MonoBehaviour {
 
 	public void Awake () {
 		unsub = UpdateService.GetInstance ().Subscribe (UpdateType.UserUpdate, (sender, message) => {
-			UpdatePanel (1f);
+			UpdatePanel ();
 		});
 	}
 
-	public void UpdatePanel (float waitTime) {
-		CurrentUser.GetInstance ().RequestUpdate ((user) => {
-			GetAllFriends ();
-			GetAllFriendsRequests ();	
-		});
+	public void UpdatePanel () {
+		GetAllFriends ();
+		GetAllFriendsRequests ();
 	}
 
 	public void Start () {
 		friendsPanelContent = GameObject.FindGameObjectWithTag ("Friends").transform.GetChild (1).GetChild(0).GetChild(0).gameObject;
 		friendsRequestPanel = GameObject.FindGameObjectWithTag ("Friends").transform.GetChild (2).GetChild(0).GetChild(0).gameObject;
-		UpdatePanel (0f);
+		UpdatePanel ();
 	}
 
 	public void OnDestroy () {
