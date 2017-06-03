@@ -18,7 +18,7 @@ public class PlayerLife : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		totHP = player.totHP;
+		totHP = player.stats.maxHP;
 		curHP = player.curHP;
 		currentScale = curHP;
 		transform.localScale = new Vector3(currentScale,1f,1f);

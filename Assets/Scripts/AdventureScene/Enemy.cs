@@ -5,9 +5,11 @@ using UnityEngine;
 public class Enemy : MonoBehaviour {
 
 	public Transform target;
+	public GameObject enemy;
 	public float speed;
 	public int damage;
 	public int maxHP;
+	public int curHP;
 	private Rigidbody2D rb;
 	public bool attackingPlayer;
 	public float actionTime = 1f;
@@ -23,6 +25,7 @@ public class Enemy : MonoBehaviour {
 		target = GameObject.FindGameObjectWithTag ("Player").transform;
 		SetDamage ();
 		SetMaxHP ();
+		curHP = maxHP;
 	}
 
 	// Update is called once per frame
@@ -94,5 +97,14 @@ public class Enemy : MonoBehaviour {
 	public virtual void MoveEnemy () {
 		Vector3 movement = (target.position - transform.position).normalized * speed;
 		rb.velocity = movement;
+	}
+
+	public virtual void GetHit(int hit) {
+		if (curHP > hit) {
+			curHP -= hit;
+		} else {
+			curHP = 0;
+			enemy.SetActive (false);
+		}
 	}
 }
