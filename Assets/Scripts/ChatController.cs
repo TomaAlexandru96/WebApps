@@ -70,6 +70,11 @@ public class ChatController : MonoBehaviour, IPointerEnterHandler, IPointerExitH
 		LoadChat (name);
 	}
 
+	public void DestroyChat (string name) {
+		ChatService.GetInstance ().Unsubscribe (new string[]{name});
+		allChatPanels.Remove (name);
+	}
+
 	public void LoadChat (String name) {
 		if (!allChatPanels.TryGetValue (name, out activePanel)) {
 			Debug.LogError ("No chat named: " + name);
