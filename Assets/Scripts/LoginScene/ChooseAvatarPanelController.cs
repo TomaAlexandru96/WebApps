@@ -13,11 +13,8 @@ public class ChooseAvatarPanelController : MonoBehaviour {
 	public InputField characterName;
 
 	public void RequestCharacter () {
-
 		DBServer.GetInstance ().ChooseCharacter (CurrentUser.GetInstance ().GetUserInfo (), characterName.text, characterNumber, () => {
-			CurrentUser.GetInstance ().RequestUpdate ((user) => {
-				SceneManager.LoadScene ("Menu");
-			});
+			SceneManager.LoadScene ("Menu");
 		}, (errorCode) => {
 			String errorMessage = errorCode + ": ";
 			switch (errorCode) {
