@@ -8,13 +8,16 @@ using UnityEngine.UI;
 public class ChooseAvatarPanelController : MonoBehaviour {
 
 	public GameObject registerPanel;
+	public GameObject avatarTypePanel;
+	public GameObject chooseAvatarPanel; 
 	public List<GameObject> avatars = new List<GameObject> ();
 	public int characterNumber;
 	public InputField characterName;
 
 	public void RequestCharacter () {
 		DBServer.GetInstance ().ChooseCharacter (CurrentUser.GetInstance ().GetUserInfo (), characterName.text, characterNumber, () => {
-			SceneManager.LoadScene ("Menu");
+			chooseAvatarPanel.SetActive(false);
+			avatarTypePanel.SetActive(true);
 		}, (errorCode) => {
 			String errorMessage = errorCode + ": ";
 			switch (errorCode) {
