@@ -44,6 +44,8 @@ class DBHTTPHandler(BaseHTTPRequestHandler):
     data = self.rfile.read(int(self.headers['Content-Length'])).decode('utf-8')
     if (url.path == "/login"):
       self.handle_login(parse_qs(data))
+    elif (url.path == "/logout"):
+      self.handle_logout(parse_qs(data))
     elif (url.path == "/register"):
       self.handle_register(parse_qs(data))
     elif (url.path == "/update_active_status"):
@@ -56,6 +58,12 @@ class DBHTTPHandler(BaseHTTPRequestHandler):
       self.handle_reject_friend_request(parse_qs(data))
     elif (url.path == "/chooseCharacter"):
       self.handle_choose_character(parse_qs(data))
+    elif (url.path == "/create_party"):
+      self.handle_create_party(parse_qs(data))
+    elif (url.path == "/join_party"):
+      self.handle_join_party(parse_qs(data))
+    elif (url.path == "/leave_party"):
+      self.handle_leave_party(parse_qs(data))
     else:
       self.send_code_only(NOT_FOUND);
 
@@ -91,20 +99,103 @@ class DBHTTPHandler(BaseHTTPRequestHandler):
     self.wfile.write(bytes(json.dumps(obj), "utf8"))
 
 
+  def send_db_query(self, query):
+    cursor = conn.cursor()
+    cursor.execute (query)
+    if (not query.startswith("SELECT")):
+      conn.commit()
+    return cursor
+
+
   # login method
   def handle_login(self, params):
     user = self.helper_find_user(params['username'][0])
     if (user is None or user['password'] != params['password'][0]):
       self.send_code_only(NOT_ACCEPTABLE)
     else:
-      cursor = conn.cursor()
       query = '''UPDATE USERS SET ACTIVE = 't', LAST_TIME_ACTIVE = NOW()
                  WHERE USERNAME = '{}'
               '''.format(user['username'])
-      cursor.execute (query)
-      conn.commit()
+      self.send_db_query(query)
       user['active'] = True
       self.send_JSON(user)
+
+
+  def handle_logout(self, params):
+    user = self.helper_find_user(params['username'][0])
+    if (user is None):
+      self.send_code_only(NOT_FOUND)
+    else:
+      query = '''UPDATE USERS SET ACTIVE = 'f', LAST_TIME_ACTIVE = NOW()
+                 WHERE USERNAME = '{}'
+              '''.format(user['username'])
+      self.send_db_query(query)
+      
+      if (not (user['party']['owner'] is None)):
+        self.handle_leave_party({'username': [user['username']]})
+      else:
+        self.send_code_only(OK)
+
+
+  def handle_create_party(self, data):
+    user = self.helper_find_user(data['owner'][0])
+    if (user is None):
+      self.send_code_only(NOT_FOUND)
+    elif (not (user['party']['owner'] is None)):
+      self.send_code_only(NOT_ACCEPTABLE)
+    else:
+      query = '''INSERT INTO PARTIES (OWNER, MEMBERS, STATE)
+		             VALUES ('{}', ARRAY['{}'], 1)
+              '''.format(user['username'], user['username'])
+      self.send_db_query(query)
+      query = '''UPDATE USERS SET PARTY = '{}'
+                 WHERE USERNAME = '{}'
+              '''.format(user['username'], user['username'])
+      self.send_db_query(query)
+      self.send_code_only(OK)
+
+
+  def handle_leave_party(self, data):
+    user = self.helper_find_user(data['username'][0])
+    if (user is None):
+      self.send_code_only(NOT_FOUND)
+    elif (user['party']['owner'] != user['username']):
+      query = '''UPDATE PARTIES SET MEMBERS = array_remove(MEMBERS::varchar(50)[], ARRAY['{}']::varchar(50)[]) 
+                 WHERE OWNER = '{}'
+              '''.format(user['username'], user['party']['owner'])
+      self.send_db_query(query)
+      query = '''UPDATE USERS SET PARTY = NULL
+                 WHERE USERNAME = '{}'
+              '''.format(user['username'])
+      self.send_db_query(query)
+      self.send_code_only(OK)
+    else:
+      query = '''DELETE FROM PARTIES WHERE OWNER = '{}'
+              '''.format(user['username'])
+      self.send_db_query(query)
+      for member in user['party']['partyMembers']:
+        query = '''UPDATE USERS SET PARTY = NULL
+                   WHERE USERNAME = '{}'
+                '''.format(member)
+        self.send_db_query(query)
+      self.send_code_only(OK)
+
+
+  def handle_join_party(self, data):
+    owner = self.helper_find_user(data['owner'][0])
+    user = self.helper_find_user(data['username'][0])
+    if (user is None or owner is None):
+      self.send_code_only(NOT_FOUND)
+    else:
+      query = '''UPDATE PARTIES SET MEMBERS = array_append(MEMBERS, '{}')
+                 WHERE OWNER = '{}' 
+              '''.format(user['username'], owner['username'])
+      self.send_db_query(query)
+      query = '''UPDATE USERS SET PARTY = '{}'
+                 WHERE USERNAME = '{}'
+              '''.format(owner['username'], user['username'])
+      self.send_db_query(query)
+      self.send_code_only(OK)
 
 
   def handle_update_active_status(self, data):
@@ -113,12 +204,10 @@ class DBHTTPHandler(BaseHTTPRequestHandler):
       self.send_code_only(NOT_FOUND)
     else:
       user['active'] = data['active'][0]
-      cursor = conn.cursor()
       query = '''UPDATE USERS SET ACTIVE = '{}', LAST_TIME_ACTIVE = NOW()
                  WHERE USERNAME = '{}'
               '''.format(user['active'], user['username'])
-      cursor.execute (query)
-      conn.commit()
+      self.send_db_query(query)
       self.send_JSON(user)
 
 
@@ -131,40 +220,38 @@ class DBHTTPHandler(BaseHTTPRequestHandler):
 
 
   def handle_choose_character(self, params):
-    user =self.helper_find_user(params['username'][0])
+    user = self.helper_find_user(params['username'][0])
     if (user is None):
       self.send_code_only(NOT_FOUND)
       return
 
-    cursor = conn.cursor();
     query1 = '''
 		INSERT INTO CHARACTERS (CHARACTER_NAME, CHARACTER_TYPE)
 		VALUES ( '{}', '{}')
  		'''.format(params['characterName'][0], params['characterID'][0])
-    cursor.execute(query1)
-    conn.commit()
+    self.send_db_query(query1)
     query2 = '''
 		UPDATE USERS SET CHARACTER_NAME = '{}'
 		WHERE USERNAME = '{}'
  		'''.format(params['characterName'][0], params['username'][0])
-    cursor.execute(query2)
-    conn.commit()
+    self.send_db_query(query2)
 
     self.handle_find_user(params)
 
+
   def helper_find_user(self, u_name):
-    cursor = conn.cursor()
     query = '''SELECT *
                FROM USERS LEFT JOIN CHARACTERS ON USERS.CHARACTER_NAME = CHARACTERS.CHARACTER_NAME
+               LEFT JOIN PARTIES ON USERS.PARTY = PARTIES.OWNER
                WHERE USERNAME = '{}'
             '''.format(u_name);
-    cursor.execute(query)
-    response = cursor.fetchone()
+    response = self.send_db_query(query).fetchone()
     if (response is None):
       return None
     else:
       user = {}
       character = {}
+      party = {}
       user['username'] = response[0]
       user['password'] = response[1]
       user['email'] = response[2]
@@ -172,29 +259,30 @@ class DBHTTPHandler(BaseHTTPRequestHandler):
       user['active'] = response[4]
       user['friends'] = response[5]
       user['character'] = character
-      character['name'] = response[8]
-      character['type'] = response[9]
+      character['name'] = response[9]
+      character['type'] = response[10]
+      user['party'] = party
+      party['owner'] = response[11]
+      party['partyMembers'] = response[12]
+      party['state'] = response[13]
       return user
 
 
   def handle_register(self, user):
-    cursor = conn.cursor()
     query = '''SELECT *
                FROM USERS
                WHERE USERNAME = '{}'
             '''.format(user['username'][0])
-    cursor.execute(query)
-
+    cursor = self.send_db_query(query)
+    
     if (cursor.fetchone() is not None):
       self.send_code_only(NOT_ACCEPTABLE)
       return
 
-    cursor = conn.cursor()
     query = '''INSERT INTO USERS (USERNAME, PASSWORD, EMAIL)
                VALUES ('{}', '{}', '{}')
             '''.format(user['username'][0], user['password'][0], user['email'][0])
-    cursor.execute(query)
-    conn.commit()
+    self.send_db_query(query)
     self.send_code_only(OK)
 
 
@@ -219,13 +307,10 @@ class DBHTTPHandler(BaseHTTPRequestHandler):
       self.send_code_only(NOT_ACCEPTABLE)
       return
 
-
-    cursor = conn.cursor()
     query = '''UPDATE USERS SET FRIEND_REQUESTS = array_prepend('{}', FRIEND_REQUESTS)
                WHERE USERNAME = '{}'
             '''.format(user['username'], requested_friend['username'])
-    cursor.execute (query)
-    conn.commit()
+    self.send_db_query(query)
     self.send_code_only(OK)
 
 
@@ -237,26 +322,18 @@ class DBHTTPHandler(BaseHTTPRequestHandler):
       self.send_code_only(NOT_FOUND)
       return
 
-    cursor = conn.cursor()
     query = '''UPDATE USERS SET FRIEND_REQUESTS = array_remove(FRIEND_REQUESTS::varchar(50)[], ARRAY['{}']::varchar(50)[])
                WHERE USERNAME = '{}'
             '''.format(requested_friend['username'], user['username'])
-    cursor.execute (query)
-    conn.commit()
-
-    cursor = conn.cursor()
+    self.send_db_query(query)
     query = '''UPDATE USERS SET FRIENDS = array_prepend('{}', FRIENDS)
                WHERE USERNAME = '{}'
             '''.format(user['username'], requested_friend['username'])
-    cursor.execute (query)
-    conn.commit()
-
-    cursor = conn.cursor()
+    self.send_db_query(query)
     query = '''UPDATE USERS SET FRIENDS = array_prepend('{}', FRIENDS)
                WHERE USERNAME = '{}'
             '''.format(requested_friend['username'], user['username'])
-    cursor.execute (query)
-    conn.commit()
+    self.send_db_query(query)
     self.send_code_only(OK)
 
 
@@ -268,12 +345,10 @@ class DBHTTPHandler(BaseHTTPRequestHandler):
       self.send_code_only(NOT_FOUND)
       return
 
-    cursor = conn.cursor()
     query = '''UPDATE USERS SET FRIEND_REQUESTS = array_remove(FRIEND_REQUESTS::varchar(50)[], ARRAY['{}']::varchar(50)[])
                WHERE USERNAME = '{}'
             '''.format(requested_friend['username'], user['username'])
-    cursor.execute (query)
-    conn.commit()
+    self.send_db_query(query)
     self.send_code_only(OK)
 
 
@@ -288,9 +363,7 @@ def update_active_status():
 def startServer():
   server_address = ('146.169.46.104', 8000)
   httpd = HTTPServer(server_address, DBHTTPHandler)
-  #context = ssl._create_unverified_context()
   httpd.socket = ssl.wrap_socket (httpd.socket, keyfile= '/tmp/crt.pem', certfile='/tmp/newcert.crt', server_side=True)
-  #httpd.socket = context.wrap_socket(httpd.socket)
   set_interval(update_active_status, 90)
   print("Serving..")
   httpd.serve_forever()
