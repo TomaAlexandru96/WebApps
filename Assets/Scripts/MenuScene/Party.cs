@@ -15,6 +15,7 @@ public class Party : MonoBehaviour {
 	public MenuController menuController;
 	public ChatTabController tabController;
 
+	private string partyChatName;
 	private Action unsub2;
 	private Action unsub3;
 	private Action unsub4;
@@ -29,11 +30,7 @@ public class Party : MonoBehaviour {
 		});
 
 		unsub4 = UpdateService.GetInstance ().Subscribe (UpdateType.PartyLeft, (sender, message) => {
-			if (CurrentUser.GetInstance ().GetUserInfo ().party.GetSize () == 0) {
-				menuController.SwtichToMenuView ();
-			} else {
-				UpdateParty ();
-			}
+			UpdateParty ();
 		});
 	}
 
@@ -68,20 +65,28 @@ public class Party : MonoBehaviour {
 	}
 
 	public void RequestLeaveParty () {
-		string owner = CurrentUser.GetInstance ().GetUserInfo ().party.owner;
 		DBServer.GetInstance ().LeaveParty (CurrentUser.GetInstance ().GetUserInfo ().username, () => {
-			menuController.SwtichToMenuView ();
-			tabController.DestroyChat (owner);
-			NetworkService.GetInstance ().LeaveRoom ();
+			UpdateParty ();
 		}, (error) => {
 			Debug.LogError (error);
 		});
 	}
 
 	private void UpdateParty () {
-		ClearParty ();
-		foreach (var member in CurrentUser.GetInstance ().GetUserInfo ().party.partyMembers) {
-			AddPlayer (member);
+		if (CurrentUser.GetInstance ().GetUserInfo ().party.GetSize () == 0) {
+			tabController.DestroyChat (partyChatName);
+			partyChatName = null;
+			NetworkService.GetInstance ().LeaveRoom ();
+			menuController.SwtichToMenuView ();
+		} else {
+			ClearParty ();
+			foreach (var member in CurrentUser.GetInstance ().GetUserInfo ().party.partyMembers) {
+				AddPlayer (member);
+			}
+			if (partyChatName == null) {
+				partyChatName = CurrentUser.GetInstance ().GetUserInfo ().party.owner;
+				tabController.AddChat (partyChatName, false);
+			}
 		}
 	}
 
@@ -94,7 +99,6 @@ public class Party : MonoBehaviour {
 	public void Join () {
 		menuController.SwitchToPartyView ();
 		UpdateParty ();
-		tabController.AddChat (CurrentUser.GetInstance ().GetUserInfo ().party.owner, false);
 	}
 
 	public void JoinParty (string ownerParty) {
