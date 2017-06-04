@@ -27,9 +27,6 @@ public class Grid : MonoBehaviour {
 		//Get grid dimensions
 		Offset = this.transform.position;
 
-		//Width = ((int)this.transform.localScale.x) * 2 + 2;
-		//Height = ((int)this.transform.localScale.y) * 2 + 2;
-
 		Width = (int) GetComponent<RectTransform> ().rect.width * 2+ 2;
 		Height = (int) GetComponent<RectTransform> ().rect.height * 2+ 2;
 

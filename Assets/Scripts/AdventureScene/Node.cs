@@ -42,18 +42,18 @@ public class Node {
 		}
 
 		//Draw Node on screen for debugging purposes
-		/*Draw = GameObject.Instantiate (Resources.Load ("Node")) as GameObject;
+		Draw = GameObject.Instantiate (Resources.Load ("Node")) as GameObject;
 		Draw.transform.position = Position;
 		if (BadNode) {
 			Draw.GetComponent<SpriteRenderer> ().color = Color.red;
 		} else {
 			Draw.GetComponent<SpriteRenderer> ().color = Color.blue;
-		}*/
+		}
 	}
 
-	/*public void SetColor(Color color) {
+	public void SetColor(Color color) {
 		Draw.transform.GetComponent<SpriteRenderer> ().color = color;
-	}*/
+	}
 
 	//Cull nodes if they don't have enough valid connection points (3)
 	public void CheckConnectionsPass1(Grid grid) {
@@ -78,50 +78,50 @@ public class Node {
 			if (DownRight == null || !DownRight.Valid)
 				clearCount++;
 
-			if (clearCount > 0) {
+			if (clearCount > 5) {
 				BadNode = true;
 				DisableConnections ();
 			}
 		}		
-		/*if (!BadNode)
+		if (!BadNode)
 			SetColor (Color.blue);
 		else
-			SetColor (Color.red);*/
+			SetColor (Color.red);
 	}
 
 	//Remove connections that connect to bad nodes
 	public void CheckConnectionsPass2() {
 		if (Up != null && Up.Node != null && Up.Node.BadNode) {
 			Up.Valid = false;
-			//Up.DrawLine ();
+			Up.DrawLine ();
 		}
 		if (Down != null && Down.Node != null && Down.Node.BadNode) {
 			Down.Valid = false;
-			//Down.DrawLine ();
+			Down.DrawLine ();
 		}
 		if (Left != null && Left.Node != null && Left.Node.BadNode) {
 			Left.Valid = false;
-			//Left.DrawLine ();
+			Left.DrawLine ();
 		}
 		if (Right != null && Right.Node != null && Right.Node.BadNode) {
 			Right.Valid = false;
-			//Right.DrawLine ();
+			Right.DrawLine ();
 		}
 		if (UpLeft != null && UpLeft.Node != null && UpLeft.Node.BadNode) {
 			UpLeft.Valid = false;
-			//UpLeft.DrawLine ();
+			UpLeft.DrawLine ();
 		}
 		if (UpRight != null && UpRight.Node != null && UpRight.Node.BadNode) {
 			UpRight.Valid = false;
-			//UpRight.DrawLine ();
+			UpRight.DrawLine ();
 		}
 		if (DownLeft != null && DownLeft.Node != null && DownLeft.Node.BadNode) {
 			DownLeft.Valid = false;
-			//DownLeft.DrawLine ();
+			DownLeft.DrawLine ();
 		}
 		if (DownRight != null && DownRight.Node != null && DownRight.Node.BadNode) {
 			DownRight.Valid = false;
-			//DownRight.DrawLine ();
+			DownRight.DrawLine ();
 		}
 	}
 
