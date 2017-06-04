@@ -115,7 +115,7 @@ public class UpdateService : MonoBehaviour {
 	}
 
 	public static KeyValuePair<string, string> CreateKV (string key, string value) {
-		return new KeyValuePair<string, string> (key, JsonUtility.ToJson (value));
+		return new KeyValuePair<string, string> (key, value);
 	}
 
 	public void Update () {

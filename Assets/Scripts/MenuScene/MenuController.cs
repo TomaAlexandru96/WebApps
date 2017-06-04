@@ -29,6 +29,7 @@ public class MenuController : MonoBehaviour {
 
 		unsub1 = UpdateService.GetInstance ().Subscribe (UpdateType.PartyRequest, (sender, message) => {
 			int mode;
+			Debug.Log (UpdateService.GetData (message, "party_type"));
 			int.TryParse (UpdateService.GetData (message, "party_type"), out mode);
 			party.OnReceivedInvite (sender, mode);
 		});
