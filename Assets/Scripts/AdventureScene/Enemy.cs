@@ -17,10 +17,6 @@ public class Enemy : MonoBehaviour {
 	public Grid grid;
 	public bool targetInRange;
 	public Point lastTargetPos;
-	public int nextBrX;
-	public int nextBrY;
-	public int curBrX;
-	public int curBrY;
 	public BreadCrumb currentBr;
 
 
