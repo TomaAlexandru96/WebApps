@@ -6,6 +6,7 @@ using UnityEngine.SceneManagement;
 public class AdventureController : MonoBehaviour {
 
 	public void Start () {
+		GameObject.FindGameObjectWithTag ("Chat").GetComponent<ChatController> ().InitDefaultChat ();
 	}
 
 	public void ExitGame () {

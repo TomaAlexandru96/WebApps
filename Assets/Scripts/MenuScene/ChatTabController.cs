@@ -40,15 +40,6 @@ public class ChatTabController : MonoBehaviour {
 		GameObject.FindGameObjectWithTag ("ChatButtons").transform.GetChild (totalTabs - 1).GetComponent<ChatTab> ().SelectChat ();
 	}
 
-	public void SetChat (string chatName, bool status) {
-		foreach (var tab in content.transform.GetComponentsInChildren<ChatTab> ()) {
-			if (tab.GetName ().Equals (chatName)) {
-				tab.gameObject.SetActive (status);
-				break;
-			}
-		}
-	}
-
 	public void DestroyChat (string chatName) {
 		foreach (var tab in content.transform.GetComponentsInChildren<ChatTab> ()) {
 			if (tab.GetName ().Equals (chatName)) {
@@ -57,5 +48,6 @@ public class ChatTabController : MonoBehaviour {
 				break;
 			}
 		}
+		ActivateLastTab ();
 	}
 }

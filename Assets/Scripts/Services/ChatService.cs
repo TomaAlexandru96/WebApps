@@ -100,7 +100,7 @@ public class ChatService : MonoBehaviour, IChatClientListener {
 		chatClient.Subscribe (chs);
 	}
 
-	public void OnConnected() {
+	public void OnConnected () {
 		GetChat ().InitDefaultChat ();
 		connected = true;
 		onFinish ();
