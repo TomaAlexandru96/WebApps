@@ -8,7 +8,7 @@ public class FriendsEntry : MonoBehaviour {
 
 	public GameObject friendsPanel;
 	public Image avatar;
-	public GameObject optionPanel;
+	private GameObject optionsPanel;
 	private Action unsub1;
 	private Action unsub2;
 	private Action unsub3;
@@ -28,14 +28,15 @@ public class FriendsEntry : MonoBehaviour {
 
 		unsub3 = UpdateService.GetInstance ().Subscribe (UpdateType.UserUpdate, (sender, message) => {
 			if (GetName ().Equals (sender)) {
-				UpdateStatus (1f);
+				UpdateStatus ();
 			}
 		});
+		optionsPanel = GameObject.FindGameObjectWithTag ("FriendsOption");
 	}
 
 	public void Start() {
-		// optionPanel.SetActive (false);
-		UpdateStatus (0f);
+		GetOptionPanel ().SetActive (false);
+		UpdateStatus ();
 	}
 
 	public void OnDestroy () {
@@ -44,16 +45,21 @@ public class FriendsEntry : MonoBehaviour {
 		unsub3 ();
 	}
 
+	public GameObject GetOptionPanel () {
+		return optionsPanel;
+	}
+
 	public void ShowOptions() {
-		if (optionPanel.GetActive ()) { 
-			optionPanel.SetActive (false);
-		} else {
-			optionPanel.SetActive (true);
-			Vector3 friendPos = friendsPanel.transform.position;
-			Vector3 OptionPos = optionPanel.transform.position;
-			optionPanel.transform.position = new Vector3 (OptionPos.x, friendPos.y-30, OptionPos.z);
-			optionPanel.transform.GetComponent<OptionScript> ().SetFriendEntity (friendsPanel);
+		if (GetOptionPanel ().activeSelf && GetOptionPanel ().GetComponent <OptionScript> ().GetPlayerName () != null && 
+							GetOptionPanel ().GetComponent <OptionScript> ().GetPlayerName ().Equals (GetName ())) {
+			GetOptionPanel ().SetActive (false);
+			return;
 		}
+		GetOptionPanel ().SetActive (true);
+		Vector3 friendPos = friendsPanel.transform.position;
+		Vector3 OptionPos = GetOptionPanel ().transform.position;
+		GetOptionPanel ().transform.position = new Vector3 (OptionPos.x, friendPos.y, OptionPos.z);
+		GetOptionPanel ().transform.GetComponent<OptionScript> ().SetPlayerName (GetName ());
 	}
 
 	private void ChangeStatus (bool status) {
@@ -62,10 +68,8 @@ public class FriendsEntry : MonoBehaviour {
 		gameObject.GetComponent<Button> ().colors = cb;
 	}
 
-	private void UpdateStatus (float delay) {
-		UpdateService.GetInstance ().Wait (delay);
+	private void UpdateStatus () {
 		DBServer.GetInstance ().FindUser (GetName (), (user) => {
-			Debug.Log (user);
 			ChangeStatus (user.active);
 			avatar.sprite = user.character.GetImage ();
 		}, (error) => {

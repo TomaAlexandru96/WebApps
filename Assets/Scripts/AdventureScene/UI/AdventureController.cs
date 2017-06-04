@@ -10,6 +10,10 @@ public class AdventureController : MonoBehaviour {
 	}
 
 	public void ExitGame () {
-		SceneManager.LoadScene ("Menu");
+		DBServer.GetInstance ().LeaveParty (CurrentUser.GetInstance ().GetUserInfo ().username, () => {
+			SceneManager.LoadScene ("Menu");
+		}, (error) => {
+			Debug.LogError (error);	
+		});
 	}
 }
