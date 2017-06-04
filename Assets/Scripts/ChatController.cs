@@ -20,7 +20,11 @@ public class ChatController : MonoBehaviour, IPointerEnterHandler, IPointerExitH
 	public Action unsub8;
 
 	public void InitDefaultChat () {
-		chatTabController.AddChat (ChatService.GLOBAL_CH, false);
+		foreach (var chat in CurrentUser.GetInstance ().GetSubscribedCH ()) {
+			bool isNotCloseable = chat.Equals (ChatService.GLOBAL_CH) || 
+				(CurrentUser.GetInstance ().IsInParty () && CurrentUser.GetInstance ().GetUserInfo ().party.owner.Equals (chat));
+			chatTabController.AddChat (chat, !isNotCloseable);
+		}
 	}
 
 	public void Start () {
@@ -64,6 +68,7 @@ public class ChatController : MonoBehaviour, IPointerEnterHandler, IPointerExitH
 
 	public void CreateNewChat (String name) {
 		ChatService.GetInstance ().CreateNewChat (name);
+		CurrentUser.GetInstance ().SubscribeToCH (name);
 		GameObject chatPanel = (GameObject) Instantiate (chatPanelPrefab, Vector3.zero, Quaternion.identity);
 		chatPanel.transform.SetParent (viewport.transform, false);
 		allChatPanels.Add (name, chatPanel);
@@ -72,6 +77,7 @@ public class ChatController : MonoBehaviour, IPointerEnterHandler, IPointerExitH
 
 	public void DestroyChat (string name) {
 		ChatService.GetInstance ().Unsubscribe (new string[]{name});
+		CurrentUser.GetInstance ().UnsubscribeCH (name);
 		allChatPanels.Remove (name);
 	}
 

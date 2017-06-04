@@ -9,6 +9,7 @@ public class CurrentUser : MonoBehaviour {
 	public const String userCache = "Assets/cache";
 	private bool withCaching = true;
 	private static CurrentUser instance = null;
+	private HashSet<string> subscribedCH = new HashSet<string> () {ChatService.GLOBAL_CH};
 
 	public void Awake () {
 		if (instance == null) {
@@ -92,6 +93,7 @@ public class CurrentUser : MonoBehaviour {
 
 	public void Logout (bool overwriteCache) {
 		userInfo = null;
+		subscribedCH = new HashSet<string> () {ChatService.GLOBAL_CH};
 		CancelInvoke ();
 		if (overwriteCache) {
 			ClearCahce ();
@@ -139,6 +141,19 @@ public class CurrentUser : MonoBehaviour {
 	public bool IsInParty () {
 		return userInfo.party.ContainsPlayer (userInfo.username);
 	}
-		
+
+	public void SubscribeToCH (string name) {
+		subscribedCH.Add (name);
+	}
+
+	public string[] GetSubscribedCH () {
+		string[] result = new string[subscribedCH.Count];
+		subscribedCH.CopyTo (result);
+		return result;
+	}
+
+	public void UnsubscribeCH (string name) {
+		subscribedCH.Remove (name);
+	}
 }
 
