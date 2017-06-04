@@ -76,7 +76,6 @@ public class Party : MonoBehaviour {
 		if (CurrentUser.GetInstance ().GetUserInfo ().party.GetSize () == 0) {
 			tabController.DestroyChat (partyChatName);
 			partyChatName = null;
-			NetworkService.GetInstance ().LeaveRoom ();
 			menuController.SwtichToMenuView ();
 		} else {
 			ClearParty ();
