@@ -8,7 +8,7 @@ public class MenuController : MonoBehaviour {
 
 	public GameObject[] UIPanels;
 	public Party party;
-	private bool isAdventure = true;
+	private int mode = PartyMembers.ADVENTURE;
 	private Action unsub;
 	private Action unsub1;
 
@@ -28,7 +28,7 @@ public class MenuController : MonoBehaviour {
 		});
 
 		unsub1 = UpdateService.GetInstance ().Subscribe (UpdateType.PartyRequest, (sender, message) => {
-			party.OnReceivedInvite (sender);
+			party.OnReceivedInvite (sender, UpdateService.GetData<int> (message, "party_type"));
 		});
 	}
 
@@ -53,7 +53,7 @@ public class MenuController : MonoBehaviour {
 	}
 
 	public void CreateParty () {
-		DBServer.GetInstance ().CreateParty (CurrentUser.GetInstance ().GetUserInfo ().username, () => {
+		DBServer.GetInstance ().CreateParty (CurrentUser.GetInstance ().GetUserInfo ().username, mode, () => {
 			party.Join ();
 		}, (error) => {
 			Debug.LogError (error);
@@ -81,16 +81,12 @@ public class MenuController : MonoBehaviour {
 		}
 	}
 
-	public void SetIsAdventure (bool value) {
-		this.isAdventure = value;
-		if (this.isAdventure) {
-			NetworkService.GetInstance ().JoinAdventureLobby ();
-		} else {
-			NetworkService.GetInstance ().JoinEndlessLobby ();
-		}
+	public void SetMode (int value) {
+		this.mode = value;
+		NetworkService.GetInstance ().JoinLobby (value);
 	}
 
-	public bool GetIsAdventure () {
-		return isAdventure;
+	public int GetMode () {
+		return mode;
 	}
 }

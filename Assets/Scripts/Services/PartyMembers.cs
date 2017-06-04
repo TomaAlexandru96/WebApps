@@ -3,7 +3,9 @@ using UnityEngine;
 
 [System.Serializable]
 public class PartyMembers {
-	
+
+	public const int ADVENTURE = 1;
+	public const int ENDLESS = 2;
 	public string[] partyMembers;
 	public string owner;
 	public int state;

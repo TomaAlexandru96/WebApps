@@ -45,16 +45,16 @@ public class NetworkService : Photon.MonoBehaviour {
 		GUILayout.Label(PhotonNetwork.connectionStateDetailed.ToString());
 	}
 
-	public RoomInfo[] GetAdventureRooms () {
+	public RoomInfo[] GetRoomList () {
 		return PhotonNetwork.GetRoomList ();
 	}
 
-	public void JoinAdventureLobby () {
-		PhotonNetwork.JoinLobby (adventureLobby);
-	}
-
-	public void JoinEndlessLobby () {
-		PhotonNetwork.JoinLobby (endlessLobby);
+	public void JoinLobby (int mode) {
+		if (mode == PartyMembers.ADVENTURE) {
+			PhotonNetwork.JoinLobby (adventureLobby);
+		} else {
+			PhotonNetwork.JoinLobby (endlessLobby);
+		}
 	}
 
 	public void JoinRoom (string roomName) {

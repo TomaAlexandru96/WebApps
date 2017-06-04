@@ -15,16 +15,14 @@ public class RoomController : MonoBehaviour {
 	}
 
 	public void Update () {
-		modeName.text = menu.GetIsAdventure () ? "Adventure" : "Endless";
+		modeName.text = menu.GetMode () == PartyMembers.ADVENTURE ? "Adventure" : "Endless";
 	}
 
 	public void Refresh () {
-		if (menu.GetIsAdventure ()) {
-			foreach (var room in NetworkService.GetInstance ().GetAdventureRooms ()) {
-				GameObject go = Instantiate (gamePartyPrefab);
-				go.GetComponent <GamePartyController> ().SetRoomStats (room);
-				go.transform.SetParent (content.transform);
-			}
+		foreach (var room in NetworkService.GetInstance ().GetRoomList ()) {
+			GameObject go = Instantiate (gamePartyPrefab);
+			go.GetComponent <GamePartyController> ().SetRoomStats (room, menu.GetMode ());
+			go.transform.SetParent (content.transform);
 		}
 	}
 }
