@@ -21,6 +21,7 @@ public class GamePartyController : MonoBehaviour {
 		this.roomName = info.Name;
 		this.roomPlayers = info.PlayerCount;
 		this.mode = mode;
+		Debug.Log ("RoomName is " + roomName);
 	}
 
 	public void Join () {

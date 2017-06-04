@@ -19,10 +19,17 @@ public class RoomController : MonoBehaviour {
 	}
 
 	public void Refresh () {
+		Clear ();
 		foreach (var room in NetworkService.GetInstance ().GetRoomList ()) {
 			GameObject go = Instantiate (gamePartyPrefab);
 			go.GetComponent <GamePartyController> ().SetRoomStats (room, menu.GetMode ());
 			go.transform.SetParent (content.transform);
+		}
+	}
+
+	public void Clear () {
+		foreach (Transform child in content.transform) {
+			Destroy (child.gameObject);
 		}
 	}
 }
