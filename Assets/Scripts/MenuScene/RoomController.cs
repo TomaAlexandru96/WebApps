@@ -10,6 +10,10 @@ public class RoomController : MonoBehaviour {
 	public GameObject gamePartyPrefab;
 	public Text modeName;
 
+	public void Start () {
+		InvokeRepeating ("Refresh", 0f, 1f);
+	}
+
 	public void Update () {
 		modeName.text = menu.GetIsAdventure () ? "Adventure" : "Endless";
 	}
