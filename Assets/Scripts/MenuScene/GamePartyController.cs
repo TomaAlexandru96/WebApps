@@ -6,12 +6,14 @@ using UnityEngine.UI;
 public class GamePartyController : MonoBehaviour {
 	public Text ownerName;
 	public Text size;
+	public Button joinBtn;
 	private string roomName;
 	private int roomPlayers = 0;
 
 	public void Start () {
 		ownerName.text = roomName;
 		size.text = roomPlayers.ToString () + "/4";
+		joinBtn.interactable = roomPlayers < 4;
 	}
 
 	public void SetRoomStats (RoomInfo info) {
