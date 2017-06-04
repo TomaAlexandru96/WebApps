@@ -288,7 +288,7 @@ public class DBServer : MonoBehaviour {
 				UpdateService.GetInstance ().SendUpdate (CurrentUser.GetInstance ().GetUserInfo ().party.partyMembers,
 						UpdateService.CreateMessage (UpdateType.PartyRequestAccept));
 				NetworkService.GetInstance ().JoinLobby (mode);
-				NetworkService.GetInstance ().JoinRoom (CurrentUser.GetInstance ().GetUserInfo ().username);
+				NetworkService.GetInstance ().JoinRoom (owner);
 				callback ();
 			});
 		}
