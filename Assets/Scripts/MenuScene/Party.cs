@@ -116,7 +116,7 @@ public class Party : MonoBehaviour {
 
 	public void OnReceivedInvite (string from, int mode) {
 		ConfirmAlertController.Create ("You have received a " + (mode == PartyMembers.ADVENTURE ? "adventure" : "endless")
-											+ "party invite from " + from, (alert) => {
+											+ " party invite from " + from, (alert) => {
 			JoinParty (from, mode);
 			alert.Close ();
 		}, (alert) => {

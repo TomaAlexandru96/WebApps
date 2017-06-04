@@ -44,7 +44,7 @@ public class ChatTabController : MonoBehaviour {
 		foreach (var tab in content.transform.GetComponentsInChildren<ChatTab> ()) {
 			if (tab.GetName ().Equals (chatName)) {
 				chat.DestroyChat (chatName);
-				Destroy (tab.gameObject);
+				DestroyImmediate (tab.gameObject);
 				break;
 			}
 		}
