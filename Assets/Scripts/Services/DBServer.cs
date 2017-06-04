@@ -283,7 +283,7 @@ public class DBServer : MonoBehaviour {
 			errorcall (request.responseCode);
 		} else {
 			CurrentUser.GetInstance ().RequestUpdate ((user) => {
-				UpdateService.GetInstance ().SendUpdate (new string[]{CurrentUser.GetInstance ().GetUserInfo ().party.owner},
+				UpdateService.GetInstance ().SendUpdate (CurrentUser.GetInstance ().GetUserInfo ().party.partyMembers,
 						UpdateService.CreateMessage (UpdateType.PartyRequestAccept));
 				NetworkService.GetInstance ().JoinRoom (CurrentUser.GetInstance ().GetUserInfo ().username);
 				callback ();
