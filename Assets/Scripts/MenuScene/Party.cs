@@ -49,7 +49,7 @@ public class Party : MonoBehaviour {
 				DBServer.GetInstance ().FindUser (input, (user) => {
 					if (!partyMembers.ContainsPlayer (user.username) && user.active) {
 						UpdateService.GetInstance ().SendUpdate (new string[]{user.username}, UpdateService.CreateMessage (UpdateType.PartyRequest, 
-							UpdateService.CreateKV ("party_type", CurrentUser.GetInstance ().GetUserInfo ().party.state)));
+							UpdateService.CreateKV ("party_type", CurrentUser.GetInstance ().GetUserInfo ().party.state.ToString ())));
 					}
 					controller.Close ();
 				}, (error) => {

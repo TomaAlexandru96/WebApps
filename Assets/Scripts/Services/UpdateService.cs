@@ -65,7 +65,7 @@ public class UpdateService : MonoBehaviour {
 		while (messagesQueue.Count != 0) {
 			KeyValuePair<String[], Dictionary<String, String>> messageEntry = messagesQueue.Dequeue ();
 			foreach (var target in messageEntry.Key) {
-				Debug.LogWarning ("Send update of type " + GetData<UpdateType> (messageEntry.Value, "type") + " from " + CurrentUser.GetInstance ().GetUserInfo ().username + " to " + target);
+				Debug.LogWarning ("Send update of type " + GetData (messageEntry.Value, "type") + " from " + CurrentUser.GetInstance ().GetUserInfo ().username + " to " + target);
 				ChatService.GetInstance ().SendPrivateMessage (target, messageEntry.Value);
 			}
 		}
@@ -88,7 +88,7 @@ public class UpdateService : MonoBehaviour {
 		CurrentUser.GetInstance ().RequestUpdate ((userInfo) => {
 			List<Action<String, Dictionary<String, String>>> functions = 
 				subscribers[JsonUtility.FromJson<UpdateType> (message["type"])];
-			Debug.LogWarning ("Received update of type " + GetData<UpdateType> (message, "type") + " from " + sender);
+			Debug.LogWarning ("Received update of type " + GetData (message, "type") + " from " + sender);
 			for (int i = 0; i < functions.Count; i++) {
 				Action<String, Dictionary<String, String>> func = functions [i];
 				// doesn't work
@@ -110,11 +110,11 @@ public class UpdateService : MonoBehaviour {
 		};
 	}
 
-	public static T GetData<T> (Dictionary<String, String> message, string key) {
-		return JsonUtility.FromJson<T>(message[key]);
+	public static string GetData (Dictionary<String, String> message, string key) {
+		return message[key];
 	}
 
-	public static KeyValuePair<string, string> CreateKV<T> (string key, T value) {
+	public static KeyValuePair<string, string> CreateKV (string key, string value) {
 		return new KeyValuePair<string, string> (key, JsonUtility.ToJson (value));
 	}
 

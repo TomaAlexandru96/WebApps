@@ -28,7 +28,7 @@ public class OptionScript : MonoBehaviour {
 		DBServer.GetInstance ().FindUser (playerName, (user) => {
 			if (!CurrentUser.GetInstance ().GetUserInfo ().party.ContainsPlayer (user.username) && user.active) {
 				UpdateService.GetInstance ().SendUpdate (new string[]{user.username}, UpdateService.CreateMessage (UpdateType.PartyRequest, 
-					UpdateService.CreateKV ("party_type", CurrentUser.GetInstance ().GetUserInfo ().party.state)));
+					UpdateService.CreateKV ("party_type", CurrentUser.GetInstance ().GetUserInfo ().party.state.ToString ())));
 			}
 		}, (error) => {
 			Debug.LogError (error);
