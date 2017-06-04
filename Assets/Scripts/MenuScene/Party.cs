@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Party : MonoBehaviour {
 
@@ -10,6 +11,7 @@ public class Party : MonoBehaviour {
 	public GameObject playerPrefab;
 	public GameObject addPlayer;
 	public GameObject leaveParty;
+	public Text gameModeLabel;
 	public MenuController menuController;
 	public ChatTabController tabController;
 
@@ -30,7 +32,7 @@ public class Party : MonoBehaviour {
 			if (CurrentUser.GetInstance ().GetUserInfo ().party.GetSize () == 0) {
 				menuController.SwtichToMenuView ();
 			} else {
-				UpdateParty ();	
+				UpdateParty ();
 			}
 		});
 	}
@@ -70,6 +72,7 @@ public class Party : MonoBehaviour {
 		DBServer.GetInstance ().LeaveParty (CurrentUser.GetInstance ().GetUserInfo ().username, () => {
 			menuController.SwtichToMenuView ();
 			tabController.DestroyChat (owner);
+			NetworkService.GetInstance ().LeaveRoom ();
 		}, (error) => {
 			Debug.LogError (error);
 		});
@@ -94,17 +97,21 @@ public class Party : MonoBehaviour {
 		tabController.AddChat (CurrentUser.GetInstance ().GetUserInfo ().party.owner, false);
 	}
 
+	public void JoinParty (string ownerParty) {
+		if(!CurrentUser.GetInstance ().GetUserInfo ().party.ContainsPlayer(ownerParty)) {
+			DBServer.GetInstance ().JoinParty (ownerParty, CurrentUser.GetInstance ().GetUserInfo ().username, () => {
+				Join ();
+			}, (error) => {
+				Debug.LogError(error);
+			});
+		} else {
+			Debug.Log("Duplicate invite");
+		}
+	}
+
 	public void OnReceivedInvite (string from) {
 		ConfirmAlertController.Create ("You have received a party invite from " + from, (alert) => {
-			if(!CurrentUser.GetInstance ().GetUserInfo ().party.ContainsPlayer(from)) {
-				DBServer.GetInstance ().JoinParty (from, CurrentUser.GetInstance ().GetUserInfo ().username, () => {
-					Join ();
-				}, (error) => {
-					Debug.LogError(error);
-				});
-			} else {
-				Debug.Log("Duplicate invite");
-			}
+			JoinParty (from);
 			alert.Close ();
 		}, (alert) => {
 			alert.Close ();
@@ -114,5 +121,6 @@ public class Party : MonoBehaviour {
 	public void Update () {
 		var owner = CurrentUser.GetInstance ().GetUserInfo ().party.owner;
 		addPlayer.SetActive (owner == CurrentUser.GetInstance ().GetUserInfo ().username);
+		gameModeLabel.text = menuController.GetIsAdventure () ?  "Game Mode\n--Adventure--" : "Game Mode\n--Endless--";
 	}
 }

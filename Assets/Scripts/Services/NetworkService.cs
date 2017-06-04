@@ -10,6 +10,8 @@ public class NetworkService : Photon.MonoBehaviour {
 	public const String partyPrefabName = "Party";
 	public Text infoLabel;
 	private static NetworkService instance = null;
+	private static TypedLobby adventureLobby = new TypedLobby ("Adventure", LobbyType.Default);
+	private static TypedLobby endlessLobby = new TypedLobby ("Endless", LobbyType.Default);
 
 	public void Awake () {
 		if (instance == null) {
@@ -35,11 +37,6 @@ public class NetworkService : Photon.MonoBehaviour {
 		PhotonNetwork.ConnectUsingSettings (GAME_VERSION);
 	}
 
-	public void OnJoinedLobby () {
-		RoomOptions options = new RoomOptions ();
-		PhotonNetwork.JoinOrCreateRoom (ChatService.GetInstance ().GetPartyCHName (), options, TypedLobby.Default);
-	}
-
 	private void DestroyConnection () {
 		PhotonNetwork.Disconnect ();
 	}
@@ -48,7 +45,27 @@ public class NetworkService : Photon.MonoBehaviour {
 		GUILayout.Label(PhotonNetwork.connectionStateDetailed.ToString());
 	}
 
+	public RoomInfo[] GetAdventureRooms () {
+		return PhotonNetwork.GetRoomList ();
+	}
+
+	public void JoinAdventureLobby () {
+		PhotonNetwork.JoinLobby (adventureLobby);
+	}
+
+	public void JoinEndlessLobby () {
+		PhotonNetwork.JoinLobby (endlessLobby);
+	}
+
 	public void JoinRoom (string roomName) {
 		PhotonNetwork.JoinRoom (roomName);
+	}
+
+	public void CreateRoom (string roomName) {
+		PhotonNetwork.CreateRoom (roomName, new RoomOptions () {MaxPlayers = 4}, PhotonNetwork.lobby);
+	}
+
+	public void LeaveRoom () {
+		PhotonNetwork.LeaveRoom ();
 	}
 }

@@ -110,6 +110,7 @@ public class DBServer : MonoBehaviour {
 
 			UpdateService.GetInstance ().SendUpdate (targets,
 							UpdateService.CreateMessage (UpdateType.LogoutUser));
+			NetworkService.GetInstance ().LeaveRoom ();
 			CurrentUser.GetInstance ().Logout (overwriteCaching);
 			callback ();
 		}
@@ -259,6 +260,7 @@ public class DBServer : MonoBehaviour {
 			errorcall (request.responseCode);
 		} else {
 			CurrentUser.GetInstance ().RequestUpdate ((user) => {
+				NetworkService.GetInstance ().CreateRoom (CurrentUser.GetInstance ().GetUserInfo ().username);
 				callback ();
 			});
 		}
@@ -283,6 +285,7 @@ public class DBServer : MonoBehaviour {
 			CurrentUser.GetInstance ().RequestUpdate ((user) => {
 				UpdateService.GetInstance ().SendUpdate (new string[]{CurrentUser.GetInstance ().GetUserInfo ().party.owner},
 						UpdateService.CreateMessage (UpdateType.PartyRequestAccept));
+				NetworkService.GetInstance ().JoinRoom (CurrentUser.GetInstance ().GetUserInfo ().username);
 				callback ();
 			});
 		}
@@ -306,6 +309,7 @@ public class DBServer : MonoBehaviour {
 			UpdateService.GetInstance ().SendUpdate (CurrentUser.GetInstance ().GetUserInfo ().party.partyMembers, 
 								UpdateService.CreateMessage (UpdateType.PartyLeft));
 			CurrentUser.GetInstance ().RequestUpdate ((user) => {
+				NetworkService.GetInstance ().LeaveRoom ();
 				callback ();
 			});
 		}
