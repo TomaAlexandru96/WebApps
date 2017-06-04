@@ -145,8 +145,8 @@ class DBHTTPHandler(BaseHTTPRequestHandler):
       self.send_code_only(NOT_ACCEPTABLE)
     else:
       query = '''INSERT INTO PARTIES (OWNER, MEMBERS, STATE)
-		             VALUES ('{}', ARRAY['{}'], 1)
-              '''.format(user['username'], user['username'])
+		             VALUES ('{}', ARRAY['{}'], {})
+              '''.format(user['username'], user['username'], data['mode'][0])
       self.send_db_query(query)
       query = '''UPDATE USERS SET PARTY = '{}'
                  WHERE USERNAME = '{}'
