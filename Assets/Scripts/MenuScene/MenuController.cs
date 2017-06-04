@@ -6,10 +6,9 @@ using UnityEngine.SceneManagement;
 
 public class MenuController : MonoBehaviour {
 
-	public GameObject playToChoosePanel;
-	public GameObject createPartyPanel;
-	public GameObject createJoinPanel;
+	public GameObject[] UIPanels;
 	public Party party;
+	private bool isAdventure = true;
 	private Action unsub;
 	private Action unsub1;
 
@@ -61,15 +60,37 @@ public class MenuController : MonoBehaviour {
 		});
 	}
 
+	public void SwitchToJoinView () {
+		ClearView ();
+		UIPanels [6].SetActive (true);
+	}
+
 	public void SwitchToPartyView () {
-		createPartyPanel.SetActive (true);
-		createJoinPanel.SetActive (false);
-		playToChoosePanel.SetActive (false);
+		ClearView ();
+		UIPanels [2].SetActive (true);
 	}
 
 	public void SwtichToMenuView () {
-		createPartyPanel.SetActive (false);
-		createJoinPanel.SetActive (false);
-		playToChoosePanel.SetActive (true);
+		ClearView ();
+		UIPanels [0].SetActive (true);
+	}
+
+	public void ClearView () {
+		foreach (var panel in UIPanels) {
+			panel.SetActive (false);
+		}
+	}
+
+	public void SetIsAdventure (bool value) {
+		this.isAdventure = value;
+		if (this.isAdventure) {
+			NetworkService.GetInstance ().JoinAdventureLobby ();
+		} else {
+			NetworkService.GetInstance ().JoinEndlessLobby ();
+		}
+	}
+
+	public bool GetIsAdventure () {
+		return isAdventure;
 	}
 }
