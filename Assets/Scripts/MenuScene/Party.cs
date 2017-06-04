@@ -48,7 +48,8 @@ public class Party : MonoBehaviour {
 			RequestAlertController.Create("Who would you want to add to the party?", (controller, input) => {
 				DBServer.GetInstance ().FindUser (input, (user) => {
 					if (!partyMembers.ContainsPlayer (user.username) && user.active) {
-						UpdateService.GetInstance ().SendUpdate (new string[]{user.username}, UpdateService.CreateMessage (UpdateType.PartyRequest));
+						UpdateService.GetInstance ().SendUpdate (new string[]{user.username}, UpdateService.CreateMessage (UpdateType.PartyRequest, 
+							UpdateService.CreateKV ("party_type", CurrentUser.GetInstance ().GetUserInfo ().party.state)));
 					}
 					controller.Close ();
 				}, (error) => {
@@ -100,9 +101,9 @@ public class Party : MonoBehaviour {
 		UpdateParty ();
 	}
 
-	public void JoinParty (string ownerParty) {
+	public void JoinParty (string ownerParty, int mode) {
 		if(!CurrentUser.GetInstance ().GetUserInfo ().party.ContainsPlayer(ownerParty)) {
-			DBServer.GetInstance ().JoinParty (ownerParty, CurrentUser.GetInstance ().GetUserInfo ().username, () => {
+			DBServer.GetInstance ().JoinParty (ownerParty, CurrentUser.GetInstance ().GetUserInfo ().username, mode, () => {
 				Join ();
 			}, (error) => {
 				Debug.LogError(error);
@@ -112,9 +113,10 @@ public class Party : MonoBehaviour {
 		}
 	}
 
-	public void OnReceivedInvite (string from) {
-		ConfirmAlertController.Create ("You have received a party invite from " + from, (alert) => {
-			JoinParty (from);
+	public void OnReceivedInvite (string from, int mode) {
+		ConfirmAlertController.Create ("You have received a " + (mode == PartyMembers.ADVENTURE ? "adventure" : "endless")
+											+ "party invite from " + from, (alert) => {
+			JoinParty (from, mode);
 			alert.Close ();
 		}, (alert) => {
 			alert.Close ();
@@ -124,6 +126,10 @@ public class Party : MonoBehaviour {
 	public void Update () {
 		var owner = CurrentUser.GetInstance ().GetUserInfo ().party.owner;
 		addPlayer.SetActive (owner == CurrentUser.GetInstance ().GetUserInfo ().username);
-		gameModeLabel.text = menuController.GetIsAdventure () ?  "Game Mode\n--Adventure--" : "Game Mode\n--Endless--";
+		gameModeLabel.text = GetPartyMode () == PartyMembers.ADVENTURE ?  "Game Mode\n--Adventure--" : "Game Mode\n--Endless--";
+	}
+
+	public int GetPartyMode () {
+		return CurrentUser.GetInstance ().GetUserInfo ().party.state;
 	}
 }

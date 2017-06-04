@@ -244,13 +244,14 @@ public class DBServer : MonoBehaviour {
 		return Convert.ToBase64String (Encoding.Unicode.GetBytes (message));
 	}
 
-	public void CreateParty (String owner, Action callback, Action<long> errorcall) {
-		StartCoroutine (CreatePartyHelper (owner, callback, errorcall));
+	public void CreateParty (String owner, int mode, Action callback, Action<long> errorcall) {
+		StartCoroutine (CreatePartyHelper (owner, mode, callback, errorcall));
 	}
 
-	private IEnumerator<AsyncOperation> CreatePartyHelper (String owner, Action callback, Action<long> errorcall) {
+	private IEnumerator<AsyncOperation> CreatePartyHelper (String owner, int mode, Action callback, Action<long> errorcall) {
 		WWWForm form = new WWWForm ();
 		form.AddField ("owner", owner);
+		form.AddField ("mode", mode);
 
 		UnityWebRequest request = UnityWebRequest.Post (DBServerAddr + "/create_party", form);
 
@@ -260,17 +261,18 @@ public class DBServer : MonoBehaviour {
 			errorcall (request.responseCode);
 		} else {
 			CurrentUser.GetInstance ().RequestUpdate ((user) => {
+				NetworkService.GetInstance ().JoinLobby (mode);
 				NetworkService.GetInstance ().CreateRoom (CurrentUser.GetInstance ().GetUserInfo ().username);
 				callback ();
 			});
 		}
 	}
 		
-	public void JoinParty (String owner, String username, Action callback, Action<long> errorcall) {
-		StartCoroutine (JoinPartyHelper (owner, username, callback, errorcall));
+	public void JoinParty (String owner, String username, int mode, Action callback, Action<long> errorcall) {
+		StartCoroutine (JoinPartyHelper (owner, username, mode, callback, errorcall));
 	}
 
-	private IEnumerator<AsyncOperation> JoinPartyHelper (String owner, String username, Action callback, Action<long> errorcall) {
+	private IEnumerator<AsyncOperation> JoinPartyHelper (String owner, String username, int mode, Action callback, Action<long> errorcall) {
 		WWWForm form = new WWWForm ();
 		form.AddField ("owner", owner);
 		form.AddField ("username", username);
@@ -285,6 +287,7 @@ public class DBServer : MonoBehaviour {
 			CurrentUser.GetInstance ().RequestUpdate ((user) => {
 				UpdateService.GetInstance ().SendUpdate (CurrentUser.GetInstance ().GetUserInfo ().party.partyMembers,
 						UpdateService.CreateMessage (UpdateType.PartyRequestAccept));
+				NetworkService.GetInstance ().JoinLobby (mode);
 				NetworkService.GetInstance ().JoinRoom (CurrentUser.GetInstance ().GetUserInfo ().username);
 				callback ();
 			});

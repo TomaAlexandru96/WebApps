@@ -9,6 +9,7 @@ public class GamePartyController : MonoBehaviour {
 	public Button joinBtn;
 	private string roomName;
 	private int roomPlayers = 0;
+	private int mode;
 
 	public void Start () {
 		ownerName.text = roomName;
@@ -16,13 +17,14 @@ public class GamePartyController : MonoBehaviour {
 		joinBtn.interactable = roomPlayers < 4;
 	}
 
-	public void SetRoomStats (RoomInfo info) {
+	public void SetRoomStats (RoomInfo info, int mode) {
 		this.roomName = info.Name;
 		this.roomPlayers = info.PlayerCount;
+		this.mode = mode;
 	}
 
 	public void Join () {
 		GameObject.FindGameObjectWithTag ("Menu").GetComponent <MenuController> ().SwitchToPartyView ();
-		GameObject.FindGameObjectWithTag ("Party").GetComponent <Party> ().JoinParty (roomName);
+		GameObject.FindGameObjectWithTag ("Party").GetComponent <Party> ().JoinParty (roomName, mode);
 	}
 }
