@@ -5,7 +5,6 @@ using UnityEngine;
 public class Enemy : MonoBehaviour {
 
 	public Transform target;
-	public GameObject enemy;
 	public float speed;
 	public int damage;
 	public int maxHP;
@@ -18,6 +17,10 @@ public class Enemy : MonoBehaviour {
 	public Grid grid;
 	public bool targetInRange;
 	public Point lastTargetPos;
+	public int nextBrX;
+	public int nextBrY;
+	public int curBrX;
+	public int curBrY;
 	public BreadCrumb currentBr;
 
 
@@ -48,34 +51,36 @@ public class Enemy : MonoBehaviour {
 	}
 
 	// Update is called once per frame
-	void Update () {
-		// pathfinding
+	void Update ()
+	{
+		
 		if (targetInRange) {
-			Point cur = new Point((int)(target.localPosition.x*2), (int)(target.localPosition.y*2));
-			if (cur != lastTargetPos) {
-				lastTargetPos = cur;
+			// pathfinding
+			Point curTargetPos = new Point ((int)(target.localPosition.x * 2), (int)(target.localPosition.y * 2));
+			// RECALCULATE
+			if (curTargetPos.X != lastTargetPos.X || curTargetPos.Y != lastTargetPos.Y) {
+				lastTargetPos = curTargetPos;
 
-				Point targetPos = new Point ((int)(target.localPosition.x * 2), (int)(target.localPosition.y * 2));
-
-				if (targetPos != null) {
+				if (curTargetPos != null) {
 					Point enemyPos = new Point ((int)(transform.localPosition.x * 2), (int)(transform.localPosition.y * 2));
 
-					BreadCrumb currentBr = PathFinder.FindPath (grid, enemyPos, targetPos);
+					currentBr = PathFinder.FindPath (grid, enemyPos, curTargetPos);
 				}
-			} else {
-				if (currentBr != null) {
-					if (transform.position.x - (currentBr.position.X * 0.5f) + transform.position.x > 1
-					    && transform.position.y - (currentBr.position.Y * 0.5f) + transform.position.y > 1) {
-						Vector3 movement = 
-							(new Vector3 (target.position.x - transform.position.y, target.position.y - transform.position.y, 0)).normalized * speed;
-						rb.velocity = movement;
-					} else {
-						currentBr = currentBr.next;
-					}
+			// MOVEMENT
+			}
+			if (currentBr != null) {
+				float realCoordinatesX = currentBr.position.X / 2 + grid.transform.position.x;
+				float realCoordinatesY = currentBr.position.Y / 2 + grid.transform.position.y;
+				if (Vector2.Distance (transform.position, 
+					new Vector2(realCoordinatesX, realCoordinatesY)) > 0.5f) {
+					Vector3 movement = new Vector2(realCoordinatesX - transform.position.x,
+						realCoordinatesY - transform.position.y) * 0.7f;
+					rb.velocity = movement;
+				} else {
+					currentBr = currentBr.next;
 				}
 			}
 		}
-
 
 		// Old movement
 		//Rotate ();
@@ -116,6 +121,11 @@ public class Enemy : MonoBehaviour {
 					}
 				}
 			}
+		} else {
+			if (currentBr != null) {
+				transform.position = new Vector3 (currentBr.position.X / 2 + grid.transform.position.x, 
+					currentBr.position.Y / 2 + grid.transform.position.y, 0);
+			}
 		}
 	}
 
@@ -152,7 +162,7 @@ public class Enemy : MonoBehaviour {
 			curHP -= hit;
 		} else {
 			curHP = 0;
-			enemy.SetActive (false);
+			gameObject.SetActive (false);
 		}
 	}
 }
