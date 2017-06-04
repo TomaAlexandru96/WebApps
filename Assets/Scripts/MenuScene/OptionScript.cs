@@ -5,43 +5,42 @@ using UnityEngine.UI;
 
 public class OptionScript : MonoBehaviour {
 
-	private GameObject friendEntity;
+	public GameObject inviteToPartyButton;
 	private string playerName;
 
-	public GameObject Party;
-	public GameObject OptionPanel;
-
-	public void SetFriendEntity(GameObject friend) {
-		friendEntity = friend;
+	public void Start () {
 	}
 
-	private void UpdateInfo() {
-		playerName = friendEntity.transform.GetChild (0).GetComponent<Text> ().text;
-	} 
+	public void Update () {
+		inviteToPartyButton.SetActive (CurrentUser.GetInstance ().IsInParty ());
+	}
+
+	public string GetPlayerName () {
+		return playerName;
+	}
+
+	public void SetPlayerName (string playerName) {
+		this.playerName = playerName;
+	}
 
 	public void InviteToParty() {
-		/*UpdateInfo ();
-		PartyMembers partyMembers = Party.transform.GetComponent<Party> ().getPartyMembers ();
+		gameObject.SetActive (false);
 		DBServer.GetInstance ().FindUser (playerName, (user) => {
-			if (!partyMembers.ContainsPlayer (user.username) && user.active) {
-				UpdateService.GetInstance ().SendUpdate (new string[]{user.username}, UpdateService.CreateMessage (UpdateType.PartyRequest));
+			if (!CurrentUser.GetInstance ().GetUserInfo ().party.ContainsPlayer (user.username) && user.active) {
+				UpdateService.GetInstance ().SendUpdate (new string[]{user.username}, UpdateService.CreateMessage (UpdateType.PartyRequest, 
+					UpdateService.CreateKV ("party_type", CurrentUser.GetInstance ().GetUserInfo ().party.state)));
 			}
 		}, (error) => {
 			Debug.LogError (error);
 		});
-		OptionPanel.SetActive (false);*/
 	}
 
 	public void InviteToChat() {
-		Debug.Log ("Inviting to chat");
-		UpdateInfo ();
 		DBServer.GetInstance ().FindUser (playerName, (user) => {
-			//			if (!partyMembers.ContainsPlayer (user.username) && user.active) {
 			UpdateService.GetInstance ().SendUpdate (new string[]{playerName}, UpdateService.CreateMessage (UpdateType.ChatRequest));
-			//			}
+			gameObject.SetActive (false);
 		}, (error) => {
 			Debug.LogError (error);
 		});
-		OptionPanel.SetActive (false);
 	}
 }
