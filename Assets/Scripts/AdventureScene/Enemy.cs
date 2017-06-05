@@ -51,40 +51,58 @@ public class Enemy : MonoBehaviour {
 	{
 		
 		if (targetInRange) {
-			// pathfinding
-			Point curTargetPos = new Point ((int)(target.localPosition.x * 2), (int)(target.localPosition.y * 2));
-			// RECALCULATE
-			if (curTargetPos.X != lastTargetPos.X || curTargetPos.Y != lastTargetPos.Y) {
+			/*RaycastHit2D hit = Physics2D.Raycast (transform.position, 
+				target.position - transform.position, Vector2.Distance(transform.position, target.position), 
+				LayerMask.GetMask (new string[]{ "Map" }));
+			if (hit == null) {
+				Debug.Log ("Normal Movement");
+				// Normal movement
+				Rotate ();
+				//only move if I'm far away from the target
+				if (Vector2.Distance (transform.position, target.position) > 0.5f
+				    && !attackingPlayer) {
+					MoveEnemy ();
+				}
+			} else {*/
+
+				// pathfinding
+			Point curTargetPos = CurrentTargetPoint();
+				// RECALCULATE
+			if (!curTargetPos.Equals (lastTargetPos)) {
 				lastTargetPos = curTargetPos;
 
 				if (curTargetPos != null) {
-					Point enemyPos = new Point ((int)(transform.localPosition.x * 2), (int)(transform.localPosition.y * 2));
+					Point enemyPos = CurrentEnemyPoint();
 
 					currentBr = PathFinder.FindPath (grid, enemyPos, curTargetPos);
+					grid.DrawPath (currentBr);
+					currentBr = currentBr.next;
 				}
-			// MOVEMENT
+				// MOVEMENT
 			}
 			if (currentBr != null) {
-				float realCoordinatesX = currentBr.position.X / 2 + grid.transform.position.x;
-				float realCoordinatesY = currentBr.position.Y / 2 + grid.transform.position.y;
+				Vector2 bcRealPos = currentBr.toRealCoordinates (grid);
 				if (Vector2.Distance (transform.position, 
-					new Vector2(realCoordinatesX, realCoordinatesY)) > 0.5f) {
-					Vector3 movement = new Vector2(realCoordinatesX - transform.position.x,
-						realCoordinatesY - transform.position.y) * 0.7f;
-					rb.velocity = movement;
+					new Vector2 (bcRealPos.x, bcRealPos.y)) > 0.1f) {
+					Vector3 movement = new Vector2 (bcRealPos.x - transform.position.x,
+						                    bcRealPos.y - transform.position.y);
+					rb.velocity = movement.normalized * 0.8f;
 				} else {
 					currentBr = currentBr.next;
 				}
+			} else {
+				rb.velocity = new Vector2(0,0);
 			}
+			//}
 		}
+	}
 
-		// Old movement
-		//Rotate ();
-		//only move if I'm far away from the target
-		/*if (Vector2.Distance (transform.position, target.position) > 0.5f
-			&& !attackingPlayer) {
-			MoveEnemy ();
-		}*/
+	public Point CurrentTargetPoint() {
+		return new Point (Mathf.RoundToInt((target.localPosition.x * 2)), Mathf.RoundToInt(target.localPosition.y * 2));
+	}
+
+	public Point CurrentEnemyPoint() {
+		return new Point (Mathf.RoundToInt((transform.localPosition.x * 2)), Mathf.RoundToInt(transform.localPosition.y * 2));
 	}
 
 	void OnCollisionEnter2D(Collision2D coll) {
@@ -116,11 +134,6 @@ public class Enemy : MonoBehaviour {
 						player.dead = true;
 					}
 				}
-			}
-		} else {
-			if (currentBr != null) {
-				transform.position = new Vector3 (currentBr.position.X / 2 + grid.transform.position.x, 
-					currentBr.position.Y / 2 + grid.transform.position.y, 0);
 			}
 		}
 	}
