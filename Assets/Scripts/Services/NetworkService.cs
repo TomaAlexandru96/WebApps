@@ -24,6 +24,7 @@ public class NetworkService : Photon.PunBehaviour {
 	public void StartService () {
 		PhotonNetwork.ConnectUsingSettings (GAME_VERSION);
 		PhotonNetwork.automaticallySyncScene = true;
+		PhotonNetwork.InstantiateInRoomOnly = true;
 	}
 
 	public void StopService () {
@@ -36,10 +37,6 @@ public class NetworkService : Photon.PunBehaviour {
 
 	private void DestroyConnection () {
 		PhotonNetwork.Disconnect ();
-	}
-
-	public void OnGui () {
-		GUILayout.Label(PhotonNetwork.connectionStateDetailed.ToString());
 	}
 
 	public RoomInfo[] GetRoomList () {
@@ -70,5 +67,13 @@ public class NetworkService : Photon.PunBehaviour {
 		if (mode == 1) {
 			PhotonNetwork.LoadLevel ("Adventure");	
 		}
+	}
+
+	public GameObject Spawn (string prefabName, Vector3 position, Quaternion rotation, int groupID) {
+		return PhotonNetwork.Instantiate (prefabName, position, rotation, groupID);
+	}
+
+	public bool IsMasterClient () {
+		return PhotonNetwork.isMasterClient;
 	}
 }

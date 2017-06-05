@@ -6,6 +6,7 @@ using UnityEngine.SceneManagement;
 public class AdventureController : MonoBehaviour {
 
 	public GameObject loadingScreen;
+	public GameObject party;
 	private HashSet<string> loadedPlayers;
 
 	public void Awake () {
@@ -18,10 +19,18 @@ public class AdventureController : MonoBehaviour {
 				StartGame ();
 			}
 		});
+
+		if (AllPartyUsersLoaded ()) {
+			StartGame ();
+		}
 	}
 
 	public void StartGame () {
 		loadingScreen.SetActive (false);
+		if (NetworkService.GetInstance ().IsMasterClient ()) {
+			GameObject partyPanel = NetworkService.GetInstance ().Spawn (party.name, Vector3.zero, Quaternion.identity, 0);
+			partyPanel.transform.SetParent (GameObject.FindGameObjectWithTag ("Canvas").transform, false);	
+		}
 	}
 
 	public void Start () {
