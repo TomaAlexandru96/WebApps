@@ -135,4 +135,8 @@ public class Party : MonoBehaviour {
 	public int GetPartyMode () {
 		return CurrentUser.GetInstance ().GetUserInfo ().party.state;
 	}
+
+	public void Play () {
+		NetworkService.GetInstance ().LoadScene (GetPartyMode ());
+	}
 }

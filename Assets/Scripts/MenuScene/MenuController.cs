@@ -50,10 +50,6 @@ public class MenuController : MonoBehaviour {
 		});
 	}
 
-	public void PlayAdventure () {
-		SceneManager.LoadScene ("Adventure");
-	}
-
 	public void CreateParty () {
 		DBServer.GetInstance ().CreateParty (CurrentUser.GetInstance ().GetUserInfo ().username, mode, () => {
 			party.Join ();
