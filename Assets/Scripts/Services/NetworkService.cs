@@ -13,6 +13,8 @@ public class NetworkService : Photon.MonoBehaviour {
 	private static TypedLobby adventureLobby = new TypedLobby ("Adventure", LobbyType.Default);
 	private static TypedLobby endlessLobby = new TypedLobby ("Endless", LobbyType.Default);
 
+	private Action onFinish;
+
 	public void Awake () {
 		if (instance == null) {
 			instance = this;
@@ -21,10 +23,11 @@ public class NetworkService : Photon.MonoBehaviour {
 		}
 	}
 
-	public void StartService () {
+	public void StartService (Action onFinish) {
 		PhotonNetwork.ConnectUsingSettings (GAME_VERSION);
 		PhotonNetwork.automaticallySyncScene = true;
 		PhotonNetwork.InstantiateInRoomOnly = true;
+		this.onFinish = onFinish;
 	}
 
 	public void StopService () {
@@ -79,5 +82,9 @@ public class NetworkService : Photon.MonoBehaviour {
 
 	public bool IsMasterClient () {
 		return PhotonNetwork.isMasterClient;
+	}
+
+	public void OnConnectedToPhoton () {
+		onFinish ();
 	}
 }

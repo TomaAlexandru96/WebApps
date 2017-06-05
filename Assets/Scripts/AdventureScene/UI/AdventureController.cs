@@ -45,7 +45,7 @@ public class AdventureController : Photon.MonoBehaviour {
 			Debug.LogError (error);	
 		});
 	}
-
+		
 	[PunRPC]
 	public void GameLoaded () { 
 		Debug.Log ("GameLoaded from " + CurrentUser.GetInstance ().GetUserInfo ().username);

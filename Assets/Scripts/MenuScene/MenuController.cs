@@ -6,6 +6,7 @@ using UnityEngine.SceneManagement;
 
 public class MenuController : MonoBehaviour {
 
+	public GameObject loadingScreen;
 	public GameObject[] UIPanels;
 	public Party party;
 	private int mode = PartyMembers.ADVENTURE;
@@ -16,9 +17,11 @@ public class MenuController : MonoBehaviour {
 		// start services 
 		UpdateService.GetInstance ().StartService ();
 		ChatService.GetInstance ().StartService (() => {
-			NetworkService.GetInstance ().StartService ();
-			UpdateService.GetInstance ().SendUpdate (CurrentUser.GetInstance ().GetUserInfo ().friends, 
-				UpdateService.CreateMessage (UpdateType.LoginUser));
+			NetworkService.GetInstance ().StartService (() => {
+				UpdateService.GetInstance ().SendUpdate (CurrentUser.GetInstance ().GetUserInfo ().friends, 
+					UpdateService.CreateMessage (UpdateType.LoginUser));
+				loadingScreen.SetActive (false);
+			});
 		});
 
 		unsub = UpdateService.GetInstance ().Subscribe (UpdateType.UserUpdate, (sender, message) => {
