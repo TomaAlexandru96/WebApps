@@ -43,7 +43,12 @@ public class ChatTab : MonoBehaviour {
 	public void UpdateName (String name, int num) {
 		chName = name;
 		chatNum = num;
-		transform.GetChild (0).GetComponent<Text> ().text = name;
+
+		if (CurrentUser.GetInstance ().IsInParty ()) {
+			transform.GetChild (0).GetComponent<Text> ().text = "Party";
+		} else {
+			transform.GetChild (0).GetComponent<Text> ().text = name;
+		}
 	}
 
 	public string GetName () {

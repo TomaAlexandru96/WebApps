@@ -22,7 +22,8 @@ public class NetworkService : Photon.PunBehaviour {
 	}
 
 	public void StartService () {
-		SetupConnection ();
+		PhotonNetwork.ConnectUsingSettings (GAME_VERSION);
+		PhotonNetwork.automaticallySyncScene = true;
 	}
 
 	public void StopService () {
@@ -31,10 +32,6 @@ public class NetworkService : Photon.PunBehaviour {
 
 	public static NetworkService GetInstance () {
 		return instance;
-	}
-
-	public void SetupConnection () {
-		PhotonNetwork.ConnectUsingSettings (GAME_VERSION);
 	}
 
 	private void DestroyConnection () {
