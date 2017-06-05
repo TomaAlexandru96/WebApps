@@ -20,10 +20,6 @@ public class AdventureController : Photon.MonoBehaviour {
 				StartGame ();
 			}
 		});
-
-		if (AllPartyUsersLoaded ()) {
-			StartGame ();
-		}
 	}
 
 	public void StartGame () {
