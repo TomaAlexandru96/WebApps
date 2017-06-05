@@ -14,6 +14,7 @@ public class Party : MonoBehaviour {
 	public Text gameModeLabel;
 	public MenuController menuController;
 	public ChatTabController tabController;
+	public GameObject playButton;
 
 	private string partyChatName;
 	private Action unsub2;
@@ -127,6 +128,7 @@ public class Party : MonoBehaviour {
 	public void Update () {
 		var owner = CurrentUser.GetInstance ().GetUserInfo ().party.owner;
 		addPlayer.SetActive (owner == CurrentUser.GetInstance ().GetUserInfo ().username);
+		playButton.SetActive (owner == CurrentUser.GetInstance ().GetUserInfo ().username);
 		gameModeLabel.text = GetPartyMode () == PartyMembers.ADVENTURE ?  "Game Mode\n--Adventure--" : "Game Mode\n--Endless--";
 	}
 
