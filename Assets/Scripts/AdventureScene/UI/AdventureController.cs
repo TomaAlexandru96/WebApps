@@ -34,6 +34,7 @@ public class AdventureController : Photon.MonoBehaviour {
 	public void Start () {
 		if (NetworkService.GetInstance ().IsMasterClient ()) {
 			actualLoadingScreen = NetworkService.GetInstance ().SpawnScene (loadingScreen.name, Vector3.zero, Quaternion.identity, 0);
+			actualLoadingScreen.transform.SetParent (GameObject.FindGameObjectWithTag ("SynchronisedCanvas").transform, false);
 		}
 
 		GameObject.FindGameObjectWithTag ("Chat").GetComponent<ChatController> ().InitDefaultChat ();
