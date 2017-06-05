@@ -146,14 +146,16 @@ public class Enemy : MonoBehaviour {
 			}
 
 			//Random.Range random = new Random ();
-			float randomInt = UnityEngine.Random.Range(0.0f,3.0f);
+			float randomInt = UnityEngine.Random.Range(0.0f,5.0f);
 
 			if (randomInt < 1) {
 				specialCaseDirection = new Vector3 (-specialCaseDirection.x, -specialCaseDirection.y, 0);
 			} else if (randomInt < 2) {
 				specialCaseDirection = new Vector3 (-specialCaseDirection.y, specialCaseDirection.x, 0);
-			} else {
+			} else if (randomInt < 3) {
 				specialCaseDirection = new Vector3 (+specialCaseDirection.y, -specialCaseDirection.x, 0);
+			} else {
+				specialCaseDirection = target.position - transform.position;
 			}
 
 		}
