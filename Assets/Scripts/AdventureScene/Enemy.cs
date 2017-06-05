@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 public class Enemy : MonoBehaviour {
 
@@ -18,10 +19,17 @@ public class Enemy : MonoBehaviour {
 	public bool targetInRange;
 	public Point lastTargetPos;
 	public BreadCrumb currentBr;
+	public bool onSpecialCaseMovement;
+	public DateTime spectialCaseMovEnd;
+	public DateTime lastCollisionTime;
+	public Vector3 specialCaseDirection;
 
 
 	// Use this for initialization
 	void Start () {
+		lastCollisionTime = DateTime.Now;
+		spectialCaseMovEnd = DateTime.MinValue;
+		onSpecialCaseMovement = false;
 		animator = GetComponent<Animator> ();
 		rb = GetComponent<Rigidbody2D> ();
 		grid = GetComponentInParent<Grid> ();
@@ -64,7 +72,7 @@ public class Enemy : MonoBehaviour {
 					MoveEnemy ();
 				}
 			} else {*/
-
+			onSpecialCaseMovement = (DateTime.Now - spectialCaseMovEnd).Seconds < 1;
 				// pathfinding
 			Point curTargetPos = CurrentTargetPoint();
 				// RECALCULATE
@@ -78,22 +86,10 @@ public class Enemy : MonoBehaviour {
 					grid.DrawPath (currentBr);
 					currentBr = currentBr.next;
 				}
-				// MOVEMENT
 			}
-			if (currentBr != null) {
-				Vector2 bcRealPos = currentBr.toRealCoordinates (grid);
-				if (Vector2.Distance (transform.position, 
-					new Vector2 (bcRealPos.x, bcRealPos.y)) > 0.1f) {
-					Vector3 movement = new Vector2 (bcRealPos.x - transform.position.x,
-						                    bcRealPos.y - transform.position.y);
-					rb.velocity = movement.normalized * 0.8f;
-				} else {
-					currentBr = currentBr.next;
-				}
-			} else {
-				rb.velocity = new Vector2(0,0);
-			}
-			//}
+			// MOVEMENT
+			MoveEnemy ();
+		
 		}
 	}
 
@@ -106,10 +102,12 @@ public class Enemy : MonoBehaviour {
 	}
 
 	void OnCollisionEnter2D(Collision2D coll) {
+
 		if (coll.gameObject.tag == "Player") {
 			PlayAttackAnimation ();
 			attackingPlayer = true;
 		}
+		lastCollisionTime = DateTime.Now;
 	}
 
 	void OnCollisionExit2D(Collision2D coll) {
@@ -117,9 +115,14 @@ public class Enemy : MonoBehaviour {
 			PlayNormalAnimation ();
 			attackingPlayer = false;
 		}
+		lastCollisionTime = DateTime.Now;
+
 	}
 
 	void OnCollisionStay2D(Collision2D coll) {
+
+
+
 		if (coll.gameObject.tag == "Player") {
 			P1_MoveAnim player = coll.gameObject.GetComponent<P1_MoveAnim> ();
 			if (player.dead) {
@@ -135,7 +138,26 @@ public class Enemy : MonoBehaviour {
 					}
 				}
 			}
+		} else {
+			onSpecialCaseMovement = (DateTime.Now - lastCollisionTime).Seconds > 1;
+			if (onSpecialCaseMovement) {
+				spectialCaseMovEnd = DateTime.Now;
+				specialCaseDirection = new Vector3 (coll.contacts [0].point.x, coll.contacts [0].point.y, 0) - transform.position;
+			}
+
+			//Random.Range random = new Random ();
+			float randomInt = UnityEngine.Random.Range(0.0f,3.0f);
+
+			if (randomInt < 1) {
+				specialCaseDirection = new Vector3 (-specialCaseDirection.x, -specialCaseDirection.y, 0);
+			} else if (randomInt < 2) {
+				specialCaseDirection = new Vector3 (-specialCaseDirection.y, specialCaseDirection.x, 0);
+			} else {
+				specialCaseDirection = new Vector3 (+specialCaseDirection.y, -specialCaseDirection.x, 0);
+			}
+
 		}
+
 	}
 
 	public virtual void SetMaxHP() {
@@ -162,8 +184,26 @@ public class Enemy : MonoBehaviour {
 	}
 
 	public virtual void MoveEnemy () {
-		Vector3 movement = (target.position - transform.position).normalized * speed;
-		rb.velocity = movement;
+
+		if (onSpecialCaseMovement ) {
+			Vector3 movement = specialCaseDirection.normalized * speed;
+			rb.velocity = movement;
+		} else {
+			if (currentBr != null) {
+				Vector2 bcRealPos = currentBr.toRealCoordinates (grid);
+				if (Vector2.Distance (transform.position, 
+					new Vector2 (bcRealPos.x, bcRealPos.y)) > 0.1f) {
+					Vector3 movement = new Vector2 (bcRealPos.x - transform.position.x,
+						bcRealPos.y - transform.position.y);
+					rb.velocity = movement.normalized * 0.8f;
+				} else {
+					currentBr = currentBr.next;
+				}
+			} else {
+				rb.velocity = new Vector2(0,0);
+			}
+								
+		}
 	}
 
 	public virtual void GetHit(int hit) {

@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -46,7 +46,7 @@ public class AdventureController : Photon.MonoBehaviour {
 		});
 	}
 
-	[RPC]
+	[PunRPC]
 	public void GameLoaded () { 
 		Debug.Log ("GameLoaded from " + CurrentUser.GetInstance ().GetUserInfo ().username);
 	}
