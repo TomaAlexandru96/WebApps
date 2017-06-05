@@ -26,16 +26,16 @@ public class AdventureController : MonoBehaviour {
 	}
 
 	public void StartGame () {
-		loadingScreen.SetActive (false);
 		if (NetworkService.GetInstance ().IsMasterClient ()) {
+			loadingScreen.SetActive (false);
 			GameObject partyPanel = NetworkService.GetInstance ().SpawnScene (party.name, Vector3.zero, Quaternion.identity, 0);
-			partyPanel.transform.SetParent (GameObject.FindGameObjectWithTag ("Canvas").transform, false);
+			partyPanel.transform.SetParent (GameObject.FindGameObjectWithTag ("SynchronisedCanvas").transform, false);
 		}
 	}
 
 	public void Start () {
 		GameObject.FindGameObjectWithTag ("Chat").GetComponent<ChatController> ().InitDefaultChat ();
-		UpdateService.GetInstance ().SendUpdate (CurrentUser.GetInstance ().GetUserInfo ().party.partyMembers, 
+		UpdateService.GetInstance ().SendUpdate (new string[] {CurrentUser.GetInstance ().GetUserInfo ().party.owner}, 
 					UpdateService.CreateMessage (UpdateType.GameLoaded));
 	}
 
