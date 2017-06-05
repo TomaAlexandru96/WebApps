@@ -68,4 +68,10 @@ public class NetworkService : Photon.PunBehaviour {
 	public void LeaveRoom () {
 		PhotonNetwork.LeaveRoom ();
 	}
+
+	public void LoadScene (int mode) {
+		if (mode == 1) {
+			PhotonNetwork.LoadLevel ("Adventure");	
+		}
+	}
 }
