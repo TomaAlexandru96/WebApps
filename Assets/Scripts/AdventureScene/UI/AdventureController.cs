@@ -8,7 +8,6 @@ public class AdventureController : Photon.MonoBehaviour {
 	public GameObject loadingScreen;
 	public GameObject party;
 
-	private GameObject actualLoadingScreen;
 	private HashSet<string> loadedPlayers;
 
 	public void Awake () {
@@ -21,24 +20,23 @@ public class AdventureController : Photon.MonoBehaviour {
 				StartGame ();
 			}
 		});
+
+		if (AllPartyUsersLoaded ()) {
+			StartGame ();
+		}
 	}
 
 	public void StartGame () {
 		if (NetworkService.GetInstance ().IsMasterClient ()) {
-			actualLoadingScreen.SetActive (false);
+			loadingScreen.SetActive (false);
 			GameObject partyPanel = NetworkService.GetInstance ().SpawnScene (party.name, Vector3.zero, Quaternion.identity, 0);
-			partyPanel.transform.SetParent (GameObject.FindGameObjectWithTag ("SynchronisedCanvas").transform, false);
+			partyPanel.transform.SetParent (GameObject.FindGameObjectWithTag ("Canvas").transform, false);
 		}
 	}
 
 	public void Start () {
-		if (NetworkService.GetInstance ().IsMasterClient ()) {
-			actualLoadingScreen = NetworkService.GetInstance ().SpawnScene (loadingScreen.name, Vector3.zero, Quaternion.identity, 0);
-			actualLoadingScreen.transform.SetParent (GameObject.FindGameObjectWithTag ("SynchronisedCanvas").transform, false);
-		}
-
 		GameObject.FindGameObjectWithTag ("Chat").GetComponent<ChatController> ().InitDefaultChat ();
-		UpdateService.GetInstance ().SendUpdate (new string[] {CurrentUser.GetInstance ().GetUserInfo ().party.owner}, 
+		UpdateService.GetInstance ().SendUpdate (CurrentUser.GetInstance ().GetUserInfo ().party.partyMembers, 
 					UpdateService.CreateMessage (UpdateType.GameLoaded));
 	}
 
@@ -58,5 +56,14 @@ public class AdventureController : Photon.MonoBehaviour {
 		}, (error) => {
 			Debug.LogError (error);	
 		});
+	}
+
+	public void OnPhotonSerialiseView (PhotonStream stream, PhotonMessageInfo info) {
+		Debug.Log (info);
+		if (stream.isWriting) {
+			Debug.Log ("writting");
+		} else {
+			Debug.Log ("reading");
+		}
 	}
 }
