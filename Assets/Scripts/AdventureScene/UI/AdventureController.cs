@@ -7,6 +7,8 @@ public class AdventureController : Photon.MonoBehaviour {
 
 	public GameObject loadingScreen;
 	public GameObject party;
+
+	private GameObject actualLoadingScreen;
 	private HashSet<string> loadedPlayers;
 
 	public void Awake () {
@@ -19,21 +21,21 @@ public class AdventureController : Photon.MonoBehaviour {
 				StartGame ();
 			}
 		});
-
-		if (AllPartyUsersLoaded ()) {
-			StartGame ();
-		}
 	}
 
 	public void StartGame () {
 		if (NetworkService.GetInstance ().IsMasterClient ()) {
-			loadingScreen.SetActive (false);
+			actualLoadingScreen.SetActive (false);
 			GameObject partyPanel = NetworkService.GetInstance ().SpawnScene (party.name, Vector3.zero, Quaternion.identity, 0);
 			partyPanel.transform.SetParent (GameObject.FindGameObjectWithTag ("SynchronisedCanvas").transform, false);
 		}
 	}
 
 	public void Start () {
+		if (NetworkService.GetInstance ().IsMasterClient ()) {
+			actualLoadingScreen = NetworkService.GetInstance ().SpawnScene (loadingScreen.name, Vector3.zero, Quaternion.identity, 0);
+		}
+
 		GameObject.FindGameObjectWithTag ("Chat").GetComponent<ChatController> ().InitDefaultChat ();
 		UpdateService.GetInstance ().SendUpdate (new string[] {CurrentUser.GetInstance ().GetUserInfo ().party.owner}, 
 					UpdateService.CreateMessage (UpdateType.GameLoaded));
