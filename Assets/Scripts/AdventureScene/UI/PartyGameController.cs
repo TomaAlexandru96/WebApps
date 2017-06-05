@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PartyGameController : MonoBehaviour {
+public class PartyGameController : Photon.MonoBehaviour {
 
 	public GameObject playerPrefab;
 
