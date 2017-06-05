@@ -44,7 +44,7 @@ public class CurrentUser : MonoBehaviour {
 		}
 
 		String userJSON = JsonUtility.ToJson (userInfo);
-		WriteToCache (userJSON);
+		PlayerPrefs.SetString ("player_cache", userJSON);
 	}
 
 	private void LoadFromCache () {
@@ -52,39 +52,22 @@ public class CurrentUser : MonoBehaviour {
 			return;
 		}
 
-		try {
-			StreamReader file = new StreamReader (userCache);
-			String userInfoJSON = file.ReadToEnd ();
+		String userInfoJSON = PlayerPrefs.GetString ("player_cache");
 
-			if (userInfoJSON.Equals ("")) {
-				return;
-			}
-
-			User loadedUser = JsonUtility.FromJson<User> (userInfoJSON);
-
-			DBServer.GetInstance ().Login (loadedUser.username, loadedUser.password, false, (user) => {
-			}, (error) => {
-				Logout (true);
-			});
-
-			file.Close ();
-		} catch (Exception) {
+		if (userInfoJSON.Equals ("")) {
 			return;
 		}
-	}
 
-	private void WriteToCache (String message) {
-		try {
-			StreamWriter file = new StreamWriter (userCache);
-			file.WriteLine (message);
-			file.Close ();
-		} catch (Exception) {
-			return;
-		}
+		User loadedUser = JsonUtility.FromJson<User> (userInfoJSON);
+
+		DBServer.GetInstance ().Login (loadedUser.username, loadedUser.password, false, (user) => {
+		}, (error) => {
+			Logout (true);
+		});
 	}
 
 	public void ClearCahce () {
-		WriteToCache ("");
+		PlayerPrefs.DeleteKey ("player_cache");
 	}
 
 	public void Login (User userInfo) {
