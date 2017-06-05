@@ -39,12 +39,12 @@ public class Grid : MonoBehaviour {
 		// We render the grid in a diamond pattern
 		for (int x = 0; x < Width; x++) {
 			for (int y = 0; y < Height; y++) {
-				float offset = 0;
-				if (y%2 != 0) {
-					offset = 0.25f;
-				}
+				//float offset = 0;
+				//if (y%2 != 0) {
+				//	offset = 0.25f;
+				//}
 		
-				Vector2 pos = new Vector2(((x*0.5f)+offset)+transform.position.x, (y*0.5f)+transform.position.y);
+				Vector2 pos = new Vector2(((x*0.5f))+transform.position.x, (y*0.5f)+transform.position.y);
 				Node node = new Node(x, y, pos, this);
 				Nodes[x, y] = node;
 
@@ -169,9 +169,42 @@ public class Grid : MonoBehaviour {
 		}		
 	}
 
-	/*void Start() {
+	public void DrawPath (BreadCrumb bc) {
+		//Vector2 target = GameObject.FindGameObjectWithTag ("Player").transform.localPosition;
+		//Point gridPos = new Point((int)(target.x*2), (int)(target.y*2));
+
+
+		//if (gridPos != null) {						
+
+			//if (gridPos.X > 0 && gridPos.Y > 0 && gridPos.X < Width && gridPos.Y < Height) {
+
+				//Point enemyPos = new Point((int)(Enemy.transform.localPosition.x*2), (int)(Enemy.transform.localPosition.y*2));
+				//Nodes [enemyPos.X, enemyPos.Y].SetColor (Color.blue);
+
+				//BreadCrumb bc = PathFinder.FindPath (this, enemyPos, gridPos);
+
+				int count = 0;
+				LineRenderer lr = Enemy.GetComponent<LineRenderer> ();
+				lr.positionCount = 100;
+				lr.startColor = Color.yellow;
+				lr.endColor = Color.yellow;
+
+				//Draw out our path
+				while (bc != null) {
+					Vector2 bcRealPos = bc.toRealCoordinates (this);
+					lr.SetPosition(count, new Vector3(bcRealPos.x, bcRealPos.y, 0));
+					bc = bc.next;
+					count += 1;
+				}
+				lr.positionCount = count;
+			}
+		//}
+	//}
+
+	/*void Start () {
 		Vector2 target = GameObject.FindGameObjectWithTag ("Player").transform.localPosition;
 		Point gridPos = new Point((int)(target.x*2), (int)(target.y*2));
+		Debug.Log ("Player position x:" + gridPos.X + ", y: " + gridPos.Y);
 
 
 		if (gridPos != null) {						
@@ -179,6 +212,8 @@ public class Grid : MonoBehaviour {
 			if (gridPos.X > 0 && gridPos.Y > 0 && gridPos.X < Width && gridPos.Y < Height) {
 
 				Point enemyPos = new Point((int)(Enemy.transform.localPosition.x*2), (int)(Enemy.transform.localPosition.y*2));
+				Debug.Log ("Enemy position x:" + enemyPos.X + ", y: " + enemyPos.Y);
+
 				Nodes [enemyPos.X, enemyPos.Y].SetColor (Color.blue);
 
 				BreadCrumb bc = PathFinder.FindPath (this, enemyPos, gridPos);

@@ -33,4 +33,8 @@ public class BreadCrumb : IComparable<BreadCrumb>
 		return cost.CompareTo(other.cost);
 	}
 	#endregion
+
+	public Vector2 toRealCoordinates(Grid grid) {
+		return new Vector2((position.X*0.5f) + grid.transform.position.x, (position.Y*0.5f) + grid.transform.position.y);
+	}
 }
