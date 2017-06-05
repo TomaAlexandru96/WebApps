@@ -27,8 +27,8 @@ public class AdventureController : Photon.MonoBehaviour {
 	}
 
 	public void StartGame () {
+		loadingScreen.SetActive (false);
 		if (NetworkService.GetInstance ().IsMasterClient ()) {
-			loadingScreen.SetActive (false);
 			GameObject partyPanel = NetworkService.GetInstance ().SpawnScene (party.name, Vector3.zero, Quaternion.identity, 0);
 			partyPanel.transform.SetParent (GameObject.FindGameObjectWithTag ("Canvas").transform, false);
 		}
