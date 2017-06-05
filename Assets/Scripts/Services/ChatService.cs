@@ -116,7 +116,7 @@ public class ChatService : MonoBehaviour, IChatClientListener {
 			}
 			chatMessages.Add ((String) messages [i]);
 		}
-
+		GameObject.FindGameObjectWithTag ("ChatButtonsView").GetComponent<ChatTabController> ().ChatAlreadyExist(channelName);
 		GetChat ().UpdateViewport (chatMessages, channelName);
 	}
 
