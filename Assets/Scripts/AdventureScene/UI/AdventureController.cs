@@ -28,7 +28,7 @@ public class AdventureController : MonoBehaviour {
 	public void StartGame () {
 		loadingScreen.SetActive (false);
 		if (NetworkService.GetInstance ().IsMasterClient ()) {
-			GameObject partyPanel = NetworkService.GetInstance ().Spawn (party.name, Vector3.zero, Quaternion.identity, 0);
+			GameObject partyPanel = NetworkService.GetInstance ().SpawnScene (party.name, Vector3.zero, Quaternion.identity, 0);
 			partyPanel.transform.SetParent (GameObject.FindGameObjectWithTag ("Canvas").transform, false);
 		}
 	}
