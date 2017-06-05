@@ -97,14 +97,10 @@ public class ChatController : MonoBehaviour, IPointerEnterHandler, IPointerExitH
 	public void  Awake () {
 		unsub7 = UpdateService.GetInstance ().Subscribe (UpdateType.ChatRequest, (sender, message) => {
 			ConfirmAlertController.Create ("You have received a chat invite from " + sender, (alert) => {
-//				if(!partyMembers.ContainsPlayer(sender)){
 				UpdateService.GetInstance ().SendUpdate (new string[]{sender}, 
 						UpdateService.CreateMessage (UpdateType.ChatRequestAccept));
 					
 				chatTabController.AddChat (CurrentUser.GetInstance().GetUserInfo().username + ":" + sender, true);
-//				} else {
-//					Debug.Log("Duplicate invite");
-//				}
 				alert.Close ();
 			}, (alert) => {
 				alert.Close ();

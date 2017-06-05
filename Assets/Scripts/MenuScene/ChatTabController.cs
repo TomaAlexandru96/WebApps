@@ -14,7 +14,7 @@ public class ChatTabController : MonoBehaviour {
 	public void AddChat () {
 		RequestAlertController.Create ("Who do you want to chat with?", (alert, input) => {
 			DBServer.GetInstance ().FindUser (input, (user) => {
-				if (user.active) {
+				if (user.active && !ChatAlreadyExist(CurrentUser.GetInstance().GetUserInfo().username + ':' + input)) {
 					UpdateService.GetInstance ().SendUpdate (new string[]{input}, UpdateService.CreateMessage (UpdateType.ChatRequest));
 					// AddChat ("Chat " + totalChats, true);
 				}
@@ -26,6 +26,9 @@ public class ChatTabController : MonoBehaviour {
 	}
 
 	public void AddChat (String name, bool isCloseable) {
+		if (ChatAlreadyExist (name)) {
+			return;
+		}
 		GameObject newTab = (GameObject) Instantiate (tabPrefab);
 		newTab.transform.SetParent (content.transform);
 		newTab.GetComponent <ChatTab> ().UpdateName (name, totalChats);
@@ -49,5 +52,26 @@ public class ChatTabController : MonoBehaviour {
 			}
 		}
 		ActivateLastTab ();
+	}
+
+	public bool ChatAlreadyExist(String name) {
+		String chatName;
+		String[] chatNames;
+		String[] names = name.Split (':');
+		for (int i = 0; i < content.transform.childCount; i++) {
+			chatName = content.transform.GetChild (i).GetChild (0).GetComponent<Text> ().text;
+			chatNames = chatName.Split (':');
+			if (chatName.Equals (name)){
+				content.transform.GetChild (i).gameObject.SetActive (true);
+				return true;
+			}
+			if (chatNames.Length > 1) {
+				if (chatNames[1].Equals(names[0]) && names[1].Equals(chatNames[0])) {
+					content.transform.GetChild (i).gameObject.SetActive (true);
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 }
