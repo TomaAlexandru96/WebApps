@@ -13,27 +13,19 @@ public class AdventureController : Photon.MonoBehaviour {
 	public void Awake () {
 		loadedPlayers = new HashSet<string> ();
 		loadedPlayers.Add (CurrentUser.GetInstance ().GetUserInfo ().username);
-
-		UpdateService.GetInstance ().Subscribe (UpdateType.GameLoaded, (sender, message) => {
-			loadedPlayers.Add (sender);
-			if (AllPartyUsersLoaded ()) {
-				StartGame ();
-			}
-		});
 	}
 
 	public void StartGame () {
 		loadingScreen.SetActive (false);
 		if (NetworkService.GetInstance ().IsMasterClient ()) {
-			GameObject partyPanel = NetworkService.GetInstance ().SpawnScene (party.name, Vector3.zero, Quaternion.identity, 0);
+			GameObject partyPanel = NetworkService.GetInstance ().Spawn (party.name, Vector3.zero, Quaternion.identity, 0);
 			partyPanel.transform.SetParent (GameObject.FindGameObjectWithTag ("Canvas").transform, false);
 		}
 	}
 
 	public void Start () {
 		GameObject.FindGameObjectWithTag ("Chat").GetComponent<ChatController> ().InitDefaultChat ();
-		UpdateService.GetInstance ().SendUpdate (CurrentUser.GetInstance ().GetUserInfo ().party.partyMembers, 
-					UpdateService.CreateMessage (UpdateType.GameLoaded));
+		photonView.RPC ("GameLoaded", PhotonTargets.All);
 	}
 
 	public bool AllPartyUsersLoaded () {
@@ -52,6 +44,11 @@ public class AdventureController : Photon.MonoBehaviour {
 		}, (error) => {
 			Debug.LogError (error);	
 		});
+	}
+
+	[RPC]
+	public void GameLoaded () { 
+		Debug.Log ("GameLoaded from " + CurrentUser.GetInstance ().GetUserInfo ().username);
 	}
 
 	public void OnPhotonSerialiseView (PhotonStream stream, PhotonMessageInfo info) {
