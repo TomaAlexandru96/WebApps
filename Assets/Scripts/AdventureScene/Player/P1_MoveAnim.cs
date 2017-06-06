@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using Photon;
 
-public class P1_MoveAnim : Photon.PunBehaviour {
+public class P1_MoveAnim : Photon.PunBehaviour, IPunObservable {
 
 	Animator animator;
 
@@ -31,7 +31,7 @@ public class P1_MoveAnim : Photon.PunBehaviour {
 
 	void OnPhotonInstantiate () {
 		mainCamera.enabled = photonView.isMine;
-		transform.parent = GameObject.FindGameObjectWithTag ("Grid").transform;
+		transform.SetParent (GameObject.FindGameObjectWithTag ("Grid").transform);
 		if (photonView.isMine) {
 			rb = GetComponent<Rigidbody2D> ();
 			animator = GetComponent<Animator>();
@@ -152,17 +152,6 @@ public class P1_MoveAnim : Photon.PunBehaviour {
 
 	}
 
-	void OnSerialisedView (PhotonStream stream, PhotonMessageInfo info) {
-		if (stream.isWriting) {
-			stream.SendNext (transform);
-			stream.SendNext (move);
-		} else {
-			transform.position = ((Transform) stream.ReceiveNext ()).position;
-			move = (Direction) stream.ReceiveNext ();
-			determineAnimation ();
-		}
-	}
-
 	public void Damaged() {
 		GetComponent<SpriteRenderer> ().color = UnityEngine.Color.red;
 		startAttack = Time.time;
@@ -192,4 +181,16 @@ public class P1_MoveAnim : Photon.PunBehaviour {
 
 	}
 
+	#region IPunObservable implementation
+	void IPunObservable.OnPhotonSerializeView (PhotonStream stream, PhotonMessageInfo info) {
+		if (stream.isWriting) {
+			stream.SendNext (transform);
+			stream.SendNext (move);
+		} else {
+			transform.position = ((Transform) stream.ReceiveNext ()).position;
+			move = (Direction) stream.ReceiveNext ();
+			determineAnimation ();
+		}
+	}
+	#endregion
 }
