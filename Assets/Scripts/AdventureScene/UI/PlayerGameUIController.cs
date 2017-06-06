@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class PlayerGameUIController : Photon.MonoBehaviour {
+public class PlayerGameUIController : Photon.PunBehaviour {
 
 	public Image avatar;
 	public Text playerName;
