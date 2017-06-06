@@ -6,13 +6,13 @@ public class PlayerLife : MonoBehaviour {
 
 	public int totHP;
 	public int curHP;
-	public P1_MoveAnim player;
+	public Player1MoveAnim player;
 	public float scale;
 	public float currentScale;
 
 	// Use this for initialization
 	void Start () {
-		player = transform.parent.gameObject.GetComponent<P1_MoveAnim> ();
+		player = transform.parent.gameObject.GetComponent<Player1MoveAnim> ();
 		scale = transform.localScale.x;
 	}
 	
