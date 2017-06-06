@@ -12,17 +12,10 @@ public class MenuController : MonoBehaviour {
 	private int mode = PartyMembers.ADVENTURE;
 	private Action unsub;
 	private Action unsub1;
+	private static bool hasLoadedServices = false;
 
 	public void Awake () {
-		// start services 
-		UpdateService.GetInstance ().StartService ();
-		ChatService.GetInstance ().StartService (() => {
-			NetworkService.GetInstance ().StartService (() => {
-				UpdateService.GetInstance ().SendUpdate (CurrentUser.GetInstance ().GetUserInfo ().friends, 
-					UpdateService.CreateMessage (UpdateType.LoginUser));
-				loadingScreen.SetActive (false);
-			});
-		});
+		StartServices ();
 
 		unsub = UpdateService.GetInstance ().Subscribe (UpdateType.UserUpdate, (sender, message) => {
 			if (!CurrentUser.GetInstance ().IsLoggedIn ()) {
@@ -47,7 +40,8 @@ public class MenuController : MonoBehaviour {
 			NetworkService.GetInstance ().StopService ();
 			UpdateService.GetInstance ().StopService ();
 			ChatService.GetInstance ().StopService ();
-			SceneManager.LoadScene ("Login");	
+			SceneManager.LoadScene ("Login");
+			hasLoadedServices = false;
 		}, (error) => {
 			Debug.LogError (error);
 		});
@@ -89,5 +83,23 @@ public class MenuController : MonoBehaviour {
 
 	public int GetMode () {
 		return mode;
+	}
+
+	public void StartServices () {
+		if (hasLoadedServices) {
+			loadingScreen.SetActive (false);
+			return;
+		}
+
+		// start services
+		UpdateService.GetInstance ().StartService ();
+		ChatService.GetInstance ().StartService (() => {
+			NetworkService.GetInstance ().StartService (() => {
+				UpdateService.GetInstance ().SendUpdate (CurrentUser.GetInstance ().GetUserInfo ().friends, 
+					UpdateService.CreateMessage (UpdateType.LoginUser));
+				loadingScreen.SetActive (false);
+				hasLoadedServices = true;
+			});
+		});
 	}
 }

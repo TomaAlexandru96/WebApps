@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
+using Photon;
 
-public class P1_MoveAnim : MonoBehaviour {
+public class P1_MoveAnim : Photon.PunBehaviour {
 
 	Animator animator;
 
@@ -27,7 +28,8 @@ public class P1_MoveAnim : MonoBehaviour {
 	int upLeftHash = Animator.StringToHash("UpLeft");
 	int downLeftHash = Animator.StringToHash("DownLeft");*/
 
-	void Start() {
+	void OnPhotonInstantiate () {
+		transform.parent = GameObject.FindGameObjectWithTag ("Grid").transform;
 		rb = GetComponent<Rigidbody2D> ();
 		animator = GetComponent<Animator>();
 		stats = new PlayerStats (PlayerType.FrontEndDev);
@@ -35,7 +37,7 @@ public class P1_MoveAnim : MonoBehaviour {
 		weapon = new Item ("Sword", 3, 2, false);
 	}
 
-	void Update() {
+	void Update () {
 
 		if (startAttack + 0.5 < Time.time) {
 			startAttack = Time.time;

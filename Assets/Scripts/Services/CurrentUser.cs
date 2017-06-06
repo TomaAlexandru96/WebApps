@@ -138,5 +138,21 @@ public class CurrentUser : MonoBehaviour {
 	public void UnsubscribeCH (string name) {
 		subscribedCH.Remove (name);
 	}
+
+	public int GetPositionInParty () {
+		if (!IsInParty ()) {
+			return -1;
+		}
+
+		int i = 0;
+		foreach (var player in userInfo.party.partyMembers) {
+			if (player.Equals (userInfo.username)) {
+				return i;
+			}
+			i++;
+		}
+
+		return -1;
+	}
 }
 
