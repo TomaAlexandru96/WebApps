@@ -31,6 +31,7 @@ public class P1_MoveAnim : Photon.PunBehaviour, IPunObservable {
 
 	void OnPhotonInstantiate () {
 		mainCamera.enabled = photonView.isMine;
+		mainCamera.GetComponent<AudioListener> ().enabled = photonView.isMine;
 		transform.SetParent (GameObject.FindGameObjectWithTag ("Grid").transform);
 		if (photonView.isMine) {
 			rb = GetComponent<Rigidbody2D> ();
@@ -186,10 +187,12 @@ public class P1_MoveAnim : Photon.PunBehaviour, IPunObservable {
 		if (stream.isWriting) {
 			stream.SendNext (transform);
 			stream.SendNext (move);
+			Debug.Log ("writing");
 		} else {
 			transform.position = ((Transform) stream.ReceiveNext ()).position;
 			move = (Direction) stream.ReceiveNext ();
 			determineAnimation ();
+			Debug.Log ("reading");
 		}
 	}
 	#endregion
