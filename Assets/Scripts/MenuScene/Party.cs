@@ -18,6 +18,7 @@ public class Party : MonoBehaviour {
 	private Action unsub2;
 	private Action unsub3;
 	private Action unsub4;
+	private string chatName;
 
 	public void Awake () {
 		unsub2 = UpdateService.GetInstance ().Subscribe (UpdateType.PartyRequestAccept, (sender, message) => {
@@ -77,6 +78,7 @@ public class Party : MonoBehaviour {
 			ChatController.GetChat ().DestroyChat (GetPartyChatName ());
 			menuController.SwtichToMenuView ();
 			NetworkService.GetInstance ().LeaveRoom ();
+			SetPartyChatName (null);
 		} else {
 			ClearParty ();
 			foreach (var member in CurrentUser.GetInstance ().GetUserInfo ().party.partyMembers) {
@@ -95,6 +97,7 @@ public class Party : MonoBehaviour {
 
 	public void Join () {
 		menuController.SwitchToPartyView ();
+		SetPartyChatName (CurrentUser.GetInstance ().GetUserInfo ().party.owner);
 		UpdateParty ();
 	}
 
@@ -137,6 +140,10 @@ public class Party : MonoBehaviour {
 	}
 
 	public string GetPartyChatName () {
-		return CurrentUser.GetInstance ().GetUserInfo ().party.owner;
+		return chatName;
+	}
+
+	public void SetPartyChatName (string name) {
+		chatName = name;
 	}
 }

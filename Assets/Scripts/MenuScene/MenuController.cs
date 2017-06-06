@@ -88,6 +88,7 @@ public class MenuController : MonoBehaviour {
 	public void StartServices () {
 		if (hasLoadedServices) {
 			loadingScreen.SetActive (false);
+			ChatController.GetChat ().InitDefaultChat ();
 			return;
 		}
 
