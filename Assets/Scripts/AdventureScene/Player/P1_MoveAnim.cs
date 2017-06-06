@@ -183,10 +183,8 @@ public class P1_MoveAnim : Photon.PunBehaviour, IPunObservable {
 	#region IPunObservable implementation
 	void IPunObservable.OnPhotonSerializeView (PhotonStream stream, PhotonMessageInfo info) {
 		if (stream.isWriting) {
-			stream.SendNext (transform.position);
 			stream.SendNext (move);
 		} else {
-			transform.position = (Vector3) stream.ReceiveNext ();
 			move = (Direction) stream.ReceiveNext ();
 			determineAnimation ();
 		}
