@@ -152,6 +152,17 @@ public class P1_MoveAnim : Photon.PunBehaviour {
 
 	}
 
+	void OnSerialisedView (PhotonStream stream, PhotonMessageInfo info) {
+		if (stream.isWriting) {
+			stream.SendNext (transform);
+			stream.SendNext (move);
+		} else {
+			transform.position = ((Transform) stream.ReceiveNext ()).position;
+			move = (Direction) stream.ReceiveNext ();
+			determineAnimation ();
+		}
+	}
+
 	public void Damaged() {
 		GetComponent<SpriteRenderer> ().color = UnityEngine.Color.red;
 		startAttack = Time.time;
