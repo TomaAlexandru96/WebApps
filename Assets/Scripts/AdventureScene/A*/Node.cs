@@ -42,17 +42,17 @@ public class Node {
 		}
 
 		//Draw Node on screen for debugging purposes
-		Draw = GameObject.Instantiate (Resources.Load ("Node")) as GameObject;
+		/*Draw = GameObject.Instantiate (Resources.Load ("Node")) as GameObject;
 		Draw.transform.position = Position;
 		if (BadNode) {
 			Draw.GetComponent<SpriteRenderer> ().color = Color.red;
 		} else {
 			Draw.GetComponent<SpriteRenderer> ().color = Color.blue;
-		}
+		}*/
 	}
 
 	public void SetColor(Color color) {
-		Draw.transform.GetComponent<SpriteRenderer> ().color = color;
+		//Draw.transform.GetComponent<SpriteRenderer> ().color = color;
 	}
 
 	//Cull nodes if they don't have enough valid connection points (3)

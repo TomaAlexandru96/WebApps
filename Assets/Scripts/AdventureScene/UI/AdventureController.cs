@@ -7,6 +7,8 @@ public class AdventureController : Photon.PunBehaviour {
 
 	public GameObject loadingScreen;
 	public GameObject party;
+	public Transform[] spawnPoints;
+	public GameObject[] players;
 
 	private HashSet<string> loadedPlayers;
 
@@ -15,10 +17,11 @@ public class AdventureController : Photon.PunBehaviour {
 	}
 
 	public void StartGame () {
-		loadingScreen.SetActive (false);
+		SpawnPlayer ();
 		if (NetworkService.GetInstance ().IsMasterClient ()) {
 			NetworkService.GetInstance ().Spawn (party.name, Vector3.zero, Quaternion.identity, 0);
 		}
+		loadingScreen.SetActive (false);
 	}
 
 	public void OnApplicationQuit () {
@@ -54,5 +57,11 @@ public class AdventureController : Photon.PunBehaviour {
 		}, (error) => {
 			Debug.LogError (error);	
 		});
+	}
+
+	public void SpawnPlayer () {
+		// to be changed
+		NetworkService.GetInstance ().Spawn (players [0].name, 
+			spawnPoints [CurrentUser.GetInstance ().GetPositionInParty ()].position, Quaternion.identity, 0);
 	}
 }
