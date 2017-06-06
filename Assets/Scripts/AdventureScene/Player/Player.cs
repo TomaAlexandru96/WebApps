@@ -37,7 +37,7 @@ public class Player : Photon.PunBehaviour, IPunObservable {
 
 
 	void Update () {
-		if (!photonView.isMine) {
+		if (!photonView.isMine || ChatController.GetChat ().IsFocused ()) {
 			return;
 		}
 
