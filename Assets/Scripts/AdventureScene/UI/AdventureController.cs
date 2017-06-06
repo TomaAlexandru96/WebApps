@@ -23,6 +23,7 @@ public class AdventureController : Photon.PunBehaviour {
 	public void Start () {
 		GameObject.FindGameObjectWithTag ("Chat").GetComponent<ChatController> ().InitDefaultChat ();
 		SpawnPlayer ();
+		ChatController.GetChat ().withFadeOut = true;
 		photonView.RPC ("OnLoaded", PhotonTargets.All, CurrentUser.GetInstance ().GetUserInfo ().username);
 	}
 

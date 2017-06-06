@@ -55,7 +55,7 @@ public class ChatController : MonoBehaviour, IPointerEnterHandler, IPointerExitH
 	}
 
 	public void OnPointerExit(PointerEventData eventData) {
-		if (withFadeOut) {
+		if (withFadeOut && !IsFocused ()) {
 			GetComponent<CanvasGroup> ().alpha = 0.2f;
 		}
 	}
@@ -194,5 +194,9 @@ public class ChatController : MonoBehaviour, IPointerEnterHandler, IPointerExitH
 		} else {
 			return res [0];
 		}
+	}
+
+	public bool IsFocused () {
+		return input.isFocused;
 	}
 }
