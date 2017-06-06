@@ -27,6 +27,8 @@ public class NetworkService : Photon.PunBehaviour {
 		PhotonNetwork.ConnectUsingSettings (GAME_VERSION);
 		PhotonNetwork.automaticallySyncScene = true;
 		PhotonNetwork.InstantiateInRoomOnly = true;
+		PhotonNetwork.sendRate = 20;
+		PhotonNetwork.sendRateOnSerialize = 10;
 		this.onFinish = onFinish;
 	}
 
