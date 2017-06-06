@@ -61,7 +61,7 @@ public class AdventureController : Photon.PunBehaviour {
 
 	public void SpawnPlayer () {
 		// to be changed
-		NetworkService.GetInstance ().Spawn (players [0].name, 
+		NetworkService.GetInstance ().Spawn (players [CurrentUser.GetInstance ().GetUserInfo ().character.type].name, 
 			spawnPoints [CurrentUser.GetInstance ().GetPositionInParty ()].position, Quaternion.identity, 0);
 	}
 }

@@ -124,7 +124,7 @@ public class Enemy : MonoBehaviour {
 
 
 		if (coll.gameObject.tag == "Player") {
-			P1_MoveAnim player = coll.gameObject.GetComponent<P1_MoveAnim> ();
+			Player1MoveAnim player = coll.gameObject.GetComponent<Player1MoveAnim> ();
 			if (player.dead) {
 				PlayNormalAnimation ();
 			} else {
