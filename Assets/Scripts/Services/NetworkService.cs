@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class NetworkService : Photon.MonoBehaviour {
+public class NetworkService : Photon.PunBehaviour {
 
 	public const String GAME_VERSION = "v0.01";
 	public const String partyPrefabName = "Party";

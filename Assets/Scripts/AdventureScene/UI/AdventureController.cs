@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class AdventureController : Photon.MonoBehaviour {
+public class AdventureController : Photon.PunBehaviour {
 
 	public GameObject loadingScreen;
 	public GameObject party;
@@ -12,13 +12,12 @@ public class AdventureController : Photon.MonoBehaviour {
 
 	public void Awake () {
 		loadedPlayers = new HashSet<string> ();
-		loadedPlayers.Add (CurrentUser.GetInstance ().GetUserInfo ().username);
 	}
 
 	public void StartGame () {
 		loadingScreen.SetActive (false);
 		if (NetworkService.GetInstance ().IsMasterClient ()) {
-			GameObject partyPanel = NetworkService.GetInstance ().Spawn (party.name, Vector3.zero, Quaternion.identity, 0);
+			NetworkService.GetInstance ().Spawn (party.name, Vector3.zero, Quaternion.identity, 0);
 		}
 	}
 
@@ -28,6 +27,15 @@ public class AdventureController : Photon.MonoBehaviour {
 
 	public void Start () {
 		GameObject.FindGameObjectWithTag ("Chat").GetComponent<ChatController> ().InitDefaultChat ();
+		photonView.RPC ("OnLoaded", PhotonTargets.All, CurrentUser.GetInstance ().GetUserInfo ().username);
+	}
+
+	[PunRPC]
+	public void OnLoaded (string name) {
+		loadedPlayers.Add (name);
+		if (AllPartyUsersLoaded ()) {
+			StartGame ();
+		}
 	}
 
 	public bool AllPartyUsersLoaded () {
@@ -46,14 +54,5 @@ public class AdventureController : Photon.MonoBehaviour {
 		}, (error) => {
 			Debug.LogError (error);	
 		});
-	}
-
-	public void OnPhotonSerialiseView (PhotonStream stream, PhotonMessageInfo info) {
-		Debug.Log (info);
-		if (stream.isWriting) {
-			Debug.Log ("writting");
-		} else {
-			Debug.Log ("reading");
-		}
 	}
 }
