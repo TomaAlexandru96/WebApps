@@ -110,7 +110,7 @@ class DBHTTPHandler(BaseHTTPRequestHandler):
   # login method
   def handle_login(self, params):
     user = self.helper_find_user(params['username'][0])
-    if (user is None or user['password'] != params['password'][0]):
+    if (user is None or user['password'] != params['password'][0] or user['active']):
       self.send_code_only(NOT_ACCEPTABLE)
     else:
       query = '''UPDATE USERS SET ACTIVE = 't', LAST_TIME_ACTIVE = NOW()
