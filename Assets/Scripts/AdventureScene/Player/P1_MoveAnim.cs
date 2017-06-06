@@ -29,17 +29,15 @@ public class P1_MoveAnim : Photon.PunBehaviour, IPunObservable {
 	int upLeftHash = Animator.StringToHash("UpLeft");
 	int downLeftHash = Animator.StringToHash("DownLeft");*/
 
-	void OnPhotonInstantiate () {
+	void Start () {
 		mainCamera.enabled = photonView.isMine;
 		mainCamera.GetComponent<AudioListener> ().enabled = photonView.isMine;
 		transform.SetParent (GameObject.FindGameObjectWithTag ("Grid").transform);
-		if (photonView.isMine) {
-			rb = GetComponent<Rigidbody2D> ();
-			animator = GetComponent<Animator>();
-			stats = new PlayerStats (PlayerType.FrontEndDev);
-			curHP = stats.maxHP;
-			weapon = new Item ("Sword", 3, 2, false);	
-		}
+		rb = GetComponent<Rigidbody2D> ();
+		animator = GetComponent<Animator>();
+		stats = new PlayerStats (PlayerType.FrontEndDev);
+		curHP = stats.maxHP;
+		weapon = new Item ("Sword", 3, 2, false);	
 	}
 
 	void Update () {
@@ -185,14 +183,12 @@ public class P1_MoveAnim : Photon.PunBehaviour, IPunObservable {
 	#region IPunObservable implementation
 	void IPunObservable.OnPhotonSerializeView (PhotonStream stream, PhotonMessageInfo info) {
 		if (stream.isWriting) {
-			stream.SendNext (transform);
+			stream.SendNext (transform.position);
 			stream.SendNext (move);
-			Debug.Log ("writing");
 		} else {
-			transform.position = ((Transform) stream.ReceiveNext ()).position;
+			transform.position = (Vector3) stream.ReceiveNext ();
 			move = (Direction) stream.ReceiveNext ();
 			determineAnimation ();
-			Debug.Log ("reading");
 		}
 	}
 	#endregion
