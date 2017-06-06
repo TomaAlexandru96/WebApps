@@ -31,15 +31,20 @@ public class P1_MoveAnim : Photon.PunBehaviour {
 
 	void OnPhotonInstantiate () {
 		mainCamera.enabled = photonView.isMine;
-		transform.parent = GameObject.FindGameObjectWithTag ("Grid").transform;
-		rb = GetComponent<Rigidbody2D> ();
-		animator = GetComponent<Animator>();
-		stats = new PlayerStats (PlayerType.FrontEndDev);
-		curHP = stats.maxHP;
-		weapon = new Item ("Sword", 3, 2, false);
+		if (photonView.isMine) {
+			transform.parent = GameObject.FindGameObjectWithTag ("Grid").transform;
+			rb = GetComponent<Rigidbody2D> ();
+			animator = GetComponent<Animator>();
+			stats = new PlayerStats (PlayerType.FrontEndDev);
+			curHP = stats.maxHP;
+			weapon = new Item ("Sword", 3, 2, false);	
+		}
 	}
 
 	void Update () {
+		if (!photonView.isMine) {
+			return;
+		}
 
 		if (startAttack + 0.5 < Time.time) {
 			startAttack = Time.time;
