@@ -37,7 +37,7 @@ public class OptionScript : MonoBehaviour {
 
 	public void InviteToChat() {
 		DBServer.GetInstance ().FindUser (playerName, (user) => {
-			UpdateService.GetInstance ().SendUpdate (new string[]{playerName}, UpdateService.CreateMessage (UpdateType.ChatRequest));
+			ChatController.GetChat ().CreateNewPrivateChat (user.username);
 			gameObject.SetActive (false);
 		}, (error) => {
 			Debug.LogError (error);

@@ -77,11 +77,15 @@ public class ChatService : MonoBehaviour, IChatClientListener {
 
 	public void SendTextMessage (String message) {
 		if (!message.Equals ("")) {
-			message = "[" + chatClient.UserId + "]: " + message;
+			message = GetMessageTemplate (message);
 			chatClient.PublishMessage (activeCH, message);
 			chatMessages.Add (message);
 			GetChat ().UpdateViewport (chatMessages, activeCH);
 		}
+	}
+
+	public string GetMessageTemplate (String message) {
+		return "[" + chatClient.UserId + "]: " + message;
 	}
 
 	public void CreateNewChat (String name) {
@@ -116,7 +120,7 @@ public class ChatService : MonoBehaviour, IChatClientListener {
 			}
 			chatMessages.Add ((String) messages [i]);
 		}
-		GameObject.FindGameObjectWithTag ("ChatButtonsView").GetComponent<ChatTabController> ().ChatAlreadyExist(channelName);
+
 		GetChat ().UpdateViewport (chatMessages, channelName);
 	}
 
@@ -125,13 +129,11 @@ public class ChatService : MonoBehaviour, IChatClientListener {
 	}
 
 	public void OnSubscribed(string[] channels, bool[] results) {
-		
 	}
 
 	public void OnUnsubscribed(string[] channels) {
 	}
 
 	public void OnStatusUpdate(string user, int status, bool gotMessage, object message) {
-		
 	}
 }
