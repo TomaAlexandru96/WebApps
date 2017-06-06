@@ -13,10 +13,8 @@ public class Party : MonoBehaviour {
 	public GameObject leaveParty;
 	public Text gameModeLabel;
 	public MenuController menuController;
-	public ChatTabController tabController;
 	public GameObject playButton;
 
-	private string partyChatName;
 	private Action unsub2;
 	private Action unsub3;
 	private Action unsub4;
@@ -76,8 +74,7 @@ public class Party : MonoBehaviour {
 
 	private void UpdateParty () {
 		if (CurrentUser.GetInstance ().GetUserInfo ().party.GetSize () == 0) {
-			tabController.DestroyChat (partyChatName);
-			partyChatName = null;
+			ChatController.GetChat ().DestroyChat (GetPartyChatName ());
 			menuController.SwtichToMenuView ();
 			NetworkService.GetInstance ().LeaveRoom ();
 		} else {
@@ -85,10 +82,8 @@ public class Party : MonoBehaviour {
 			foreach (var member in CurrentUser.GetInstance ().GetUserInfo ().party.partyMembers) {
 				AddPlayer (member);
 			}
-			if (partyChatName == null) {
-				partyChatName = CurrentUser.GetInstance ().GetUserInfo ().party.owner;
-				tabController.AddChat (partyChatName, false);
-			}
+				
+			ChatController.GetChat ().CreateNewChat (GetPartyChatName (), "Party", false);
 		}
 	}
 
@@ -138,5 +133,9 @@ public class Party : MonoBehaviour {
 
 	public void Play () {
 		NetworkService.GetInstance ().LoadScene (GetPartyMode ());
+	}
+
+	public string GetPartyChatName () {
+		return CurrentUser.GetInstance ().GetUserInfo ().party.owner;
 	}
 }

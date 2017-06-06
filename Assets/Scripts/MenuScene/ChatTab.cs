@@ -7,8 +7,6 @@ using UnityEngine.UI;
 public class ChatTab : MonoBehaviour {
 	
 	private String chName;
-	private int chatNum;
-	public GameObject chatTab;
 	public GameObject closeButton;
 	public bool isCloseable;
 
@@ -17,17 +15,10 @@ public class ChatTab : MonoBehaviour {
 	}
 
 	public void SelectChat () {
-		getChatView ().GetComponent<ScrollRect> ().content = 
-			(RectTransform)getChatView ().GetChild(0).transform.GetChild (chatNum+1);
-		GameObject.FindGameObjectWithTag ("Chat").GetComponent<ChatController> ().LoadChat (chName);
-
 		DeactivateButtons ();
-		chatTab.GetComponent<Image> ().color = Color.green;
+		ChatController.GetChat ().LoadChat (chName);
+		GetComponent<Image> ().color = Color.green;
 	}
-
-	private Transform getChatView() {
-		return GameObject.FindGameObjectWithTag ("Chat").transform.GetChild (0);
-	} 
 
 	private void DeactivateButtons() {
 		for (int i = 0; i < GameObject.FindGameObjectWithTag ("ChatButtons").transform.childCount; i++) {
@@ -36,20 +27,12 @@ public class ChatTab : MonoBehaviour {
 	}
 
 	public void CloseTab () {
-		gameObject.SetActive (false);
-//		ChatService.GetInstance ().Unsubscribe (new string[]{chName});
-//		Destroy (gameObject);
+		ChatController.GetChat ().DestroyChat (chName);
 	}
 
-	public void UpdateName (String name, int num) {
+	public void UpdateName (String name, String viewName) {
 		chName = name;
-		chatNum = num;
-
-		if (CurrentUser.GetInstance ().IsInParty ()) {
-			transform.GetChild (0).GetComponent<Text> ().text = "Party";
-		} else {
-			transform.GetChild (0).GetComponent<Text> ().text = name;
-		}
+		transform.GetChild (0).GetComponent<Text> ().text = viewName;
 	}
 
 	public string GetName () {
