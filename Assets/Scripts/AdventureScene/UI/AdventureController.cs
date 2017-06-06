@@ -19,13 +19,15 @@ public class AdventureController : Photon.MonoBehaviour {
 		loadingScreen.SetActive (false);
 		if (NetworkService.GetInstance ().IsMasterClient ()) {
 			GameObject partyPanel = NetworkService.GetInstance ().Spawn (party.name, Vector3.zero, Quaternion.identity, 0);
-			partyPanel.transform.SetParent (GameObject.FindGameObjectWithTag ("Canvas").transform, false);
 		}
+	}
+
+	public void OnApplicationQuit () {
+		ExitGame ();
 	}
 
 	public void Start () {
 		GameObject.FindGameObjectWithTag ("Chat").GetComponent<ChatController> ().InitDefaultChat ();
-		photonView.RPC ("GameLoaded", PhotonTargets.All);
 	}
 
 	public bool AllPartyUsersLoaded () {
@@ -44,11 +46,6 @@ public class AdventureController : Photon.MonoBehaviour {
 		}, (error) => {
 			Debug.LogError (error);	
 		});
-	}
-		
-	[PunRPC]
-	public void GameLoaded () { 
-		Debug.Log ("GameLoaded from " + CurrentUser.GetInstance ().GetUserInfo ().username);
 	}
 
 	public void OnPhotonSerialiseView (PhotonStream stream, PhotonMessageInfo info) {
