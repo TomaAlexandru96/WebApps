@@ -31,8 +31,8 @@ public class P1_MoveAnim : Photon.PunBehaviour {
 
 	void OnPhotonInstantiate () {
 		mainCamera.enabled = photonView.isMine;
+		transform.parent = GameObject.FindGameObjectWithTag ("Grid").transform;
 		if (photonView.isMine) {
-			transform.parent = GameObject.FindGameObjectWithTag ("Grid").transform;
 			rb = GetComponent<Rigidbody2D> ();
 			animator = GetComponent<Animator>();
 			stats = new PlayerStats (PlayerType.FrontEndDev);
