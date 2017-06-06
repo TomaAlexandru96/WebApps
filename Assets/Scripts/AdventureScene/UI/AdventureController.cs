@@ -16,20 +16,13 @@ public class AdventureController : Photon.PunBehaviour {
 		loadedPlayers = new HashSet<string> ();
 	}
 
-	public void StartGame () {
-		SpawnPlayer ();
-		if (NetworkService.GetInstance ().IsMasterClient ()) {
-			NetworkService.GetInstance ().Spawn (party.name, Vector3.zero, Quaternion.identity, 0);
-		}
-		loadingScreen.SetActive (false);
-	}
-
 	public void OnApplicationQuit () {
 		ExitGame ();
 	}
 
 	public void Start () {
 		GameObject.FindGameObjectWithTag ("Chat").GetComponent<ChatController> ().InitDefaultChat ();
+		SpawnPlayer ();
 		photonView.RPC ("OnLoaded", PhotonTargets.All, CurrentUser.GetInstance ().GetUserInfo ().username);
 	}
 
@@ -39,6 +32,13 @@ public class AdventureController : Photon.PunBehaviour {
 		if (AllPartyUsersLoaded ()) {
 			StartGame ();
 		}
+	}
+
+	public void StartGame () {
+		if (NetworkService.GetInstance ().IsMasterClient ()) {
+			NetworkService.GetInstance ().SpawnScene (party.name, Vector3.zero, Quaternion.identity, 0);
+		}
+		loadingScreen.SetActive (false);
 	}
 
 	public bool AllPartyUsersLoaded () {
@@ -62,6 +62,6 @@ public class AdventureController : Photon.PunBehaviour {
 	public void SpawnPlayer () {
 		// to be changed
 		NetworkService.GetInstance ().Spawn (players [CurrentUser.GetInstance ().GetUserInfo ().character.type].name, 
-			spawnPoints [CurrentUser.GetInstance ().GetPositionInParty ()].position, Quaternion.identity, 0);
+			spawnPoints [CurrentUser.GetInstance ().GetPositionInParty ()].position, Quaternion.identity, 0, new object[1] {CurrentUser.GetInstance ().GetUserInfo ().username});
 	}
 }

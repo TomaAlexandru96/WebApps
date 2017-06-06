@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine;
 using System;
 
 public class Enemy : MonoBehaviour {
@@ -35,7 +36,6 @@ public class Enemy : MonoBehaviour {
 		grid = GetComponentInParent<Grid> ();
 		speed = 0.5f;
 		targetInRange = false;
-		target = GameObject.FindGameObjectWithTag ("Player").transform;
 		SetDamage ();
 		SetMaxHP ();
 		curHP = maxHP;
@@ -54,10 +54,28 @@ public class Enemy : MonoBehaviour {
 		}
 	}
 
+	private bool FindNewTarget () {
+		var targets = GameObject.FindGameObjectsWithTag ("Player");
+		if (targets.Length == 0) {
+			return false;
+		}
+		target = targets [UnityEngine.Random.Range (0, targets.Length - 1)].transform;
+		return true;
+	}
+
+	private bool HasTarget () {
+		return target != null;
+	}
+
 	// Update is called once per frame
 	void Update ()
 	{
-		
+		if (!HasTarget ()) {
+			if (!FindNewTarget ()) {
+				return;
+			}
+		}
+
 		if (targetInRange) {
 			/*RaycastHit2D hit = Physics2D.Raycast (transform.position, 
 				target.position - transform.position, Vector2.Distance(transform.position, target.position), 
@@ -120,11 +138,8 @@ public class Enemy : MonoBehaviour {
 	}
 
 	void OnCollisionStay2D(Collision2D coll) {
-
-
-
 		if (coll.gameObject.tag == "Player") {
-			Player1MoveAnim player = coll.gameObject.GetComponent<Player1MoveAnim> ();
+			Player player = coll.gameObject.GetComponent<Player> ();
 			if (player.dead) {
 				PlayNormalAnimation ();
 			} else {

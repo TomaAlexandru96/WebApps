@@ -6,12 +6,18 @@ public class PartyGameController : Photon.PunBehaviour {
 
 	public GameObject playerPrefab;
 
-	public void OnPhotonInstantiate () {
+	private Dictionary<string, Player> playerPartyEntities = new Dictionary<string, Player> ();
+
+	public void Start () {
 		transform.SetParent (GameObject.FindGameObjectWithTag ("Canvas").transform, false);
-		foreach (var username in CurrentUser.GetInstance ().GetUserInfo ().party.partyMembers) {
+
+		GameObject[] players = GameObject.FindGameObjectsWithTag ("Player");
+
+		foreach (GameObject player in players) {
+			playerPartyEntities.Add (player.GetComponent<Player> ().GetName (), player.GetComponent<Player> ());
 			GameObject go = Instantiate (playerPrefab);
-			go.GetComponent <PlayerGameUIController> ().SetStats (username);
 			go.transform.SetParent (transform);
+			go.GetComponent<PlayerGameUIController> ().SetPlayer (player.GetComponent<Player> ());
 		}
 	}
 }

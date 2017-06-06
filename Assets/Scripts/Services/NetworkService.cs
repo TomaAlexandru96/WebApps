@@ -78,6 +78,10 @@ public class NetworkService : Photon.PunBehaviour {
 		return PhotonNetwork.Instantiate (prefabName, position, rotation, groupID);
 	}
 
+	public GameObject Spawn (string prefabName, Vector3 position, Quaternion rotation, int groupID, object[] data) {
+		return PhotonNetwork.Instantiate (prefabName, position, rotation, groupID, data);
+	}
+
 	public GameObject SpawnScene (string prefabName, Vector3 position, Quaternion rotation, int groupID) {
 		return PhotonNetwork.InstantiateSceneObject (prefabName, position, rotation, groupID, new object[0]);
 	}
@@ -86,7 +90,12 @@ public class NetworkService : Photon.PunBehaviour {
 		return PhotonNetwork.isMasterClient;
 	}
 
-	public void OnConnectedToPhoton () {
+	public override void OnConnectedToPhoton () {
+		base.OnConnectedToPhoton ();
 		onFinish ();
+	}
+
+	public bool IsInRoom () {
+		return PhotonNetwork.inRoom;
 	}
 }
