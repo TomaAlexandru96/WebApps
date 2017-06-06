@@ -124,6 +124,7 @@ public class Party : MonoBehaviour {
 		var owner = CurrentUser.GetInstance ().GetUserInfo ().party.owner;
 		addPlayer.SetActive (owner == CurrentUser.GetInstance ().GetUserInfo ().username);
 		playButton.SetActive (owner == CurrentUser.GetInstance ().GetUserInfo ().username);
+		playButton.GetComponent<Button> ().interactable = NetworkService.GetInstance ().IsInRoom ();
 		gameModeLabel.text = GetPartyMode () == PartyMembers.ADVENTURE ?  "Game Mode\n--Adventure--" : "Game Mode\n--Endless--";
 	}
 

@@ -18,6 +18,11 @@ public class Player : Photon.PunBehaviour, IPunObservable {
 
 	protected Rigidbody2D rb;
 	protected Animator animator;
+	protected string username;
+
+	void Awake () {
+		this.username = (string) photonView.instantiationData [0];
+	}
 
 	void Start () {
 		mainCamera.enabled = photonView.isMine;
@@ -142,6 +147,10 @@ public class Player : Photon.PunBehaviour, IPunObservable {
 		}
 	}
 	#endregion
+
+	public string GetName () {
+		return username;
+	}
 
 	protected virtual void Animate () { }
 }

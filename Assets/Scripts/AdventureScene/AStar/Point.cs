@@ -18,5 +18,9 @@ public class Point {
 		return other.X == this.X &&
 				other.Y == this.Y;
 	}
+
+	public override int GetHashCode () {
+		return base.GetHashCode ();
+	}
 }
 
