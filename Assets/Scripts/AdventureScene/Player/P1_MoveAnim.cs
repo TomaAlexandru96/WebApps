@@ -8,6 +8,7 @@ public class P1_MoveAnim : Photon.PunBehaviour {
 	public float speed;
 	public Direction move;
 	public PlayerStats stats;
+	public Camera mainCamera;
 
 	private Rigidbody2D rb;
 
@@ -29,6 +30,7 @@ public class P1_MoveAnim : Photon.PunBehaviour {
 	int downLeftHash = Animator.StringToHash("DownLeft");*/
 
 	void OnPhotonInstantiate () {
+		mainCamera.enabled = photonView.isMine;
 		transform.parent = GameObject.FindGameObjectWithTag ("Grid").transform;
 		rb = GetComponent<Rigidbody2D> ();
 		animator = GetComponent<Animator>();
