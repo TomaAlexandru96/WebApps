@@ -18,4 +18,11 @@ public class EnemyJS : Enemy {
 			gameObject.SetActive (false);
 		}
 	}
+
+	public virtual void Rotate() {
+		Vector2 relativePos = target.position - transform.position;
+		float angle = Mathf.Atan2(relativePos.y, relativePos.x) * Mathf.Rad2Deg - 90;
+		Quaternion q = Quaternion.AngleAxis(angle, Vector3.forward);
+		transform.rotation = Quaternion.Slerp(transform.rotation, q, Time.deltaTime * 2f);
+	}
 }

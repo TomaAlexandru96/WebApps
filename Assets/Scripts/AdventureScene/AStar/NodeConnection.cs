@@ -22,7 +22,7 @@ public class NodeConnection {
 		if (Parent != null && Parent.BadNode) {
 			Valid = false;
 		}
-		DrawLine ();
+		//DrawLine ();
 	}
 
 	//Debug
