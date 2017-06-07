@@ -101,7 +101,7 @@ public class Enemy : MonoBehaviour {
 					Point enemyPos = CurrentEnemyPoint();
 
 					currentBr = PathFinder.FindPath (grid, enemyPos, curTargetPos);
-					grid.DrawPath (currentBr);
+					// grid.DrawPath (currentBr);
 					currentBr = currentBr.next;
 				}
 			}
