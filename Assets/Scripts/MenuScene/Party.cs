@@ -126,9 +126,19 @@ public class Party : MonoBehaviour {
 	public void Update () {
 		var owner = CurrentUser.GetInstance ().GetUserInfo ().party.owner;
 		addPlayer.SetActive (owner == CurrentUser.GetInstance ().GetUserInfo ().username);
+		addPlayer.SetActive (GetPartyMode () != PartyMembers.STORY);
 		playButton.SetActive (owner == CurrentUser.GetInstance ().GetUserInfo ().username);
 		playButton.GetComponent<Button> ().interactable = NetworkService.GetInstance ().IsInRoom ();
-		gameModeLabel.text = GetPartyMode () == PartyMembers.ADVENTURE ?  "Game Mode\n--Adventure--" : "Game Mode\n--Endless--";
+
+		string text = "";
+
+		switch (GetPartyMode ()) {
+		case PartyMembers.ADVENTURE: text = "Game Mode\n--Adventure--" ; break;
+		case PartyMembers.ENDLESS: text = "Game Mode\n--Endless--" ; break;
+		case PartyMembers.STORY: text = "Game Mode\n--Story--" ; break;
+		}
+
+		gameModeLabel.text = text;
 	}
 
 	public int GetPartyMode () {
