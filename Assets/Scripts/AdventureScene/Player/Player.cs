@@ -46,11 +46,7 @@ public class Player : Photon.PunBehaviour, IPunObservable {
 			GetComponent<SpriteRenderer> ().color = UnityEngine.Color.white;
 		}
 
-		float h;
-		float v;
-
 		if (!dead) {
-
 			// GET ATTACK INPUT
 			if (Input.GetMouseButtonDown(0)) {
 				Vector3 pz = Camera.main.ScreenToWorldPoint(Input.mousePosition);
@@ -60,81 +56,66 @@ public class Player : Photon.PunBehaviour, IPunObservable {
 				}
 			}
 
-			// GET MOVEMENT INPUT
-			h = Input.GetAxisRaw ("Horizontal");
-
-			v = Input.GetAxisRaw ("Vertical");
-
-			// MOVEMENT
-			Vector2 movement = new Vector2 (h, v).normalized;
-			rb.velocity = movement * speed;
-
-			// RIGHT
-			if (h > 0.1) {
-
-				if (v > 0.1) {
-					move = Direction.UpRight;
-				} else if (v < -0.1) {
-					move = Direction.DownRight;
-				} else {
-					move = Direction.Right;
-				}
-				// LEFT
-			} else if (h < -0.1) {
-
-				if (v > 0.1) {
-					move = Direction.UpLeft;
-				} else if (v < -0.1) {
-					move = Direction.DownLeft;
-				} else {
-					move = Direction.Left;
-				}
-				// STILL
-			} else {
-
-				if (v > 0.1) {
-					move = Direction.Up;
-				} else if (v < -0.1) {
-					move = Direction.Down;
-				} else {
-					move = Direction.Still;
-				}
-
-			}
+			Move ();
 		} else {
 			move = Direction.Dead;
 		}
 
 		Animate ();
-
 	}
 
-	public void Damaged() {
-		GetComponent<SpriteRenderer> ().color = UnityEngine.Color.red;
-		startAttack = Time.time;
-	}
+	private void Move () {
+		// GET MOVEMENT INPUT
+		float h = Input.GetAxisRaw ("Horizontal");
 
-	void OnCollisionStay2D(Collision2D coll) {
-		if (coll.gameObject.tag == "Enemy") {
-			if (Input.GetMouseButtonDown(0)) {
-				RaycastHit2D hit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector2.zero);
-				if(hit.collider != null) {
-					HitEnemy (hit.collider.gameObject);
-				}
+		float v = Input.GetAxisRaw ("Vertical");
+
+		// MOVEMENT
+		Vector2 movement = new Vector2 (h, v).normalized;
+		rb.velocity = movement * speed;
+
+		// RIGHT
+		if (h > 0.1) {
+			if (v > 0.1) {
+				move = Direction.UpRight;
+			} else if (v < -0.1) {
+				move = Direction.DownRight;
+			} else {
+				move = Direction.Right;
+			}
+			// LEFT
+		} else if (h < -0.1) {
+			if (v > 0.1) {
+				move = Direction.UpLeft;
+			} else if (v < -0.1) {
+				move = Direction.DownLeft;
+			} else {
+				move = Direction.Left;
+			}
+			// STILL
+		} else {
+			if (v > 0.1) {
+				move = Direction.Up;
+			} else if (v < -0.1) {
+				move = Direction.Down;
+			} else {
+				move = Direction.Still;
 			}
 		}
 	}
 
-	private void HitEnemy(GameObject enemy) {
-		switch (enemy.name) {
-		case "EnemyGit":
-			enemy.transform.GetComponent <Enemy> ().GetHit (stats.git);
-			break;
-		case "EnemyJS":
-			enemy.transform.GetComponent <Enemy> ().GetHit (stats.javascript);
-			break;
+	public void GetHit (Enemy enemy) {
+		GetComponent<SpriteRenderer> ().color = UnityEngine.Color.red;
+		startAttack = Time.time;
+		curHP -= enemy.stats.damage;
+		if (curHP <= 0) {
+			curHP = 0;
+			dead = true;
 		}
+	}
 
+	private void HitEnemy (GameObject enemy) {
+		enemy.transform.GetComponent <Enemy> ().GetHit (this);
 	}
 
 	#region IPunObservable implementation
@@ -144,7 +125,7 @@ public class Player : Photon.PunBehaviour, IPunObservable {
 			stream.SendNext (curHP);
 		} else {
 			move = (Direction) stream.ReceiveNext ();
-			curHP = (float) stream.ReceiveNext ();
+			curHP = (float)  stream.ReceiveNext ();
 			Animate ();
 		}
 	}
