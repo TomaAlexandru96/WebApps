@@ -2,22 +2,21 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SpecifyMovementScript : MonoBehaviour {
+public class ReceptionistDirectionsScript : MonoBehaviour {
 
 
-	public GameObject SpecifyMovementPanel;
+	public GameObject DirectionsPanel;
 
 	public void Start () {
-		SpecifyMovementPanel.SetActive (false);
-
+		DirectionsPanel.SetActive (false);
 	}
 
 	void OnTriggerEnter2D(Collider2D coll) {
-		SpecifyMovementPanel.SetActive (true);
+		DirectionsPanel.SetActive (true);
 	}
 
 	void OnTriggerExit2D(Collider2D coll) {
-		SpecifyMovementPanel.SetActive (false);
+		DirectionsPanel.SetActive (false);
 
 	}
 

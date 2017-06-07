@@ -3,7 +3,7 @@ using Photon;
 
 public class P1_MoveAnim : Photon.PunBehaviour {
 
-	Animator animator;
+	public Animator animator;
 
 	public float speed;
 	public Direction move;
@@ -29,9 +29,7 @@ public class P1_MoveAnim : Photon.PunBehaviour {
 	int upLeftHash = Animator.StringToHash("UpLeft");
 	int downLeftHash = Animator.StringToHash("DownLeft");*/
 
-	void OnPhotonInstantiate () {
-		mainCamera.enabled = photonView.isMine;
-		transform.parent = GameObject.FindGameObjectWithTag ("Grid").transform;
+	void Awake () {
 		rb = GetComponent<Rigidbody2D> ();
 		animator = GetComponent<Animator>();
 		stats = new PlayerStats (PlayerType.FrontEndDev);
