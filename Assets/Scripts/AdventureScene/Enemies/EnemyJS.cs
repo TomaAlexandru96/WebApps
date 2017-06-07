@@ -19,7 +19,7 @@ public class EnemyJS : Enemy {
 		}
 	}
 
-	public virtual void Rotate() {
+	public override void Rotate() {
 		Vector2 relativePos = target.position - transform.position;
 		float angle = Mathf.Atan2(relativePos.y, relativePos.x) * Mathf.Rad2Deg - 90;
 		Quaternion q = Quaternion.AngleAxis(angle, Vector3.forward);

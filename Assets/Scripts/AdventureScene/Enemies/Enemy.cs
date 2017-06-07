@@ -104,8 +104,13 @@ public class Enemy : MonoBehaviour {
 		} else {
 			if (currentBr != null) {
 				BreadCrumb next = currentBr.next;
-				Debug.Log ("current: " + currentBr.position.X + ", " + currentBr.position.Y);
-				Debug.Log ("next: " + next.position.X + ", " + next.position.Y);
+				if (next == null) {
+					Vector3 movement = target.position - transform.position;
+					GetComponent<Rigidbody2D> ().velocity = movement.normalized * 0.8f;
+					return;
+				}
+				// Debug.Log ("current: " + currentBr.position.X + ", " + currentBr.position.Y);
+				// Debug.Log ("next: " + next.position.X + ", " + next.position.Y);
 				int xdiff = currentBr.position.X - next.position.X;
 				int ydiff = currentBr.position.Y - next.position.Y;
 				// LEFT
@@ -114,12 +119,12 @@ public class Enemy : MonoBehaviour {
 					if (ydiff == 1) {
 						// Collider on the left
 						if (GetComponent<Rigidbody2D> ().velocity.x > GetComponent<Rigidbody2D> ().velocity.y) {
-							Debug.Log ("LEFT-DOWN collider left");
+							// Debug.Log ("LEFT-DOWN collider left");
 							currentBr.position = new Point (currentBr.position.X, currentBr.position.Y - 1);
 							return;
 							// Collider down
 						} else {
-							Debug.Log ("LEFT-DOWN collider down");
+							// Debug.Log ("LEFT-DOWN collider down");
 							currentBr.position = new Point (currentBr.position.X - 1, currentBr.position.Y);
 							return;
 						}
@@ -128,26 +133,26 @@ public class Enemy : MonoBehaviour {
 					} else if (ydiff == -1) {
 						// Collider on the left
 						if (-GetComponent<Rigidbody2D> ().velocity.x > GetComponent<Rigidbody2D> ().velocity.y) {
-							Debug.Log ("LEFT-UP collider left");
+							// Debug.Log ("LEFT-UP collider left");
 							currentBr.position = new Point (currentBr.position.X, currentBr.position.Y + 1);
 							return;
 							// Collider up
 						} else {
-							Debug.Log ("LEFT-UP collider up");
+							// Debug.Log ("LEFT-UP collider up");
 							currentBr.position = new Point (currentBr.position.X - 1, currentBr.position.Y);
 							return;
 						}
 						// LEFT
 					} else {
-						Debug.Log ("LEFT");
+						// Debug.Log ("LEFT");
 						// collider up
 						if (coll.transform.position.y > transform.position.y) {
-							Debug.Log ("LEFT collider up");
+							// Debug.Log ("LEFT collider up");
 							currentBr.position = new Point (currentBr.position.X - 1, currentBr.position.Y - 1);
 							return;
 							// Collider down
 						} else {
-							Debug.Log ("LEFT collider down");
+							// Debug.Log ("LEFT collider down");
 							currentBr.position = new Point (currentBr.position.X - 1, currentBr.position.Y + 1);
 							return;
 						}
@@ -158,12 +163,12 @@ public class Enemy : MonoBehaviour {
 					if (ydiff == 1) {
 						// Collider on the right
 						if (GetComponent<Rigidbody2D> ().velocity.x > -GetComponent<Rigidbody2D> ().velocity.y) {
-							Debug.Log ("RIGHT-DOWN collider right");
+							// Debug.Log ("RIGHT-DOWN collider right");
 							currentBr.position = new Point (currentBr.position.X, currentBr.position.Y - 1);
 							return;
 							// Collider down
 						} else {
-							Debug.Log ("RIGHT-DOWN collider down");
+							// Debug.Log ("RIGHT-DOWN collider down");
 							currentBr.position = new Point (currentBr.position.X + 1, currentBr.position.Y);
 							return;
 						}
@@ -171,25 +176,25 @@ public class Enemy : MonoBehaviour {
 					} else if (ydiff == -1) {
 						// Collider on the right
 						if (GetComponent<Rigidbody2D> ().velocity.x > GetComponent<Rigidbody2D> ().velocity.y) {
-							Debug.Log ("RIGHT-UP collider right");
+							// Debug.Log ("RIGHT-UP collider right");
 							currentBr.position = new Point (currentBr.position.X, currentBr.position.Y + 1);
 							return;
 							// Collider up
 						} else {
-							Debug.Log ("RIGHT-UP collider up");
+							// Debug.Log ("RIGHT-UP collider up");
 							currentBr.position = new Point (currentBr.position.X + 1, currentBr.position.Y);
 							return;
 						}
 					} else {
-						Debug.Log ("RIGHT");
+						// Debug.Log ("RIGHT");
 						// collider up
 						if (coll.transform.position.y > transform.position.y) {
-							Debug.Log ("RIGHT collider up");
+							// Debug.Log ("RIGHT collider up");
 							currentBr.position = new Point (currentBr.position.X + 1, currentBr.position.Y - 1);
 							return;
 						// Collider down
 						} else {
-							Debug.Log ("RIGHT collider down");
+							// Debug.Log ("RIGHT collider down");
 							currentBr.position = new Point (currentBr.position.X + 1, currentBr.position.Y + 1);
 							return;
 						}
@@ -200,12 +205,12 @@ public class Enemy : MonoBehaviour {
 					if (ydiff == 1) {
 						// collider right
 						if (coll.transform.position.x > transform.position.x) {
-							Debug.Log ("DOWN collider right");
+							// Debug.Log ("DOWN collider right");
 							currentBr.position = new Point (currentBr.position.X - 1, currentBr.position.Y + ydiff);
 							return;
 							// Collider left
 						} else {
-							Debug.Log ("DOWN collider left");
+							// Debug.Log ("DOWN collider left");
 							currentBr.position = new Point (currentBr.position.X + 1, currentBr.position.Y + ydiff);
 							return;
 						}
@@ -214,12 +219,12 @@ public class Enemy : MonoBehaviour {
 					} else {
 						// collider right
 						if (coll.transform.position.x > transform.position.x) {
-							Debug.Log ("UP collider right");
+							// Debug.Log ("UP collider right");
 							currentBr.position = new Point (currentBr.position.X - 1, currentBr.position.Y + ydiff);
 							return;
 							// Collider left
 						} else {
-							Debug.Log ("UP collider left");
+							// Debug.Log ("UP collider left");
 							currentBr.position = new Point (currentBr.position.X + 1, currentBr.position.Y + ydiff);
 							return;
 						}
