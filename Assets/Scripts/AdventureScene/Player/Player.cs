@@ -140,6 +140,16 @@ public class Player : Photon.PunBehaviour, IPunObservable {
 		curHP -= 0.5f;
 	}
 
+	public void GetBuff (Buff buff) {
+		if (buff == Buff.Coffee) {
+			IncreaseHealth(10);
+		}
+	}
+
+	public void IncreaseHealth (float points) {
+		curHP = Mathf.Clamp (points + curHP, 0, stats.maxHP);
+	}
+
 	private IEnumerator PlayGetHitAnimation () {
 		GetComponent<SpriteRenderer> ().color = UnityEngine.Color.red;
 		yield return new WaitForSeconds (0.1f);

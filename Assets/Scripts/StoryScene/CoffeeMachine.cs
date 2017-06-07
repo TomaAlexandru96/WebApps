@@ -24,20 +24,4 @@ public class CoffeeMachine : SpecifyMovementScript {
 			return;
 		}
 	}
-
-//	InvokeRepeating ("GetHitOvertime", 1, 30);
-
-//	public void GetHitOvertime () {
-//		curHP -= 0.5f;
-//	}
-//
-//	public void GetBuff (Buff buff) {
-//		if (buff == Buff.Coffee) {
-//			IncreaseHealth(10);
-//		}
-//	}
-//
-//	public void IncreaseHealth (float points) {
-//		curHP = Mathf.Clamp (points + curHP, 0, stats.maxHP);
-//	}
 }
