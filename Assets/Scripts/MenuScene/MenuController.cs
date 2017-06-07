@@ -86,7 +86,8 @@ public class MenuController : MonoBehaviour {
 	}
 
 	public void PlayStory () {
-		SceneManager.LoadScene ("Story");
+		SetMode (PartyMembers.STORY);
+		CreateParty ();
 	}
 
 	public void StartServices () {
