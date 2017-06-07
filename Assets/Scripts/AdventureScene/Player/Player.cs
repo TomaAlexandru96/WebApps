@@ -1,5 +1,5 @@
 ﻿using System;
-
+using System.Collections;
 using UnityEngine;
 
 public class Player : Photon.PunBehaviour, IPunObservable {
@@ -14,7 +14,6 @@ public class Player : Photon.PunBehaviour, IPunObservable {
 
 	public Inventory inventory;
 	public Item weapon;
-	public float startAttack;
 	public GameObject attackRadius;
 
 	protected Rigidbody2D rb;
@@ -40,11 +39,6 @@ public class Player : Photon.PunBehaviour, IPunObservable {
 	void Update () {
 		if (!photonView.isMine || ChatController.GetChat ().IsFocused ()) {
 			return;
-		}
-
-		if (startAttack + 0.5 < Time.time) {
-			startAttack = Time.time;
-			GetComponent<SpriteRenderer> ().color = UnityEngine.Color.white;
 		}
 
 		if (!dead) {
@@ -80,6 +74,16 @@ public class Player : Photon.PunBehaviour, IPunObservable {
 			angle = inverted ? -angle : angle;
 			attackRadius.transform.RotateAround (transform.position, Vector3.forward, angle);
 		}
+
+		if(Input.GetKeyUp(KeyCode.Space)){
+			StartCoroutine (PlayAttackAnimation ());
+		}
+	}
+
+	private IEnumerator PlayAttackAnimation () {
+		attackRadius.GetComponent<Animator> ().Play ("Slash");
+		yield return new WaitForSeconds (0.1f);
+		attackRadius.GetComponent<Animator> ().Play ("Default");
 	}
 
 	private void Move () {
@@ -123,13 +127,18 @@ public class Player : Photon.PunBehaviour, IPunObservable {
 	}
 
 	public void GetHit (Enemy enemy) {
-		GetComponent<SpriteRenderer> ().color = UnityEngine.Color.red;
-		startAttack = Time.time;
+		StartCoroutine (PlayGetHitAnimation ());
 		curHP -= enemy.stats.damage;
 		if (curHP <= 0) {
 			curHP = 0;
 			dead = true;
 		}
+	}
+
+	private IEnumerator PlayGetHitAnimation () {
+		GetComponent<SpriteRenderer> ().color = UnityEngine.Color.red;
+		yield return new WaitForSeconds (0.1f);
+		GetComponent<SpriteRenderer> ().color = UnityEngine.Color.white;
 	}
 
 	private void HitEnemy (GameObject enemy) {

@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class EnemyGit : Enemy {
 
+	public float startAttack;
+
 	public override void Rotate() {
 		// Do nothing
 	}
@@ -17,6 +19,7 @@ public class EnemyGit : Enemy {
 	}
 
 	public override void SetStats() {
+		this.startAttack = Time.time;
 		this.stats = new EnemyStats (7f, 2f, 0.5f);
 	}
 
@@ -33,13 +36,16 @@ public class EnemyGit : Enemy {
 
 	void OnCollisionStay2D(Collision2D coll) {
 		if (coll.gameObject.tag == "Player") {
-			Player player = coll.gameObject.GetComponent<Player> ();
-			if (player.dead) {
-				PlayNormalAnimation ();
-			} else {
-				if (Time.time > nextAction) {
-					player.GetHit (this);
-					nextAction = Time.time + actionTime;
+			if (startAttack + 0.5f < Time.time) {
+				startAttack = Time.time;
+				Player player = coll.gameObject.GetComponent<Player> ();
+				if (player.dead) {
+					PlayNormalAnimation ();
+				} else {
+					if (Time.time > nextAction) {
+						player.GetHit (this);
+						nextAction = Time.time + actionTime;
+					}
 				}
 			}
 		}

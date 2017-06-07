@@ -18,12 +18,9 @@ public class Grid : MonoBehaviour {
 
 	public const float UnitSize = 1f;
 
-	GameObject Enemy;
 	private LineRenderer LineRenderer;
 
-	void Awake () {	
-		Enemy = GameObject.FindGameObjectWithTag ("Enemy");
-
+	void Awake () {
 		//Get grid dimensions
 		Offset = this.transform.position;
 
