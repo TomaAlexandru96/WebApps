@@ -28,6 +28,7 @@ public class Enemy : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
+		transform.SetParent (GameObject.FindGameObjectWithTag ("Grid").transform);
 		lastCollisionTime = DateTime.Now;
 		spectialCaseMovEnd = DateTime.MinValue;
 		onSpecialCaseMovement = false;
@@ -39,7 +40,6 @@ public class Enemy : MonoBehaviour {
 		SetDamage ();
 		SetMaxHP ();
 		curHP = maxHP;
-		lastTargetPos = new Point((int)(target.localPosition.x*2), (int)(target.localPosition.y*2));
 	}
 
 	void OnTriggerEnter2D(Collider2D coll) {
@@ -68,10 +68,10 @@ public class Enemy : MonoBehaviour {
 	}
 
 	// Update is called once per frame
-	void Update ()
-	{
+	void Update () {
 		if (!HasTarget ()) {
 			if (!FindNewTarget ()) {
+				Debug.Log ("How many times");
 				return;
 			}
 		}
@@ -120,7 +120,6 @@ public class Enemy : MonoBehaviour {
 	}
 
 	void OnCollisionEnter2D(Collision2D coll) {
-
 		if (coll.gameObject.tag == "Player") {
 			PlayAttackAnimation ();
 			attackingPlayer = true;
@@ -201,7 +200,6 @@ public class Enemy : MonoBehaviour {
 	}
 
 	public virtual void MoveEnemy () {
-
 		if (onSpecialCaseMovement ) {
 			Vector3 movement = specialCaseDirection.normalized * speed;
 			rb.velocity = movement;
