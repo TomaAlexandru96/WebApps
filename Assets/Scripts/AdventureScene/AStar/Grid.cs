@@ -201,7 +201,7 @@ public class Grid : MonoBehaviour {
 		//}
 	//}
 
-	/*void Start () {
+	void Start () {
 		Vector2 target = GameObject.FindGameObjectWithTag ("Player").transform.localPosition;
 		Point gridPos = new Point((int)(target.x*2), (int)(target.y*2));
 		Debug.Log ("Player position x:" + gridPos.X + ", y: " + gridPos.Y);
@@ -235,6 +235,6 @@ public class Grid : MonoBehaviour {
 				lr.positionCount = count;
 			}
 		}
-	}*/
+	}
 
 }

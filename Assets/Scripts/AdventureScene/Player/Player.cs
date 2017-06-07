@@ -10,7 +10,7 @@ public class Player : Photon.PunBehaviour, IPunObservable {
 	public Camera mainCamera;
 
 	public bool dead = false;
-	public int curHP; 
+	public float curHP;
 
 	public Inventory inventory;
 	public Item weapon;
@@ -141,8 +141,10 @@ public class Player : Photon.PunBehaviour, IPunObservable {
 	void IPunObservable.OnPhotonSerializeView (PhotonStream stream, PhotonMessageInfo info) {
 		if (stream.isWriting) {
 			stream.SendNext (move);
+			stream.SendNext (curHP);
 		} else {
 			move = (Direction) stream.ReceiveNext ();
+			curHP = (float) stream.ReceiveNext ();
 			Animate ();
 		}
 	}

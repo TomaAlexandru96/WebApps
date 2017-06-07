@@ -71,7 +71,6 @@ public class Enemy : MonoBehaviour {
 	void Update () {
 		if (!HasTarget ()) {
 			if (!FindNewTarget ()) {
-				Debug.Log ("How many times");
 				return;
 			}
 		}

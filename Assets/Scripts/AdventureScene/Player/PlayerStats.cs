@@ -3,7 +3,7 @@
 public class PlayerStats {
 
 	public int level;
-	public int maxHP;
+	public float maxHP;
 	public int javascript;
 	public int html;
 	public int python;
