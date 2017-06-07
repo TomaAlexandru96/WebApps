@@ -7,8 +7,9 @@ public class AdventureController : Photon.PunBehaviour {
 
 	public GameObject loadingScreen;
 	public GameObject party;
-	public Transform[] spawnPoints;
+	public Transform[] playerSpawnPoints;
 	public GameObject[] players;
+	public GameObject[] enemies;
 
 	private HashSet<string> loadedPlayers;
 
@@ -38,6 +39,7 @@ public class AdventureController : Photon.PunBehaviour {
 	public void StartGame () {
 		if (NetworkService.GetInstance ().IsMasterClient ()) {
 			NetworkService.GetInstance ().SpawnScene (party.name, Vector3.zero, Quaternion.identity, 0);
+			SpawnEnemies ();
 		}
 		loadingScreen.SetActive (false);
 	}
@@ -63,6 +65,10 @@ public class AdventureController : Photon.PunBehaviour {
 	public void SpawnPlayer () {
 		// to be changed
 		NetworkService.GetInstance ().Spawn (players [CurrentUser.GetInstance ().GetUserInfo ().character.type].name, 
-			spawnPoints [CurrentUser.GetInstance ().GetPositionInParty ()].position, Quaternion.identity, 0, new object[1] {CurrentUser.GetInstance ().GetUserInfo ().username});
+			playerSpawnPoints [CurrentUser.GetInstance ().GetPositionInParty ()].position, Quaternion.identity, 0, new object[1] {CurrentUser.GetInstance ().GetUserInfo ().username});
+	}
+
+	public void SpawnEnemies () {
+		NetworkService.GetInstance ().SpawnScene (enemies [0].name, new Vector3 (7.795f, -4.65f, 0f), Quaternion.identity, 0);
 	}
 }
