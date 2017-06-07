@@ -85,6 +85,10 @@ public class MenuController : MonoBehaviour {
 		return mode;
 	}
 
+	public void PlayStory () {
+		SceneManager.LoadScene ("Story");
+	}
+
 	public void StartServices () {
 		if (hasLoadedServices) {
 			loadingScreen.SetActive (false);
