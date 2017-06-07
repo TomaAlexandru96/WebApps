@@ -61,7 +61,6 @@ public class PlayerStats {
 		java += increaseLevelUp;
 		mySQL += increaseLevelUp;
 		git += increaseLevelUp;
-
 	}
 
 }
