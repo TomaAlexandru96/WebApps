@@ -33,7 +33,8 @@ public class Player : Photon.PunBehaviour, IPunObservable {
 		animator = GetComponent<Animator>();
 		stats = new PlayerStats (PlayerType.FrontEndDev);
 		curHP = stats.maxHP;
-		weapon = new Item ("Sword", 3, 2, false);	
+		weapon = new Item ("Sword", 3, 2, false);
+		InvokeRepeating ("GetHitOvertime", 1, 30);
 	}
 
 
@@ -130,6 +131,10 @@ public class Player : Photon.PunBehaviour, IPunObservable {
 			curHP = 0;
 			dead = true;
 		}
+	}
+		
+	public void GetHitOvertime () {
+		curHP -= 0.5f;
 	}
 
 	private void HitEnemy (GameObject enemy) {
