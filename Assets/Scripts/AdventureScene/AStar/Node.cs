@@ -41,18 +41,31 @@ public class Node {
 			BadNode = true;
 		}
 
+		RectTransform gridRect = grid.GetComponent<RectTransform> ();
+
+		if (position.x > gridRect.rect.width + gridRect.position.x ||
+			position.y > gridRect.rect.height + gridRect.position.y) {
+			DisableConnections ();
+			BadNode = true;
+		}
+
+		if (position.x - gridRect.position.x < 0 || position.y - gridRect.position.y < 0) {
+			DisableConnections ();
+			BadNode = true;
+		}
+
 		//Draw Node on screen for debugging purposes
-		/*Draw = GameObject.Instantiate (Resources.Load ("Node")) as GameObject;
+		Draw = GameObject.Instantiate (Resources.Load ("Node")) as GameObject;
 		Draw.transform.position = Position;
 		if (BadNode) {
 			Draw.GetComponent<SpriteRenderer> ().color = Color.red;
 		} else {
 			Draw.GetComponent<SpriteRenderer> ().color = Color.blue;
-		}*/
+		}
 	}
 
 	public void SetColor(Color color) {
-		//Draw.transform.GetComponent<SpriteRenderer> ().color = color;
+		Draw.transform.GetComponent<SpriteRenderer> ().color = color;
 	}
 
 	//Cull nodes if they don't have enough valid connection points (3)
