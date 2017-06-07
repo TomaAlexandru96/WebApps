@@ -39,10 +39,6 @@ public class Grid : MonoBehaviour {
 		// We render the grid in a diamond pattern
 		for (int x = 0; x < Width; x++) {
 			for (int y = 0; y < Height; y++) {
-				//float offset = 0;
-				//if (y%2 != 0) {
-				//	offset = 0.25f;
-				//}
 		
 				Vector2 pos = new Vector2(((x*0.5f))+transform.position.x, (y*0.5f)+transform.position.y);
 				Node node = new Node(x, y, pos, this);
@@ -202,7 +198,7 @@ public class Grid : MonoBehaviour {
 	//}
 
 	void Start () {
-		Vector2 target = GameObject.FindGameObjectWithTag ("Player").transform.localPosition;
+		/*Vector2 target = GameObject.FindGameObjectWithTag ("Player").transform.localPosition;
 		Point gridPos = new Point((int)(target.x*2), (int)(target.y*2));
 		Debug.Log ("Player position x:" + gridPos.X + ", y: " + gridPos.Y);
 
@@ -234,7 +230,7 @@ public class Grid : MonoBehaviour {
 				}
 				lr.positionCount = count;
 			}
-		}
+		}*/
 	}
 
 }

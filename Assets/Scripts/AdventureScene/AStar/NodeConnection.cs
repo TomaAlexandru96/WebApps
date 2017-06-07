@@ -28,7 +28,7 @@ public class NodeConnection {
 	//Debug
 	public void DrawLine()
 	{	
-		/*if (Parent != null && Node != null) {
+		if (Parent != null && Node != null) {
 			draw = GameObject.Instantiate (Resources.Load ("Line")) as GameObject;
 			LineRenderer lr = draw.GetComponent<LineRenderer> ();
 
@@ -41,6 +41,6 @@ public class NodeConnection {
 				lr.startColor = Color.red;
 				lr.endColor = Color.red;
 			}
-		}*/
+		}
 	}
 }
