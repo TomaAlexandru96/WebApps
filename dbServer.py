@@ -240,6 +240,9 @@ class DBHTTPHandler(BaseHTTPRequestHandler):
 
 
   def helper_find_user(self, u_name):
+    if (u_name is None or u_name == ""):
+      print("User name is invalid (either null or empty)")
+      return None
     query = '''SELECT *
                FROM USERS LEFT JOIN CHARACTERS ON USERS.CHARACTER_NAME = CHARACTERS.CHARACTER_NAME
                LEFT JOIN PARTIES ON USERS.PARTY = PARTIES.OWNER
