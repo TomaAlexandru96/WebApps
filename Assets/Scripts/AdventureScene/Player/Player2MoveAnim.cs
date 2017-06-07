@@ -31,6 +31,9 @@ public class Player2MoveAnim : Player {
 		case Direction.DownLeft:
 			animator.Play ("P2_DownLeft");
 			break;
+		case Direction.Dead:
+			animator.Play ("P2_Dead");
+			break;
 
 		}
 	}
