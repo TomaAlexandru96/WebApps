@@ -6,6 +6,7 @@ using UnityEngine.SceneManagement;
 public class StoryController : MonoBehaviour {
 
 	public GameObject[] playerPrefabs;
+	public GameObject partyPrefab;
 	public Transform spawnPoint;
 
 	// Use this for initialization
@@ -13,6 +14,7 @@ public class StoryController : MonoBehaviour {
 		ChatController.GetChat ().InitDefaultChat ();
 		NetworkService.GetInstance ().Spawn (playerPrefabs [CurrentUser.GetInstance ().GetUserInfo ().character.type].name, spawnPoint.position, Quaternion.identity, 0,
 			new object[1] {CurrentUser.GetInstance ().GetUserInfo ().username});
+		NetworkService.GetInstance ().SpawnScene (partyPrefab.name, Vector3.zero, Quaternion.identity, 0);
 	}
 
 	void OnApplicationQuit () {
