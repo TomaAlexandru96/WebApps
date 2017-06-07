@@ -30,9 +30,6 @@ public class Grid : MonoBehaviour {
 		Width = (int) GetComponent<RectTransform> ().rect.width * 2+ 2;
 		Height = (int) GetComponent<RectTransform> ().rect.height * 2+ 2;
 
-		Debug.Log (Width);
-		Debug.Log (Height);
-
 		Nodes = new Node[Width, Height];
 
 		// Initialize the grid nodes - 1 grid unit between each node
@@ -179,7 +176,7 @@ public class Grid : MonoBehaviour {
 
 				//BreadCrumb bc = PathFinder.FindPath (this, enemyPos, gridPos);
 
-				int count = 0;
+				/*int count = 0;
 				LineRenderer lr = Enemy.GetComponent<LineRenderer> ();
 				lr.positionCount = 100;
 				lr.startColor = Color.yellow;
@@ -192,7 +189,7 @@ public class Grid : MonoBehaviour {
 					bc = bc.next;
 					count += 1;
 				}
-				lr.positionCount = count;
+				lr.positionCount = count;*/
 			}
 		//}
 	//}

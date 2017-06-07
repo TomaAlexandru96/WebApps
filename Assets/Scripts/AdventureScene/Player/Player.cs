@@ -15,6 +15,7 @@ public class Player : Photon.PunBehaviour, IPunObservable {
 	public Inventory inventory;
 	public Item weapon;
 	public float startAttack;
+	public GameObject attackRadius;
 
 	protected Rigidbody2D rb;
 	protected Animator animator;
@@ -47,21 +48,38 @@ public class Player : Photon.PunBehaviour, IPunObservable {
 		}
 
 		if (!dead) {
-			// GET ATTACK INPUT
-			if (Input.GetMouseButtonDown(0)) {
-				Vector3 pz = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-				pz.z = 0;
-				if (weapon.longRange) {
-					// for now do nothing
-				}
-			}
-
+			Attack ();
 			Move ();
 		} else {
 			move = Direction.Dead;
 		}
 
 		Animate ();
+	}
+
+	private Vector2 GetMouseInput () {
+		RaycastHit2D hit = Physics2D.Raycast(mainCamera.ScreenToWorldPoint(Input.mousePosition), Vector2.zero);
+		return (new Vector3 (hit.point.x, hit.point.y, transform.position.z) - transform.position).normalized;
+	}
+
+	private void Attack () {
+		/*// GET ATTACK INPUT
+		if (Input.GetMouseButtonDown(0)) {
+			Vector3 pz = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+			pz.z = 0;
+			if (weapon.longRange) {
+				// for now do nothing
+			}
+		}*/
+
+		if (Input.GetKeyDown (KeyCode.Space)) {
+			Vector3 mouseDirection = GetMouseInput ();
+
+			bool inverted = Vector3.Cross (attackRadius.transform.localPosition, mouseDirection).z < 0;
+			float angle = Vector3.Angle (attackRadius.transform.localPosition, mouseDirection);
+			angle = inverted ? -angle : angle;
+			attackRadius.transform.RotateAround (transform.position, Vector3.forward, angle);
+		}
 	}
 
 	private void Move () {

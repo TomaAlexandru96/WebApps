@@ -86,7 +86,6 @@ public class Enemy : MonoBehaviour {
 			}
 			// MOVEMENT
 			MoveEnemy ();
-		
 		}
 	}
 
@@ -103,7 +102,6 @@ public class Enemy : MonoBehaviour {
 			PlayAttackAnimation ();
 			attackingPlayer = true;
 		} else {
-			Debug.Log ("Try fix AI");
 			if (currentBr != null) {
 				BreadCrumb next = currentBr.next;
 				Debug.Log ("current: " + currentBr.position.X + ", " + currentBr.position.Y);
@@ -259,10 +257,7 @@ public class Enemy : MonoBehaviour {
 	}
 
 	public virtual void Rotate() {
-		Vector2 relativePos = target.position - transform.position;
-		float angle = Mathf.Atan2(relativePos.y, relativePos.x) * Mathf.Rad2Deg - 90;
-		Quaternion q = Quaternion.AngleAxis(angle, Vector3.forward);
-		transform.rotation = Quaternion.Slerp(transform.rotation, q, Time.deltaTime * 2f);
+		// use child function
 	}
 
 	public virtual void MoveEnemy () {
