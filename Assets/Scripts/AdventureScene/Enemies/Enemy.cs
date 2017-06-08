@@ -119,14 +119,9 @@ public abstract class Enemy : Entity<EnemyStats> {
 		base.GetHit<E> (entity);
 	}
 
-	protected override IEnumerator PlayDeadAnimation () {
-		yield return GetEmptyIE ();
-		gameObject.SetActive (false);
-	}
-
-	protected virtual IEnumerator PlayAttackAnimation() {
-		yield return GetEmptyIE ();
-	}
+	// ----------------------------------------------------------------------------------------------------------
+	// -------------------------------------------------SYNCH----------------------------------------------------
+	// ----------------------------------------------------------------------------------------------------------
 
 	protected override void OnSendNext (PhotonStream stream, PhotonMessageInfo info) {
 
@@ -136,10 +131,26 @@ public abstract class Enemy : Entity<EnemyStats> {
 
 	}
 
+	// ----------------------------------------------------------------------------------------------------------
+	// ----------------------------------------------ANIMATIONS--------------------------------------------------
+	// ----------------------------------------------------------------------------------------------------------
+
+	protected override IEnumerator PlayDeadAnimation () {
+		yield return GetEmptyIE ();
+		gameObject.SetActive (false);
+	}
+
+	protected virtual IEnumerator PlayAttackAnimation() {
+		yield return GetEmptyIE ();
+	}
+
+	// ----------------------------------------------------------------------------------------------------------
+	// ---------------------------------------------------A*-----------------------------------------------------
+	// ----------------------------------------------------------------------------------------------------------
 
 	void OnCollisionEnter2D(Collision2D coll) {
 		if (coll.gameObject.tag.Equals("Player")) {
-			StartCoroutine (PlayAttackAnimation ());
+			PlayAnimation ("PlayAttackAnimation");
 			attackingPlayer = true;
 		} else {
 			if (currentBr != null) {
