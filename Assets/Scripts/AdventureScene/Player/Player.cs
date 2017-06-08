@@ -35,10 +35,14 @@ public class Player : Photon.PunBehaviour, IPunObservable {
 		weapon = new Item ("Sword", 3, 2, false);
 		InvokeRepeating ("GetHitOvertime", 10, 20);
 
-		if (photonView.isMine) {
+		if (photonView.isMine && !IsStory ()) {
 			abilities = GameObject.FindGameObjectWithTag ("PlayerAbilities").GetComponent<PlayerAbilities> ();
 			abilities.Init (this);
 		}
+	}
+
+	private bool IsStory () {
+		return CurrentUser.GetInstance ().GetUserInfo ().party.state == PartyMembers.STORY;
 	}
 
 	void Update () {
@@ -47,8 +51,10 @@ public class Player : Photon.PunBehaviour, IPunObservable {
 		}
 
 		if (!dead) {
-			SelectAbility ();
-			Attack ();
+			if (!IsStory ()) {
+				SelectAbility ();
+				Attack ();
+			}
 			Move ();
 		} else {
 			move = Direction.Dead;
