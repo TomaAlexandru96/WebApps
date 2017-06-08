@@ -4,11 +4,21 @@ using UnityEngine;
 
 public class PlayerAttack : MonoBehaviour {
 
-	void OnTriggerStay2D (Collider2D coll) {
-		if (Input.GetKeyUp (KeyCode.Space)) {
-			if (coll.transform.tag == "Enemy") {
-				coll.transform.GetComponent<Enemy> ().GetHit (GetComponentInParent<Player> ());
-			}	
+	private bool canAttack = false;
+
+	public void StartAttack () {
+		canAttack = true;
+	}
+
+	public void StopAttack () {
+		canAttack = false;
+	}
+
+	void OnTriggerStay2D (Collider2D col) {
+		if (canAttack) {
+			if (col.transform.tag == "Enemy") {
+				col.transform.GetComponent<Enemy> ().GetHit (GetComponentInParent<Player> ());
+			}
 		}
 	}
 }
