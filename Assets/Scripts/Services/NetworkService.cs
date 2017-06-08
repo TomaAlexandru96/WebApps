@@ -12,6 +12,7 @@ public class NetworkService : Photon.PunBehaviour {
 	private static NetworkService instance = null;
 	private static TypedLobby adventureLobby = new TypedLobby ("Adventure", LobbyType.Default);
 	private static TypedLobby endlessLobby = new TypedLobby ("Endless", LobbyType.Default);
+	private static TypedLobby storyLobby = new TypedLobby ("Story", LobbyType.Default);
 
 	private Action onFinish;
 
@@ -51,8 +52,10 @@ public class NetworkService : Photon.PunBehaviour {
 	public void JoinLobby (int mode) {
 		if (mode == PartyMembers.ADVENTURE) {
 			PhotonNetwork.JoinLobby (adventureLobby);
-		} else {
+		} else if (mode == PartyMembers.ENDLESS) {
 			PhotonNetwork.JoinLobby (endlessLobby);
+		} else {
+			PhotonNetwork.JoinLobby (storyLobby);
 		}
 	}
 
@@ -70,7 +73,11 @@ public class NetworkService : Photon.PunBehaviour {
 
 	public void LoadScene (int mode) {
 		if (mode == 1) {
-			PhotonNetwork.LoadLevel ("Adventure");	
+			PhotonNetwork.LoadLevel ("Adventure");
+		} else if (mode == 2) {
+			PhotonNetwork.LoadLevel ("Endless");
+		} else {
+			PhotonNetwork.LoadLevel ("Story");
 		}
 	}
 

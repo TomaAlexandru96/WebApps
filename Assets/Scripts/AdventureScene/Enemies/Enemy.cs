@@ -1,45 +1,34 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine;
 using System;
 
 public class Enemy : MonoBehaviour {
 
 	public Transform target;
-	public float speed;
-	public int damage;
-	public int maxHP;
-	public int curHP;
-	private Rigidbody2D rb;
+	public float curHP;
+	public EnemyStats stats;
 	public bool attackingPlayer;
 	public float actionTime = 1f;
 	public float nextAction = 0;
-	public Animator animator;
 	public Grid grid;
-	public bool targetInRange;
 	public Point lastTargetPos;
 	public BreadCrumb currentBr;
-	public bool onSpecialCaseMovement;
+	//public bool onSpecialCaseMovement;
 	public DateTime spectialCaseMovEnd;
 	public DateTime lastCollisionTime;
-	public Vector3 specialCaseDirection;
-
+	//public Vector3 specialCaseDirection;
+	public bool targetInRange = false;
 
 	// Use this for initialization
 	void Start () {
+		transform.SetParent (GameObject.FindGameObjectWithTag ("Grid").transform);
 		lastCollisionTime = DateTime.Now;
 		spectialCaseMovEnd = DateTime.MinValue;
-		onSpecialCaseMovement = false;
-		animator = GetComponent<Animator> ();
-		rb = GetComponent<Rigidbody2D> ();
+		//onSpecialCaseMovement = false;
 		grid = GetComponentInParent<Grid> ();
-		speed = 0.5f;
-		targetInRange = false;
-		SetDamage ();
-		SetMaxHP ();
-		curHP = maxHP;
-		lastTargetPos = new Point((int)(target.localPosition.x*2), (int)(target.localPosition.y*2));
+		SetStats ();
+		curHP = stats.maxHP;
 	}
 
 	void OnTriggerEnter2D(Collider2D coll) {
@@ -68,8 +57,7 @@ public class Enemy : MonoBehaviour {
 	}
 
 	// Update is called once per frame
-	void Update ()
-	{
+	void Update () {
 		if (!HasTarget ()) {
 			if (!FindNewTarget ()) {
 				return;
@@ -77,37 +65,27 @@ public class Enemy : MonoBehaviour {
 		}
 
 		if (targetInRange) {
-			/*RaycastHit2D hit = Physics2D.Raycast (transform.position, 
-				target.position - transform.position, Vector2.Distance(transform.position, target.position), 
-				LayerMask.GetMask (new string[]{ "Map" }));
-			if (hit == null) {
-				Debug.Log ("Normal Movement");
-				// Normal movement
-				Rotate ();
-				//only move if I'm far away from the target
-				if (Vector2.Distance (transform.position, target.position) > 0.5f
-				    && !attackingPlayer) {
-					MoveEnemy ();
-				}
-			} else {*/
-			onSpecialCaseMovement = (DateTime.Now - spectialCaseMovEnd).Seconds < 1;
-				// pathfinding
+			// pathfinding
 			Point curTargetPos = CurrentTargetPoint();
 				// RECALCULATE
 			if (!curTargetPos.Equals (lastTargetPos)) {
 				lastTargetPos = curTargetPos;
 
 				if (curTargetPos != null) {
-					Point enemyPos = CurrentEnemyPoint();
+					Point enemyPos = CurrentEnemyPoint ();
 
 					currentBr = PathFinder.FindPath (grid, enemyPos, curTargetPos);
-					grid.DrawPath (currentBr);
-					currentBr = currentBr.next;
+					// grid.DrawPath (currentBr);
+					if (currentBr != null) {
+						currentBr = currentBr.next;
+					} else {
+						Vector3 movement = target.position - transform.position;
+						GetComponent<Rigidbody2D> ().velocity = movement.normalized * 0.8f;
+					}
 				}
 			}
 			// MOVEMENT
 			MoveEnemy ();
-		
 		}
 	}
 
@@ -120,12 +98,142 @@ public class Enemy : MonoBehaviour {
 	}
 
 	void OnCollisionEnter2D(Collision2D coll) {
-
 		if (coll.gameObject.tag == "Player") {
 			PlayAttackAnimation ();
 			attackingPlayer = true;
+		} else {
+			if (currentBr != null) {
+				BreadCrumb next = currentBr.next;
+				if (next == null) {
+					Vector3 movement = target.position - transform.position;
+					GetComponent<Rigidbody2D> ().velocity = movement.normalized * 0.8f;
+					return;
+				}
+				// Debug.Log ("current: " + currentBr.position.X + ", " + currentBr.position.Y);
+				// Debug.Log ("next: " + next.position.X + ", " + next.position.Y);
+				int xdiff = currentBr.position.X - next.position.X;
+				int ydiff = currentBr.position.Y - next.position.Y;
+				// LEFT
+				if (xdiff == 1) {
+					// LEFT - DOWN
+					if (ydiff == 1) {
+						// Collider on the left
+						if (GetComponent<Rigidbody2D> ().velocity.x > GetComponent<Rigidbody2D> ().velocity.y) {
+							// Debug.Log ("LEFT-DOWN collider left");
+							currentBr.position = new Point (currentBr.position.X, currentBr.position.Y - 1);
+							return;
+							// Collider down
+						} else {
+							// Debug.Log ("LEFT-DOWN collider down");
+							currentBr.position = new Point (currentBr.position.X - 1, currentBr.position.Y);
+							return;
+						}
+
+					// LEFT - UP
+					} else if (ydiff == -1) {
+						// Collider on the left
+						if (-GetComponent<Rigidbody2D> ().velocity.x > GetComponent<Rigidbody2D> ().velocity.y) {
+							// Debug.Log ("LEFT-UP collider left");
+							currentBr.position = new Point (currentBr.position.X, currentBr.position.Y + 1);
+							return;
+							// Collider up
+						} else {
+							// Debug.Log ("LEFT-UP collider up");
+							currentBr.position = new Point (currentBr.position.X - 1, currentBr.position.Y);
+							return;
+						}
+						// LEFT
+					} else {
+						// Debug.Log ("LEFT");
+						// collider up
+						if (coll.transform.position.y > transform.position.y) {
+							// Debug.Log ("LEFT collider up");
+							currentBr.position = new Point (currentBr.position.X - 1, currentBr.position.Y - 1);
+							return;
+							// Collider down
+						} else {
+							// Debug.Log ("LEFT collider down");
+							currentBr.position = new Point (currentBr.position.X - 1, currentBr.position.Y + 1);
+							return;
+						}
+					}
+					// RIGHT
+				} else if (xdiff == -1) {
+					// RIGHT - DOWN
+					if (ydiff == 1) {
+						// Collider on the right
+						if (GetComponent<Rigidbody2D> ().velocity.x > -GetComponent<Rigidbody2D> ().velocity.y) {
+							// Debug.Log ("RIGHT-DOWN collider right");
+							currentBr.position = new Point (currentBr.position.X, currentBr.position.Y - 1);
+							return;
+							// Collider down
+						} else {
+							// Debug.Log ("RIGHT-DOWN collider down");
+							currentBr.position = new Point (currentBr.position.X + 1, currentBr.position.Y);
+							return;
+						}
+						// RiGHT - UP
+					} else if (ydiff == -1) {
+						// Collider on the right
+						if (GetComponent<Rigidbody2D> ().velocity.x > GetComponent<Rigidbody2D> ().velocity.y) {
+							// Debug.Log ("RIGHT-UP collider right");
+							currentBr.position = new Point (currentBr.position.X, currentBr.position.Y + 1);
+							return;
+							// Collider up
+						} else {
+							// Debug.Log ("RIGHT-UP collider up");
+							currentBr.position = new Point (currentBr.position.X + 1, currentBr.position.Y);
+							return;
+						}
+					} else {
+						// Debug.Log ("RIGHT");
+						// collider up
+						if (coll.transform.position.y > transform.position.y) {
+							// Debug.Log ("RIGHT collider up");
+							currentBr.position = new Point (currentBr.position.X + 1, currentBr.position.Y - 1);
+							return;
+						// Collider down
+						} else {
+							// Debug.Log ("RIGHT collider down");
+							currentBr.position = new Point (currentBr.position.X + 1, currentBr.position.Y + 1);
+							return;
+						}
+					}
+				// UP OR DOWN
+				} else {
+					// DOWN
+					if (ydiff == 1) {
+						// collider right
+						if (coll.transform.position.x > transform.position.x) {
+							// Debug.Log ("DOWN collider right");
+							currentBr.position = new Point (currentBr.position.X - 1, currentBr.position.Y + ydiff);
+							return;
+							// Collider left
+						} else {
+							// Debug.Log ("DOWN collider left");
+							currentBr.position = new Point (currentBr.position.X + 1, currentBr.position.Y + ydiff);
+							return;
+						}
+
+					// UP
+					} else {
+						// collider right
+						if (coll.transform.position.x > transform.position.x) {
+							// Debug.Log ("UP collider right");
+							currentBr.position = new Point (currentBr.position.X - 1, currentBr.position.Y + ydiff);
+							return;
+							// Collider left
+						} else {
+							// Debug.Log ("UP collider left");
+							currentBr.position = new Point (currentBr.position.X + 1, currentBr.position.Y + ydiff);
+							return;
+						}
+					}
+
+				}
+			}
 		}
-		lastCollisionTime = DateTime.Now;
+		//lastCollisionTime = DateTime.Now;
 	}
 
 	void OnCollisionExit2D(Collision2D coll) {
@@ -133,102 +241,48 @@ public class Enemy : MonoBehaviour {
 			PlayNormalAnimation ();
 			attackingPlayer = false;
 		}
-		lastCollisionTime = DateTime.Now;
+		//lastCollisionTime = DateTime.Now;
 
 	}
 
-	void OnCollisionStay2D(Collision2D coll) {
-		if (coll.gameObject.tag == "Player") {
-			Player player = coll.gameObject.GetComponent<Player> ();
-			if (player.dead) {
-				PlayNormalAnimation ();
-			} else {
-				if (Time.time > nextAction) {
-					player.Damaged ();
-					nextAction = Time.time + actionTime;
-					player.curHP -= damage;
-					if (player.curHP <= 0) {
-						player.curHP = 0;
-						player.dead = true;
-					}
-				}
-			}
-		} else {
-			onSpecialCaseMovement = (DateTime.Now - lastCollisionTime).Seconds > 1;
-			if (onSpecialCaseMovement) {
-				spectialCaseMovEnd = DateTime.Now;
-				specialCaseDirection = new Vector3 (coll.contacts [0].point.x, coll.contacts [0].point.y, 0) - transform.position;
-			}
-
-			//Random.Range random = new Random ();
-			float randomInt = UnityEngine.Random.Range(0.0f,5.0f);
-
-			if (randomInt < 1) {
-				specialCaseDirection = new Vector3 (-specialCaseDirection.x, -specialCaseDirection.y, 0);
-			} else if (randomInt < 2) {
-				specialCaseDirection = new Vector3 (-specialCaseDirection.y, specialCaseDirection.x, 0);
-			} else if (randomInt < 3) {
-				specialCaseDirection = new Vector3 (+specialCaseDirection.y, -specialCaseDirection.x, 0);
-			} else {
-				specialCaseDirection = target.position - transform.position;
-			}
-
-		}
-
-	}
-
-	public virtual void SetMaxHP() {
+	public virtual void SetStats () {
 		// use child function
 	}
 
-	public virtual void SetDamage() {
+	public virtual void PlayAttackAnimation () {
 		// use child function
 	}
 
-	public virtual void PlayAttackAnimation() {
+	public virtual void PlayNormalAnimation () {
 		// use child function
 	}
 
-	public virtual void PlayNormalAnimation() {
+	public virtual void GetHit (Player player) {
 		// use child function
 	}
 
 	public virtual void Rotate() {
-		Vector2 relativePos = target.position - transform.position;
-		float angle = Mathf.Atan2(relativePos.y, relativePos.x) * Mathf.Rad2Deg - 90;
-		Quaternion q = Quaternion.AngleAxis(angle, Vector3.forward);
-		transform.rotation = Quaternion.Slerp(transform.rotation, q, Time.deltaTime * 2f);
+		// use child function
 	}
 
 	public virtual void MoveEnemy () {
-
-		if (onSpecialCaseMovement ) {
-			Vector3 movement = specialCaseDirection.normalized * speed;
-			rb.velocity = movement;
-		} else {
+		//if (onSpecialCaseMovement ) {
+		//	Vector3 movement = specialCaseDirection.normalized * stats.speed;
+		//	GetComponent<Rigidbody2D> ().velocity = movement;
+		//} else {
 			if (currentBr != null) {
 				Vector2 bcRealPos = currentBr.toRealCoordinates (grid);
 				if (Vector2.Distance (transform.position, 
 					new Vector2 (bcRealPos.x, bcRealPos.y)) > 0.1f) {
 					Vector3 movement = new Vector2 (bcRealPos.x - transform.position.x,
 						bcRealPos.y - transform.position.y);
-					rb.velocity = movement.normalized * 0.8f;
+					GetComponent<Rigidbody2D> ().velocity = movement.normalized * 0.8f;
 				} else {
 					currentBr = currentBr.next;
 				}
 			} else {
-				rb.velocity = new Vector2(0,0);
+				GetComponent<Rigidbody2D> ().velocity = new Vector2(0,0);
 			}
-								
-		}
-	}
-
-	public virtual void GetHit(int hit) {
-		if (curHP > hit) {
-			curHP -= hit;
-		} else {
-			curHP = 0;
-			gameObject.SetActive (false);
-		}
+		//}
 	}
 }

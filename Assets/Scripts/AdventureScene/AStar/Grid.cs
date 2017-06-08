@@ -18,20 +18,14 @@ public class Grid : MonoBehaviour {
 
 	public const float UnitSize = 1f;
 
-	GameObject Enemy;
 	private LineRenderer LineRenderer;
 
-	void Awake () {	
-		Enemy = GameObject.FindGameObjectWithTag ("Enemy");
-
+	void Awake () {
 		//Get grid dimensions
 		Offset = this.transform.position;
 
 		Width = (int) GetComponent<RectTransform> ().rect.width * 2+ 2;
 		Height = (int) GetComponent<RectTransform> ().rect.height * 2+ 2;
-
-		Debug.Log (Width);
-		Debug.Log (Height);
 
 		Nodes = new Node[Width, Height];
 
@@ -39,10 +33,6 @@ public class Grid : MonoBehaviour {
 		// We render the grid in a diamond pattern
 		for (int x = 0; x < Width; x++) {
 			for (int y = 0; y < Height; y++) {
-				//float offset = 0;
-				//if (y%2 != 0) {
-				//	offset = 0.25f;
-				//}
 		
 				Vector2 pos = new Vector2(((x*0.5f))+transform.position.x, (y*0.5f)+transform.position.y);
 				Node node = new Node(x, y, pos, this);
@@ -183,7 +173,7 @@ public class Grid : MonoBehaviour {
 
 				//BreadCrumb bc = PathFinder.FindPath (this, enemyPos, gridPos);
 
-				int count = 0;
+				/*int count = 0;
 				LineRenderer lr = Enemy.GetComponent<LineRenderer> ();
 				lr.positionCount = 100;
 				lr.startColor = Color.yellow;
@@ -196,13 +186,13 @@ public class Grid : MonoBehaviour {
 					bc = bc.next;
 					count += 1;
 				}
-				lr.positionCount = count;
+				lr.positionCount = count;*/
 			}
 		//}
 	//}
 
-	/*void Start () {
-		Vector2 target = GameObject.FindGameObjectWithTag ("Player").transform.localPosition;
+	void Start () {
+		/*Vector2 target = GameObject.FindGameObjectWithTag ("Player").transform.localPosition;
 		Point gridPos = new Point((int)(target.x*2), (int)(target.y*2));
 		Debug.Log ("Player position x:" + gridPos.X + ", y: " + gridPos.Y);
 
@@ -234,7 +224,7 @@ public class Grid : MonoBehaviour {
 				}
 				lr.positionCount = count;
 			}
-		}
-	}*/
+		}*/
+	}
 
 }

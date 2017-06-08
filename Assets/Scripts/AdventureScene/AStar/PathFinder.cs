@@ -57,40 +57,42 @@ public static class PathFinder
 					continue;                				                  
 
 				//Check if we've already examined a neighbour, if not create a new node for it.
-				if (brWorld[tmp.X, tmp.Y] == null) {
-					node = new BreadCrumb(tmp);
-					brWorld[tmp.X, tmp.Y] = node;
-				} else {
-					node = brWorld[tmp.X, tmp.Y];
-				}
-
-				//If the node is not on the 'closedList' check it's new score, keep the best
-				if (!node.onClosedList) {
-					diff = 0;
-					if (current.position.X != node.position.X) {
-						diff += 1;
-					}
-					if (current.position.Y != node.position.Y) {
-						diff += 1;
+				if (tmp.X > 0 && tmp.Y > 0) {
+					if (brWorld [tmp.X, tmp.Y] == null) {
+						node = new BreadCrumb (tmp);
+						brWorld [tmp.X, tmp.Y] = node;
+					} else {
+						node = brWorld [tmp.X, tmp.Y];
 					}
 
-					int distance = (int)Mathf.Pow(Mathf.Max(Mathf.Abs (end.X - node.position.X), Mathf.Abs(end.Y - node.position.Y)), 2);
-					cost = current.cost + diff + distance;
-
-					if (cost < node.cost) {
-						node.cost = cost;
-						node.next = current;
-					}
-
-					//If the node wasn't on the openList yet, add it 
-					if (!node.onOpenList) {
-						//Check to see if we're done
-						if (node.Equals(finish)) {
-							node.next = current;
-							return node;
+					//If the node is not on the 'closedList' check it's new score, keep the best
+					if (!node.onClosedList) {
+						diff = 0;
+						if (current.position.X != node.position.X) {
+							diff += 1;
 						}
-						node.onOpenList = true;
-						openList.Add(node);
+						if (current.position.Y != node.position.Y) {
+							diff += 1;
+						}
+
+						int distance = (int)Mathf.Pow (Mathf.Max (Mathf.Abs (end.X - node.position.X), Mathf.Abs (end.Y - node.position.Y)), 2);
+						cost = current.cost + diff + distance;
+
+						if (cost < node.cost) {
+							node.cost = cost;
+							node.next = current;
+						}
+
+						//If the node wasn't on the openList yet, add it 
+						if (!node.onOpenList) {
+							//Check to see if we're done
+							if (node.Equals (finish)) {
+								node.next = current;
+								return node;
+							}
+							node.onOpenList = true;
+							openList.Add (node);
+						}
 					}
 				}
 			}

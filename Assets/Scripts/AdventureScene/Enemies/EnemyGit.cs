@@ -4,24 +4,51 @@ using UnityEngine;
 
 public class EnemyGit : Enemy {
 
+	public float startAttack;
+
 	public override void Rotate() {
 		// Do nothing
 	}
 
 	public override void PlayAttackAnimation() {
-		animator.Play ("EnemyGitAttackAnim");
+		GetComponent<Animator> ().Play ("EnemyGitAttackAnim");
 	}
 
 	public override void PlayNormalAnimation() {
-		animator.Play ("EnemyGitAnim");
+		GetComponent<Animator> ().Play ("EnemyGitAnim");
 	}
 
-	public override void SetMaxHP() {
-		maxHP = 7;
+	public override void SetStats() {
+		this.startAttack = Time.time;
+		this.stats = new EnemyStats (7f, 2f, 0.5f);
 	}
 
-	public override void SetDamage() {
-		damage = 2;
+	public override void GetHit (Player player) {
+		float hit = player.stats.git;
+
+		if (curHP > hit) {
+			curHP -= hit;
+		} else {
+			curHP = 0;
+			gameObject.SetActive (false);
+		}
+	}
+
+	void OnCollisionStay2D(Collision2D coll) {
+		if (coll.gameObject.tag == "Player") {
+			if (startAttack + 0.5f < Time.time) {
+				startAttack = Time.time;
+				Player player = coll.gameObject.GetComponent<Player> ();
+				if (player.dead) {
+					PlayNormalAnimation ();
+				} else {
+					if (Time.time > nextAction) {
+						player.GetHit (this);
+						nextAction = Time.time + actionTime;
+					}
+				}
+			}
+		}
 	}
 }
 
