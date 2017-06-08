@@ -11,15 +11,24 @@ public class ToniScript : MonoBehaviour {
 	public string[] text;
 	public int index = 0;
 	public bool seated;
+	public bool foodServed;
+	public bool foodFinished;
+	public bool interview;
+	public string foodServingText;
 	protected bool firstContact;
 	protected bool inside;
 	protected float dateTime;
+	private Transform huxely308;
 
 	public void Start () {
 		dateTime = Time.time -1;
 		firstContact = true;
 		seated = false;
+		foodServed = false;
+		foodFinished = false;
+		interview = false;
 		directionPanel = GameObject.FindGameObjectsWithTag ("Canvas")[0].transform.GetChild(0).gameObject;
+		huxely308 = GameObject.FindGameObjectWithTag ("Huxely308").transform;
 	}
 
 	void OnTriggerEnter2D(Collider2D coll) {
@@ -40,16 +49,64 @@ public class ToniScript : MonoBehaviour {
 	}
 
 	public void Update () {
-		if (!seated && (Time.time - dateTime) > 1.5 && index == 2 && inside){
-			seated = true;
+		if (!seated && index == 3){
 			index = 1;
+			dateTime = Time.time;
 			return;
 		}
-		if ((Input.GetKeyDown("space") || firstContact) && inside && index < maxSize &&  (Time.time - dateTime) > 0.5) {
+		if (inside && index == maxSize && (Time.time - dateTime) > 5) {
+			foodServed = true;
+			huxely308.GetComponent<Controller308> ().BlankScreen ();
+			dateTime = Time.time;
+			directionPanel.transform.GetComponent<DirectionPanel> ().DisplayText (foodServingText);
+			MakeAllStudentDisappear ();
+			index++;
+		}
+		if (foodServed && (Time.time - dateTime) > 3) {
+			//New sudents with position
+			MakeAllFoodStudentAppear ();
+			dateTime = Time.time;
+			foodFinished = true;
+			foodServed = false;
+			huxely308.GetComponent<Controller308> ().SetFood();
+		}
+		if (inside && index < maxSize &&  (Time.time - dateTime) > 5) {
 			Conversation();
 		}
-		if (index >= maxSize && (Time.time - dateTime) > 1) {
-			directionPanel.SetActive (false);
+		if (foodFinished && (Time.time - dateTime) > 5) {
+			directionPanel.transform.GetComponent<DirectionPanel> ().DisplayText ("Eating food increase your health, you can grab food with (Space key)");
 		}
+		if (foodFinished && (Time.time - dateTime) > 15) {
+			huxely308.GetComponent<Controller308> ().DissapearFood ();
+			FoodGone ();
+			foodFinished = false;
+			dateTime = Time.time;
+			interview = true;
+		}
+		if (interview && (Time.time - dateTime) > 5) {
+			directionPanel.SetActive (true);
+			directionPanel.transform.GetComponent<DirectionPanel> ().DisplayText ("Go to 217, 218 for your interview, near main staircase..");
+		}
+	}
+
+	private void MakeAllStudentDisappear () {
+		GameObject[] students = GameObject.FindGameObjectsWithTag ("Student");
+		foreach (GameObject student in students) {
+			student.SetActive (false);
+		}
+	}
+
+	private void MakeAllFoodStudentAppear () {
+		Transform Huxely308 = GameObject.FindGameObjectWithTag ("Huxely308").transform;
+		int maxChild = Huxely308.childCount;
+		for (int i = 19; i < maxChild; i++) {
+			Huxely308.GetChild (i).gameObject.SetActive (true);
+		}
+	}
+
+	private void FoodGone() {
+		Transform Huxely308 = GameObject.FindGameObjectWithTag ("Huxely308").transform;
+		int maxChild = Huxely308.childCount;
+		Huxely308.GetChild (maxChild-1).gameObject.SetActive (false);
 	}
 }
