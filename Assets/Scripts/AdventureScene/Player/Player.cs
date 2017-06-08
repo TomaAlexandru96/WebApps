@@ -8,16 +8,19 @@ public class Player : Entity<PlayerStats> {
 	public Camera mainCamera;
 
 	public GameObject attackRadius;
+	public RuntimeAnimatorController[] playerControllers;
 
-	protected string username;
-	protected PlayerAbilities abilities;
+	private PlayerAbilities abilities;
+	private User user;
 
 	void Awake () {
-		this.username = (string) photonView.instantiationData [0];
+		this.user = (User) photonView.instantiationData [0];
 	}
 
 	new void Start () {
 		base.Start ();
+		GetComponent<SpriteRenderer> ().sprite = user.character.GetImage ();
+		GetComponent<Animator> ().runtimeAnimatorController = playerControllers [user.character.type];
 		mainCamera.enabled = photonView.isMine;
 		mainCamera.GetComponent<AudioListener> ().enabled = photonView.isMine;
 		InvokeRepeating ("GetHitOvertime", 10, 20);
@@ -28,19 +31,12 @@ public class Player : Entity<PlayerStats> {
 		}
 	}
 
-	protected override IEnumerator PlayDeadAnimation () {
-		move = Direction.Dead;
-		GetComponent<Rigidbody2D> ().velocity = Vector2.zero;
-		Animate ();
-		yield return GetEmptyIE ();
-	}
-
 	protected override void SetStats () {
 		stats = new PlayerStats (PlayerType.FrontEndDev);
 	}
 
 	private bool IsStory () {
-		return CurrentUser.GetInstance ().GetUserInfo ().party.state == PartyMembers.STORY;
+		return user.character.type == PartyMembers.STORY;
 	}
 
 	private Vector2 GetMouseInput () {
@@ -87,19 +83,11 @@ public class Player : Entity<PlayerStats> {
 				float angle = Vector3.Angle (attackRadius.transform.localPosition, mouseDirection);
 				angle = inverted ? -angle : angle;
 				attackRadius.transform.RotateAround (transform.position, Vector3.forward, angle);
-				StartCoroutine (PlayMeleAttackAnimation ());
+				PlayAnimation ("PlayMeleAttackAnimation");
 			} else {
 				Debug.LogWarning ("Not yet implemented: " + selectedAbility.ToString ());
 			}
 		}
-	}
-
-	protected IEnumerator PlayMeleAttackAnimation () {
-		attackRadius.GetComponent<Animator> ().Play ("Slash");
-		attackRadius.GetComponent<PlayerAttack> ().StartAttack ();
-		yield return new WaitForSeconds (0.1f);
-		attackRadius.GetComponent<Animator> ().Play ("Default");
-		attackRadius.GetComponent<PlayerAttack> ().StopAttack ();
 	}
 
 	protected override void Move () {
@@ -138,7 +126,7 @@ public class Player : Entity<PlayerStats> {
 				move = Direction.Still;
 			}
 		}
-		Animate ();
+		PlayAnimation ("Animate");
 	}
 		
 	public void GetHitOvertime () {
@@ -155,24 +143,18 @@ public class Player : Entity<PlayerStats> {
 		ChangeHealth (curHP + points);
 	}
 
-	protected override IEnumerator PlayGetHitAnimation () {
-		GetComponent<SpriteRenderer> ().color = UnityEngine.Color.red;
-		yield return new WaitForSeconds (0.1f);
-		GetComponent<SpriteRenderer> ().color = UnityEngine.Color.white;
-	}
-
 	public override void GetHit<E> (Entity<E> entity) {
 		ChangeHealth (curHP - entity.stats.damage);
 		base.GetHit (entity);
 	}
 
 	public string GetName () {
-		return username;
+		return user.username;
 	}
 
-	protected virtual void Animate () {
-		// used by children
-	}
+	// ----------------------------------------------------------------------------------------------------------
+	// -------------------------------------------------SYNCH----------------------------------------------------
+	// ----------------------------------------------------------------------------------------------------------
 
 	protected override void OnSendNext (PhotonStream stream, PhotonMessageInfo info) {
 		stream.SendNext (move);
@@ -180,7 +162,81 @@ public class Player : Entity<PlayerStats> {
 
 	protected override void OnReceiveNext (PhotonStream stream, PhotonMessageInfo info) {
 		move = (Direction) stream.ReceiveNext ();
-		Animate ();
+	}
+
+
+	// ----------------------------------------------------------------------------------------------------------
+	// ----------------------------------------------ANIMATIONS--------------------------------------------------
+	// ----------------------------------------------------------------------------------------------------------
+
+	private bool isAttacking = false;
+
+	protected IEnumerator PlayMeleAttackAnimation () {
+		isAttacking = true;
+		attackRadius.GetComponent<Animator> ().Play ("Slash");
+		attackRadius.GetComponent<PlayerAttack> ().StartAttack ();
+		GetComponent<Animator> ().Play ("P"+(user.character.type+1)+"_LaptopAttack");
+		yield return new WaitForSeconds (0.1f);
+		attackRadius.GetComponent<Animator> ().Play ("Default");
+		attackRadius.GetComponent<PlayerAttack> ().StopAttack ();
+		isAttacking = false;
+	}
+
+	protected override IEnumerator PlayDeadAnimation () {
+		move = Direction.Dead;
+		GetComponent<Rigidbody2D> ().velocity = Vector2.zero;
+		PlayAnimation ("Animate");
+		yield return GetEmptyIE ();
+	}
+
+	protected override IEnumerator PlayGetHitAnimation () {
+		GetComponent<SpriteRenderer> ().color = UnityEngine.Color.red;
+		yield return new WaitForSeconds (0.1f);
+		GetComponent<SpriteRenderer> ().color = UnityEngine.Color.white;
+	}
+
+	protected IEnumerator Animate () {
+		if (!isAttacking) {
+			Animator animator = GetComponent<Animator> ();
+			animator.speed = curSpeed;
+
+			int index = user.character.type + 1;
+
+			switch (move) {
+			case Direction.Still:
+				animator.Play ("P"+index+"_Still");
+				break;
+			case Direction.Down:
+				animator.Play ("P"+index+"_Down");
+				break;
+			case Direction.Up:
+				animator.Play ("P"+index+"_Up");
+				break;
+			case Direction.Left:
+				animator.Play ("P"+index+"_Left");
+				break;
+			case Direction.Right:
+				animator.Play ("P"+index+"_Right");
+				break;
+			case Direction.UpRight:
+				animator.Play ("P"+index+"_UpRight");
+				break;
+			case Direction.UpLeft:
+				animator.Play ("P"+index+"_UpLeft");
+				break;
+			case Direction.DownRight:
+				animator.Play ("P"+index+"_DownRight");
+				break;
+			case Direction.DownLeft:
+				animator.Play ("P"+index+"_DownLeft");
+				break;
+			case Direction.Dead:
+				animator.Play ("P"+index+"_Dead");
+				break;
+			}	
+		}
+
+		yield return GetEmptyIE ();
 	}
 }
 
