@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Enemy : Entity<EnemyStats> {
+public abstract class Enemy : Entity<EnemyStats> {
 
 	public Transform target;
 	public bool attackingPlayer;
@@ -279,5 +279,13 @@ public class Enemy : Entity<EnemyStats> {
 
 	protected virtual IEnumerator PlayAttackAnimation() {
 		yield return null;
+	}
+
+	protected override void OnSendNext (PhotonStream stream, PhotonMessageInfo info) {
+
+	}
+
+	protected override void OnReceiveNext (PhotonStream stream, PhotonMessageInfo info) {
+
 	}
 }

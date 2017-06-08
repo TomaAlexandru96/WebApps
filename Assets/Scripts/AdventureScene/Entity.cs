@@ -60,12 +60,19 @@ public abstract class Entity<T> : Photon.PunBehaviour, IPunObservable where T : 
 		if (stream.isWriting) {
 			stream.SendNext (curHP);
 			stream.SendNext (curSpeed);
+			OnSendNext (stream, info);
+
 		} else {
 			curHP = (float) stream.ReceiveNext ();
 			curSpeed = (float) stream.ReceiveNext ();
+			OnReceiveNext (stream, info);
 		}
 	}
 	#endregion
+
+	protected abstract void OnSendNext (PhotonStream stream, PhotonMessageInfo info);
+
+	protected abstract void OnReceiveNext (PhotonStream stream, PhotonMessageInfo info);
 
 	protected virtual IEnumerator PlayDeadAnimation () {
 		yield return GetEmptyIE ();
