@@ -2,7 +2,8 @@
 using Photon;
 
 public class Player1MoveAnim : Player {
-	
+
+	[PunRPC]
 	protected override void Animate () {
 		Animator animator = GetComponent<Animator> ();
 		animator.speed = curSpeed;
