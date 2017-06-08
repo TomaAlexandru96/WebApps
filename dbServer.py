@@ -6,6 +6,7 @@ import threading
 import json
 from urllib.parse import urlparse, parse_qs
 from http.server import BaseHTTPRequestHandler, HTTPServer, SimpleHTTPRequestHandler
+import requests
 
 NOT_FOUND = 404
 OK = 200
@@ -22,16 +23,16 @@ except Exception as e:
   print(e)
 
 
-def set_interval(func, sec):
-  def func_wrapper():
-      set_interval(func, sec)
-      func()
-  t = threading.Timer(sec, func_wrapper)
-  t.start()
-  return t
-
-
 class DBHTTPHandler(BaseHTTPRequestHandler):
+
+  def handle_logout_inactive_users(self):
+    query = '''SELECT * FROM USERS
+               WHERE EXTRACT(EPOCH FROM NOW() - LAST_TIME_ACTIVE) > 90'''
+    results = self.send_db_query(query).fetchall()
+    for result in results:
+      self.handle_logout({'username': [result[0]]}, False)
+    self.send_code_only(OK)
+
 
   # OPTIONS
   def do_OPTIONS(self):
@@ -45,7 +46,7 @@ class DBHTTPHandler(BaseHTTPRequestHandler):
     if (url.path == "/login"):
       self.handle_login(parse_qs(data))
     elif (url.path == "/logout"):
-      self.handle_logout(parse_qs(data))
+      self.handle_logout(parse_qs(data), True)
     elif (url.path == "/register"):
       self.handle_register(parse_qs(data))
     elif (url.path == "/update_active_status"):
@@ -63,7 +64,9 @@ class DBHTTPHandler(BaseHTTPRequestHandler):
     elif (url.path == "/join_party"):
       self.handle_join_party(parse_qs(data))
     elif (url.path == "/leave_party"):
-      self.handle_leave_party(parse_qs(data))
+      self.handle_leave_party(parse_qs(data), True)
+    elif (url.path == "/logout_inactive_users"):
+      self.handle_logout_inactive_users()
     else:
       self.send_code_only(NOT_FOUND);
 
@@ -121,7 +124,7 @@ class DBHTTPHandler(BaseHTTPRequestHandler):
       self.send_JSON(user)
 
 
-  def handle_logout(self, params):
+  def handle_logout(self, params, send_the_code):
     user = self.helper_find_user(params['username'][0])
     if (user is None):
       self.send_code_only(NOT_FOUND)
@@ -132,8 +135,8 @@ class DBHTTPHandler(BaseHTTPRequestHandler):
       self.send_db_query(query)
       
       if (not (user['party']['owner'] is None)):
-        self.handle_leave_party({'username': [user['username']]})
-      else:
+        self.handle_leave_party({'username': [user['username']]}, send_the_code)
+      elif (send_the_code):
         self.send_code_only(OK)
 
 
@@ -155,7 +158,7 @@ class DBHTTPHandler(BaseHTTPRequestHandler):
       self.send_code_only(OK)
 
 
-  def handle_leave_party(self, data):
+  def handle_leave_party(self, data, send_the_code):
     user = self.helper_find_user(data['username'][0])
     if (user is None):
       self.send_code_only(NOT_FOUND)
@@ -168,7 +171,8 @@ class DBHTTPHandler(BaseHTTPRequestHandler):
                  WHERE USERNAME = '{}'
               '''.format(user['username'])
       self.send_db_query(query)
-      self.send_code_only(OK)
+      if (send_the_code):
+        self.send_code_only(OK)
     else:
       query = '''DELETE FROM PARTIES WHERE OWNER = '{}'
               '''.format(user['username'])
@@ -178,7 +182,8 @@ class DBHTTPHandler(BaseHTTPRequestHandler):
                    WHERE USERNAME = '{}'
                 '''.format(member)
         self.send_db_query(query)
-      self.send_code_only(OK)
+      if (send_the_code):
+        self.send_code_only(OK)
 
 
   def handle_join_party(self, data):
@@ -355,22 +360,33 @@ class DBHTTPHandler(BaseHTTPRequestHandler):
     self.send_code_only(OK)
 
 
-def update_active_status():
-  cursor = conn.cursor()
-  query = '''UPDATE USERS SET ACTIVE = 'f'
-             WHERE EXTRACT(EPOCH FROM NOW() - LAST_TIME_ACTIVE) > 90'''
-  cursor.execute (query)
-  conn.commit()
+def set_interval(func, sec):
+  def func_wrapper():
+      set_interval(func, sec)
+      func()
+  t = threading.Timer(sec, func_wrapper)
+  t.start()
+  return t
 
 
-def startServer():
-  server_address = ('146.169.46.104', 8000)
+def check_for_inactive_users():
+  r = requests.post('https://cloud-vm-46-104.doc.ic.ac.uk:8000/logout_inactive_users')
+  print(r.status_code)
+
+
+def start_server():
+  server_address = ('cloud-vm-46-104.doc.ic.ac.uk', 8000)
   httpd = HTTPServer(server_address, DBHTTPHandler)
   httpd.socket = ssl.wrap_socket (httpd.socket, keyfile= '/tmp/crt.pem', certfile='/tmp/newcert.crt', server_side=True)
-  set_interval(update_active_status, 90)
-  print("Serving..")
-  httpd.serve_forever()
+  try:
+    print("Running server.")
+    t = set_interval(check_for_inactive_users, 90)
+    httpd.serve_forever()
+  except KeyboardInterrupt:
+    print("\nServer closed.")
+    httpd.socket.close()
+    t.cancel()
 
 
 if __name__ == "__main__":
-  startServer()
+  start_server()
