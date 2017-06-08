@@ -378,14 +378,17 @@ def start_server():
   server_address = ('cloud-vm-46-104.doc.ic.ac.uk', 8000)
   httpd = HTTPServer(server_address, DBHTTPHandler)
   httpd.socket = ssl.wrap_socket (httpd.socket, keyfile= '/tmp/crt.pem', certfile='/tmp/newcert.crt', server_side=True)
+  t1 = set_interval(check_for_inactive_users, 90)
+  t2 = threading.Timer(0.2, check_for_inactive_users)
+  t2.start()
   try:
     print("Running server.")
-    t = set_interval(check_for_inactive_users, 90)
     httpd.serve_forever()
   except KeyboardInterrupt:
     print("\nServer closed.")
     httpd.socket.close()
-    t.cancel()
+    t1.cancel()
+    t2.cancel()
 
 
 if __name__ == "__main__":
