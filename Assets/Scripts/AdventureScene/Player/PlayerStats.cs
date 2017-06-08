@@ -6,6 +6,7 @@ public class PlayerStats {
 
 	public float attackSpeed = 0.5f;
 	public float speed = 1f;
+	public float runSpeed = 3f;
 	public int level;
 	public float maxHP;
 	public int javascript;
