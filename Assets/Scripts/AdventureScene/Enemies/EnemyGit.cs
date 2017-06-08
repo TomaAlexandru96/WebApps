@@ -26,7 +26,7 @@ public class EnemyGit : Enemy {
 
 	public override void GetHit<E> (Entity<E> entity) {
 		float hit = (entity.stats as PlayerStats).git;
-		curHP = Mathf.Clamp(curHP - hit, 0, stats.maxHP);
+		ChangeHealth (curHP - hit);
 		base.GetHit (entity);
 	}
 
