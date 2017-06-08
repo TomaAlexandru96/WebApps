@@ -11,18 +11,11 @@ public abstract class Enemy : Entity<EnemyStats> {
 	public Grid grid;
 	public Point lastTargetPos;
 	public BreadCrumb currentBr;
-	//public bool onSpecialCaseMovement;
-	public float spectialCaseMovEnd;
-	public float lastCollisionTime;
-	//public Vector3 specialCaseDirection;
 	public bool targetInRange = false;
 
 	// Use this for initialization
 	new void Start () {
 		base.Start ();
-		lastCollisionTime = Time.time;
-		spectialCaseMovEnd = Time.time;
-		//onSpecialCaseMovement = false;
 		grid = GetComponentInParent<Grid> ();
 	}
 
@@ -81,6 +74,8 @@ public abstract class Enemy : Entity<EnemyStats> {
 			// MOVEMENT
 			MoveEnemy ();
 		}
+
+		PlayAnimation ("Rotate");
 	}
 
 	public Point CurrentTargetPoint() {
@@ -91,9 +86,73 @@ public abstract class Enemy : Entity<EnemyStats> {
 		return new Point (Mathf.RoundToInt((transform.localPosition.x * 2)), Mathf.RoundToInt(transform.localPosition.y * 2));
 	}
 
+	void OnCollisionExit2D(Collision2D coll) {
+		if (coll.gameObject.tag == "Player") {
+			PlayNormalAnimation ();
+			attackingPlayer = false;
+		}
+	}
+
+	public virtual void MoveEnemy () {
+		if (currentBr != null) {
+			Vector2 bcRealPos = currentBr.toRealCoordinates (grid);
+			if (Vector2.Distance (transform.position, 
+				new Vector2 (bcRealPos.x, bcRealPos.y)) > 0.1f) {
+				Vector3 movement = new Vector2 (bcRealPos.x - transform.position.x,
+					bcRealPos.y - transform.position.y);
+				GetComponent<Rigidbody2D> ().velocity = movement.normalized * 0.8f;
+			} else {
+				currentBr = currentBr.next;
+			}
+		} else {
+			GetComponent<Rigidbody2D> ().velocity = new Vector2(0,0);
+		}
+	}
+
+	public override void GetHit<E> (Entity<E> entity) { 
+		base.GetHit<E> (entity);
+	}
+
+	// ----------------------------------------------------------------------------------------------------------
+	// -------------------------------------------------SYNCH----------------------------------------------------
+	// ----------------------------------------------------------------------------------------------------------
+
+	protected override void OnSendNext (PhotonStream stream, PhotonMessageInfo info) {
+
+	}
+
+	protected override void OnReceiveNext (PhotonStream stream, PhotonMessageInfo info) {
+
+	}
+
+	// ----------------------------------------------------------------------------------------------------------
+	// ----------------------------------------------ANIMATIONS--------------------------------------------------
+	// ----------------------------------------------------------------------------------------------------------
+
+	protected override IEnumerator PlayDeadAnimation () {
+		yield return GetEmptyIE ();
+		gameObject.SetActive (false);
+	}
+
+	protected virtual IEnumerator PlayAttackAnimation() {
+		yield return GetEmptyIE ();
+	}
+		
+	protected virtual IEnumerator PlayNormalAnimation () {
+		yield return GetEmptyIE ();
+	}
+
+	protected virtual IEnumerator Rotate() {
+		yield return GetEmptyIE ();
+	}
+
+	// ----------------------------------------------------------------------------------------------------------
+	// ---------------------------------------------------A*-----------------------------------------------------
+	// ----------------------------------------------------------------------------------------------------------
+
 	void OnCollisionEnter2D(Collision2D coll) {
 		if (coll.gameObject.tag.Equals("Player")) {
-			StartCoroutine (PlayAttackAnimation ());
+			PlayAnimation ("PlayAttackAnimation");
 			attackingPlayer = true;
 		} else {
 			if (currentBr != null) {
@@ -123,7 +182,7 @@ public abstract class Enemy : Entity<EnemyStats> {
 							return;
 						}
 
-					// LEFT - UP
+						// LEFT - UP
 					} else if (ydiff == -1) {
 						// Collider on the left
 						if (-GetComponent<Rigidbody2D> ().velocity.x > GetComponent<Rigidbody2D> ().velocity.y) {
@@ -186,14 +245,14 @@ public abstract class Enemy : Entity<EnemyStats> {
 							// Debug.Log ("RIGHT collider up");
 							currentBr.position = new Point (currentBr.position.X + 1, currentBr.position.Y - 1);
 							return;
-						// Collider down
+							// Collider down
 						} else {
 							// Debug.Log ("RIGHT collider down");
 							currentBr.position = new Point (currentBr.position.X + 1, currentBr.position.Y + 1);
 							return;
 						}
 					}
-				// UP OR DOWN
+					// UP OR DOWN
 				} else {
 					// DOWN
 					if (ydiff == 1) {
@@ -209,7 +268,7 @@ public abstract class Enemy : Entity<EnemyStats> {
 							return;
 						}
 
-					// UP
+						// UP
 					} else {
 						// collider right
 						if (coll.transform.position.x > transform.position.x) {
@@ -227,65 +286,5 @@ public abstract class Enemy : Entity<EnemyStats> {
 				}
 			}
 		}
-		//lastCollisionTime = DateTime.Now;
-	}
-
-	void OnCollisionExit2D(Collision2D coll) {
-		if (coll.gameObject.tag == "Player") {
-			PlayNormalAnimation ();
-			attackingPlayer = false;
-		}
-		//lastCollisionTime = DateTime.Now;
-
-	}
-
-	public virtual void PlayNormalAnimation () {
-		// use child function
-	}
-
-	public virtual void Rotate() {
-		// use child function
-	}
-
-	public virtual void MoveEnemy () {
-		//if (onSpecialCaseMovement ) {
-		//	Vector3 movement = specialCaseDirection.normalized * stats.speed;
-		//	GetComponent<Rigidbody2D> ().velocity = movement;
-		//} else {
-			if (currentBr != null) {
-				Vector2 bcRealPos = currentBr.toRealCoordinates (grid);
-				if (Vector2.Distance (transform.position, 
-					new Vector2 (bcRealPos.x, bcRealPos.y)) > 0.1f) {
-					Vector3 movement = new Vector2 (bcRealPos.x - transform.position.x,
-						bcRealPos.y - transform.position.y);
-					GetComponent<Rigidbody2D> ().velocity = movement.normalized * 0.8f;
-				} else {
-					currentBr = currentBr.next;
-				}
-			} else {
-				GetComponent<Rigidbody2D> ().velocity = new Vector2(0,0);
-			}
-		//}
-	}
-
-	public override void GetHit<E> (Entity<E> entity) { 
-		base.GetHit<E> (entity);
-	}
-
-	protected override IEnumerator PlayDeadAnimation () {
-		gameObject.SetActive (false);
-		yield return null;
-	}
-
-	protected virtual IEnumerator PlayAttackAnimation() {
-		yield return null;
-	}
-
-	protected override void OnSendNext (PhotonStream stream, PhotonMessageInfo info) {
-
-	}
-
-	protected override void OnReceiveNext (PhotonStream stream, PhotonMessageInfo info) {
-
 	}
 }

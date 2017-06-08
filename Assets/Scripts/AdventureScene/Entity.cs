@@ -45,15 +45,19 @@ public abstract class Entity<T> : Photon.PunBehaviour, IPunObservable where T : 
 	}
 
 	public virtual void GetHit<E> (Entity<E> entity) where E : EntityStats {
-		StartCoroutine (PlayGetHitAnimation ());
+		PlayAnimation ("PlayGetHitAnimation");
 	}
 
 	protected void ChangeHealth (float newHealth) {
 		curHP = Mathf.Clamp (newHealth, 0, stats.maxHP);
 		if (isDead ()) {
-			StartCoroutine (PlayDeadAnimation ());
+			PlayAnimation ("PlayDeadAnimation");
 		}
 	}
+
+	// ----------------------------------------------------------------------------------------------------------
+	// -------------------------------------------------SYNCH----------------------------------------------------
+	// ----------------------------------------------------------------------------------------------------------
 
 	#region IPunObservable implementation
 	void IPunObservable.OnPhotonSerializeView (PhotonStream stream, PhotonMessageInfo info) {
@@ -73,6 +77,19 @@ public abstract class Entity<T> : Photon.PunBehaviour, IPunObservable where T : 
 	protected abstract void OnSendNext (PhotonStream stream, PhotonMessageInfo info);
 
 	protected abstract void OnReceiveNext (PhotonStream stream, PhotonMessageInfo info);
+
+	// ----------------------------------------------------------------------------------------------------------
+	// ----------------------------------------------ANIMATIONS--------------------------------------------------
+	// ----------------------------------------------------------------------------------------------------------
+
+	protected void PlayAnimation (string name) {
+		photonView.RPC ("PlayAnimationHelper", PhotonTargets.All, name);
+	}
+
+	[PunRPC]
+	protected void PlayAnimationHelper (string name) {
+		StartCoroutine (name);
+	}
 
 	protected virtual IEnumerator PlayDeadAnimation () {
 		yield return GetEmptyIE ();

@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using ExitGames.Client.Photon;
+using System.Text;
 
 public class NetworkService : Photon.PunBehaviour {
 
@@ -30,6 +32,13 @@ public class NetworkService : Photon.PunBehaviour {
 		PhotonNetwork.InstantiateInRoomOnly = true;
 		PhotonNetwork.sendRate = 20;
 		PhotonNetwork.sendRateOnSerialize = 10;
+		ExitGames.Client.Photon.PhotonPeer.RegisterType	(typeof (User), 2, 
+			new SerializeMethod ((object userObj) => {
+				User cast = (User) userObj;
+				return Encoding.UTF8.GetBytes (JsonUtility.ToJson (cast));
+			}), new DeserializeMethod ((byte[] obj) => {
+				return JsonUtility.FromJson<User> (Encoding.UTF8.GetString(obj));
+			}));
 		this.onFinish = onFinish;
 	}
 

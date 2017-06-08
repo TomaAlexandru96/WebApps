@@ -8,7 +8,7 @@ public class AdventureController : Photon.PunBehaviour {
 	public GameObject loadingScreen;
 	public GameObject party;
 	public Transform[] playerSpawnPoints;
-	public GameObject[] players;
+	public GameObject player;
 	public GameObject[] enemies;
 
 	private HashSet<string> loadedPlayers;
@@ -69,8 +69,8 @@ public class AdventureController : Photon.PunBehaviour {
 
 	public void SpawnPlayer () {
 		// to be changed
-		NetworkService.GetInstance ().Spawn (players [CurrentUser.GetInstance ().GetUserInfo ().character.type].name, 
-			playerSpawnPoints [CurrentUser.GetInstance ().GetPositionInParty ()].position, Quaternion.identity, 0, new object[1] {CurrentUser.GetInstance ().GetUserInfo ().username});
+		NetworkService.GetInstance ().Spawn (player.name, 
+			playerSpawnPoints [CurrentUser.GetInstance ().GetPositionInParty ()].position, Quaternion.identity, 0, new object[1] {CurrentUser.GetInstance ().GetUserInfo ()});
 	}
 
 	public void SpawnEnemies () {
