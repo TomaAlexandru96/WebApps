@@ -10,8 +10,8 @@ public class Player : Entity<PlayerStats> {
 	public GameObject attackRadius;
 	public RuntimeAnimatorController[] playerControllers;
 
-	protected string username;
-	protected PlayerAbilities abilities;
+	private string username;
+	private PlayerAbilities abilities;
 
 	void Awake () {
 		this.username = (string) photonView.instantiationData [0];
@@ -169,12 +169,17 @@ public class Player : Entity<PlayerStats> {
 	// ----------------------------------------------ANIMATIONS--------------------------------------------------
 	// ----------------------------------------------------------------------------------------------------------
 
+	private bool isAttacking = false;
+
 	protected IEnumerator PlayMeleAttackAnimation () {
+		isAttacking = true;
 		attackRadius.GetComponent<Animator> ().Play ("Slash");
 		attackRadius.GetComponent<PlayerAttack> ().StartAttack ();
+		GetComponent<Animator> ().Play ("P"+(CurrentUser.GetInstance ().GetUserInfo ().character.type+1)+"_LaptopAttack");
 		yield return new WaitForSeconds (0.1f);
 		attackRadius.GetComponent<Animator> ().Play ("Default");
 		attackRadius.GetComponent<PlayerAttack> ().StopAttack ();
+		isAttacking = false;
 	}
 
 	protected override IEnumerator PlayDeadAnimation () {
@@ -191,42 +196,44 @@ public class Player : Entity<PlayerStats> {
 	}
 
 	protected IEnumerator Animate () {
-		Animator animator = GetComponent<Animator> ();
-		animator.speed = curSpeed;
+		if (!isAttacking) {
+			Animator animator = GetComponent<Animator> ();
+			animator.speed = curSpeed;
 
-		int index = CurrentUser.GetInstance ().GetUserInfo ().character.type + 1;
+			int index = CurrentUser.GetInstance ().GetUserInfo ().character.type + 1;
 
-		switch (move) {
-		case Direction.Still:
-			animator.Play ("P"+index+"_Still");
-			break;
-		case Direction.Down:
-			animator.Play ("P"+index+"_Down");
-			break;
-		case Direction.Up:
-			animator.Play ("P"+index+"_Up");
-			break;
-		case Direction.Left:
-			animator.Play ("P"+index+"_Left");
-			break;
-		case Direction.Right:
-			animator.Play ("P"+index+"_Right");
-			break;
-		case Direction.UpRight:
-			animator.Play ("P"+index+"_UpRight");
-			break;
-		case Direction.UpLeft:
-			animator.Play ("P"+index+"_UpLeft");
-			break;
-		case Direction.DownRight:
-			animator.Play ("P"+index+"_DownRight");
-			break;
-		case Direction.DownLeft:
-			animator.Play ("P"+index+"_DownLeft");
-			break;
-		case Direction.Dead:
-			animator.Play ("P"+index+"_Dead");
-			break;
+			switch (move) {
+			case Direction.Still:
+				animator.Play ("P"+index+"_Still");
+				break;
+			case Direction.Down:
+				animator.Play ("P"+index+"_Down");
+				break;
+			case Direction.Up:
+				animator.Play ("P"+index+"_Up");
+				break;
+			case Direction.Left:
+				animator.Play ("P"+index+"_Left");
+				break;
+			case Direction.Right:
+				animator.Play ("P"+index+"_Right");
+				break;
+			case Direction.UpRight:
+				animator.Play ("P"+index+"_UpRight");
+				break;
+			case Direction.UpLeft:
+				animator.Play ("P"+index+"_UpLeft");
+				break;
+			case Direction.DownRight:
+				animator.Play ("P"+index+"_DownRight");
+				break;
+			case Direction.DownLeft:
+				animator.Play ("P"+index+"_DownLeft");
+				break;
+			case Direction.Dead:
+				animator.Play ("P"+index+"_Dead");
+				break;
+			}	
 		}
 
 		yield return GetEmptyIE ();
