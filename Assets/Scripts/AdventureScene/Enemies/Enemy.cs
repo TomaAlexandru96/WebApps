@@ -273,12 +273,12 @@ public abstract class Enemy : Entity<EnemyStats> {
 	}
 
 	protected override IEnumerator PlayDeadAnimation () {
+		yield return GetEmptyIE ();
 		gameObject.SetActive (false);
-		yield return null;
 	}
 
 	protected virtual IEnumerator PlayAttackAnimation() {
-		yield return null;
+		yield return GetEmptyIE ();
 	}
 
 	protected override void OnSendNext (PhotonStream stream, PhotonMessageInfo info) {
