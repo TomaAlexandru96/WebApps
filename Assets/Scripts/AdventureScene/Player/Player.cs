@@ -2,7 +2,7 @@
 using System.Collections;
 using UnityEngine;
 
-public class Player : Entity<PlayerStats>, IPunObservable {
+public class Player : Entity<PlayerStats> {
 	
 	public Direction move;
 	public Camera mainCamera;
@@ -160,23 +160,21 @@ public class Player : Entity<PlayerStats>, IPunObservable {
 		base.GetHit (entity);
 	}
 
-	#region IPunObservable implementation
-	void IPunObservable.OnPhotonSerializeView (PhotonStream stream, PhotonMessageInfo info) {
-		if (stream.isWriting) {
-			stream.SendNext (move);
-		} else {
-			move = (Direction) stream.ReceiveNext ();
-			Animate ();
-		}
-	}
-	#endregion
-
 	public string GetName () {
 		return username;
 	}
 
 	protected virtual void Animate () {
 		// used by children
+	}
+
+	protected override void OnSendNext (PhotonStream stream, PhotonMessageInfo info) {
+		stream.SendNext (move);
+	}
+
+	protected override void OnReceiveNext (PhotonStream stream, PhotonMessageInfo info) {
+		move = (Direction) stream.ReceiveNext ();
+		Animate ();
 	}
 }
 
