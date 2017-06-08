@@ -28,13 +28,6 @@ public class Player : Entity<PlayerStats> {
 		}
 	}
 
-	protected override IEnumerator PlayDeadAnimation () {
-		move = Direction.Dead;
-		GetComponent<Rigidbody2D> ().velocity = Vector2.zero;
-		photonView.RPC ("Animate", PhotonTargets.All);
-		yield return GetEmptyIE ();
-	}
-
 	protected override void SetStats () {
 		stats = new PlayerStats (PlayerType.FrontEndDev);
 	}
@@ -94,14 +87,6 @@ public class Player : Entity<PlayerStats> {
 		}
 	}
 
-	protected IEnumerator PlayMeleAttackAnimation () {
-		attackRadius.GetComponent<Animator> ().Play ("Slash");
-		attackRadius.GetComponent<PlayerAttack> ().StartAttack ();
-		yield return new WaitForSeconds (0.1f);
-		attackRadius.GetComponent<Animator> ().Play ("Default");
-		attackRadius.GetComponent<PlayerAttack> ().StopAttack ();
-	}
-
 	protected override void Move () {
 		// GET MOVEMENT INPUT
 		float h = Input.GetAxisRaw ("Horizontal");
@@ -138,7 +123,7 @@ public class Player : Entity<PlayerStats> {
 				move = Direction.Still;
 			}
 		}
-		photonView.RPC ("Animate", PhotonTargets.All);
+		PlayAnimation ("Animate");
 	}
 		
 	public void GetHitOvertime () {
@@ -155,12 +140,6 @@ public class Player : Entity<PlayerStats> {
 		ChangeHealth (curHP + points);
 	}
 
-	protected override IEnumerator PlayGetHitAnimation () {
-		GetComponent<SpriteRenderer> ().color = UnityEngine.Color.red;
-		yield return new WaitForSeconds (0.1f);
-		GetComponent<SpriteRenderer> ().color = UnityEngine.Color.white;
-	}
-
 	public override void GetHit<E> (Entity<E> entity) {
 		ChangeHealth (curHP - entity.stats.damage);
 		base.GetHit (entity);
@@ -170,8 +149,45 @@ public class Player : Entity<PlayerStats> {
 		return username;
 	}
 
-	[PunRPC]
-	private void Animate () {
+	// ----------------------------------------------------------------------------------------------------------
+	// -------------------------------------------------SYNCH----------------------------------------------------
+	// ----------------------------------------------------------------------------------------------------------
+
+	protected override void OnSendNext (PhotonStream stream, PhotonMessageInfo info) {
+		stream.SendNext (move);
+	}
+
+	protected override void OnReceiveNext (PhotonStream stream, PhotonMessageInfo info) {
+		move = (Direction) stream.ReceiveNext ();
+	}
+
+
+	// ----------------------------------------------------------------------------------------------------------
+	// ----------------------------------------------ANIMATIONS--------------------------------------------------
+	// ----------------------------------------------------------------------------------------------------------
+
+	protected IEnumerator PlayMeleAttackAnimation () {
+		attackRadius.GetComponent<Animator> ().Play ("Slash");
+		attackRadius.GetComponent<PlayerAttack> ().StartAttack ();
+		yield return new WaitForSeconds (0.1f);
+		attackRadius.GetComponent<Animator> ().Play ("Default");
+		attackRadius.GetComponent<PlayerAttack> ().StopAttack ();
+	}
+
+	protected override IEnumerator PlayDeadAnimation () {
+		move = Direction.Dead;
+		GetComponent<Rigidbody2D> ().velocity = Vector2.zero;
+		PlayAnimation ("Animate");
+		yield return GetEmptyIE ();
+	}
+
+	protected override IEnumerator PlayGetHitAnimation () {
+		GetComponent<SpriteRenderer> ().color = UnityEngine.Color.red;
+		yield return new WaitForSeconds (0.1f);
+		GetComponent<SpriteRenderer> ().color = UnityEngine.Color.white;
+	}
+
+	protected IEnumerator Animate () {
 		Animator animator = GetComponent<Animator> ();
 		animator.speed = curSpeed;
 
@@ -209,14 +225,8 @@ public class Player : Entity<PlayerStats> {
 			animator.Play ("P"+index+"_Dead");
 			break;
 		}
-	}
 
-	protected override void OnSendNext (PhotonStream stream, PhotonMessageInfo info) {
-		stream.SendNext (move);
-	}
-
-	protected override void OnReceiveNext (PhotonStream stream, PhotonMessageInfo info) {
-		move = (Direction) stream.ReceiveNext ();
+		yield return GetEmptyIE ();
 	}
 }
 

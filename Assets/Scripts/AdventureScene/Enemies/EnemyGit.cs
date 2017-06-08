@@ -6,19 +6,6 @@ public class EnemyGit : Enemy {
 
 	public float startAttack;
 
-	public override void Rotate() {
-		// Do nothing
-	}
-
-	protected override IEnumerator PlayAttackAnimation() {
-		GetComponent<Animator> ().Play ("EnemyGitAttackAnim");
-		yield return GetEmptyIE ();
-	}
-
-	public override void PlayNormalAnimation() {
-		GetComponent<Animator> ().Play ("EnemyGitAnim");
-	}
-
 	protected override void SetStats() {
 		this.startAttack = Time.time;
 		this.stats = new EnemyStats (7f, 2f, 0.5f);
@@ -36,7 +23,7 @@ public class EnemyGit : Enemy {
 				startAttack = Time.time;
 				Player player = coll.gameObject.GetComponent<Player> ();
 				if (player.isDead ()) {
-					PlayNormalAnimation ();
+					PlayAnimation ("PlayNormalAnimation");
 				} else {
 					if (Time.time > nextAction) {
 						player.GetHit (this);
@@ -45,6 +32,23 @@ public class EnemyGit : Enemy {
 				}
 			}
 		}
+	}
+
+	// ----------------------------------------------------------------------------------------------------------
+	// ----------------------------------------------ANIMATIONS--------------------------------------------------
+	// ----------------------------------------------------------------------------------------------------------
+
+	public override void Rotate() {
+		// Do nothing
+	}
+
+	protected override IEnumerator PlayAttackAnimation() {
+		GetComponent<Animator> ().Play ("EnemyGitAttackAnim");
+		yield return GetEmptyIE ();
+	}
+
+	public override void PlayNormalAnimation() {
+		GetComponent<Animator> ().Play ("EnemyGitAnim");
 	}
 }
 

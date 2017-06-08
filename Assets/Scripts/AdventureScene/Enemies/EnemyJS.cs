@@ -14,6 +14,10 @@ public class EnemyJS : Enemy {
 		base.GetHit (entity);
 	}
 
+	// ----------------------------------------------------------------------------------------------------------
+	// ----------------------------------------------ANIMATIONS--------------------------------------------------
+	// ----------------------------------------------------------------------------------------------------------
+
 	public override void Rotate() {
 		Vector2 relativePos = target.position - transform.position;
 		float angle = Mathf.Atan2(relativePos.y, relativePos.x) * Mathf.Rad2Deg - 90;
