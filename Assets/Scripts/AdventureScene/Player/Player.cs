@@ -3,8 +3,7 @@ using System.Collections;
 using UnityEngine;
 
 public class Player : Photon.PunBehaviour, IPunObservable {
-
-	public float speed;
+	
 	public Direction move;
 	public PlayerStats stats;
 	public Camera mainCamera;
@@ -20,8 +19,11 @@ public class Player : Photon.PunBehaviour, IPunObservable {
 	protected Animator animator;
 	protected string username;
 
+	private float lastAttack;
+
 	void Awake () {
 		this.username = (string) photonView.instantiationData [0];
+		this.lastAttack = Time.time;
 	}
 
 	void Start () {
@@ -33,7 +35,7 @@ public class Player : Photon.PunBehaviour, IPunObservable {
 		stats = new PlayerStats (PlayerType.FrontEndDev);
 		curHP = stats.maxHP;
 		weapon = new Item ("Sword", 3, 2, false);
-		InvokeRepeating ("GetHitOvertime", 1, 30);
+		InvokeRepeating ("GetHitOvertime", 10, 20);
 	}
 
 
@@ -54,7 +56,7 @@ public class Player : Photon.PunBehaviour, IPunObservable {
 
 	private Vector2 GetMouseInput () {
 		RaycastHit2D hit = Physics2D.Raycast (mainCamera.ScreenToWorldPoint (Input.mousePosition), 
-			Vector2.zero, 1f, LayerMask.GetMask (new string[] {"Map"}));
+			Vector2.zero, 1f, LayerMask.GetMask (new string[] {"MouseInput"}));
 		return (new Vector3 (hit.point.x, hit.point.y, transform.position.z) - transform.position).normalized;
 	}
 
@@ -68,7 +70,8 @@ public class Player : Photon.PunBehaviour, IPunObservable {
 			}
 		}*/
 
-		if (Input.GetKeyUp (KeyCode.Space)) {
+		if (Input.GetKeyUp (KeyCode.Space) && lastAttack + stats.attackSpeed < Time.time) {
+			lastAttack = Time.time;
 			Vector3 mouseDirection = GetMouseInput ();
 
 			bool inverted = Vector3.Cross (attackRadius.transform.localPosition, mouseDirection).z < 0;
@@ -95,7 +98,7 @@ public class Player : Photon.PunBehaviour, IPunObservable {
 
 		// MOVEMENT
 		Vector2 movement = new Vector2 (h, v).normalized;
-		rb.velocity = movement * speed;
+		rb.velocity = movement * stats.speed;
 
 		// RIGHT
 		if (h > 0.1) {
@@ -137,7 +140,7 @@ public class Player : Photon.PunBehaviour, IPunObservable {
 	}
 		
 	public void GetHitOvertime () {
-		curHP -= 0.5f;
+		curHP -= 1f;
 	}
 
 	public void GetBuff (Buff buff) {
