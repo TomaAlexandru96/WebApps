@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using UnityEngine;
 
 public class PlayerStats {
 
@@ -12,6 +14,9 @@ public class PlayerStats {
 	public int java;
 	public int mySQL;
 	public int git;
+
+	public List<Ability> abilities = new List<Ability> () {new Ability(Ability.Mele), 
+		new Ability(Ability.ForkBomb), new Ability(Ability.DebugGun), new Ability(Ability.ForkBomb)};
 
 	public const int increaseLevelUp = 3;
 
