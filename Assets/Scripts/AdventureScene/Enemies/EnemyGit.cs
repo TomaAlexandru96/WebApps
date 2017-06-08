@@ -38,8 +38,8 @@ public class EnemyGit : Enemy {
 	// ----------------------------------------------ANIMATIONS--------------------------------------------------
 	// ----------------------------------------------------------------------------------------------------------
 
-	public override void Rotate() {
-		// Do nothing
+	protected override IEnumerator Rotate() {
+		return GetEmptyIE ();
 	}
 
 	protected override IEnumerator PlayAttackAnimation() {
@@ -47,8 +47,9 @@ public class EnemyGit : Enemy {
 		yield return GetEmptyIE ();
 	}
 
-	public override void PlayNormalAnimation() {
+	protected override IEnumerator PlayNormalAnimation() {
 		GetComponent<Animator> ().Play ("EnemyGitAnim");
+		yield return GetEmptyIE ();
 	}
 }
 

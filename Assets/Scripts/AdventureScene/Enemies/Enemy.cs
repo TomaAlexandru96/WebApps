@@ -74,6 +74,8 @@ public abstract class Enemy : Entity<EnemyStats> {
 			// MOVEMENT
 			MoveEnemy ();
 		}
+
+		PlayAnimation ("Rotate");
 	}
 
 	public Point CurrentTargetPoint() {
@@ -89,14 +91,6 @@ public abstract class Enemy : Entity<EnemyStats> {
 			PlayNormalAnimation ();
 			attackingPlayer = false;
 		}
-	}
-
-	public virtual void PlayNormalAnimation () {
-		// use child function
-	}
-
-	public virtual void Rotate() {
-		// use child function
 	}
 
 	public virtual void MoveEnemy () {
@@ -141,6 +135,14 @@ public abstract class Enemy : Entity<EnemyStats> {
 	}
 
 	protected virtual IEnumerator PlayAttackAnimation() {
+		yield return GetEmptyIE ();
+	}
+		
+	protected virtual IEnumerator PlayNormalAnimation () {
+		yield return GetEmptyIE ();
+	}
+
+	protected virtual IEnumerator Rotate() {
 		yield return GetEmptyIE ();
 	}
 
