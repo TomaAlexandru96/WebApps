@@ -5,15 +5,16 @@ using UnityEngine.SceneManagement;
 
 public class StoryController : MonoBehaviour {
 
-	public GameObject[] playerPrefabs;
+	public GameObject playerPrefab;
 	public GameObject partyPrefab;
 	public Transform spawnPoint;
 
 	// Use this for initialization
 	void Start () {
 		ChatController.GetChat ().InitDefaultChat ();
-		NetworkService.GetInstance ().Spawn (playerPrefabs [CurrentUser.GetInstance ().GetUserInfo ().character.type].name, spawnPoint.position, Quaternion.identity, 0,
-			new object[1] {CurrentUser.GetInstance ().GetUserInfo ().username});
+		GameObject player = NetworkService.GetInstance ().Spawn (playerPrefab.name, spawnPoint.position, Quaternion.identity, 0,
+			new object[1] {CurrentUser.GetInstance ().GetUserInfo ()});
+		player.GetComponent<Player> ().SetAttack (false);
 		NetworkService.GetInstance ().SpawnScene (partyPrefab.name, Vector3.zero, Quaternion.identity, 0);
 	}
 

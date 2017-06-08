@@ -4,6 +4,7 @@
 "asmCodeUrl": "WebAppsExe.asm.code.unityweb",
 "asmMemoryUrl": "WebAppsExe.asm.memory.unityweb",
 "asmFrameworkUrl": "WebAppsExe.asm.framework.unityweb",
+"backgroundUrl": "WebAppsExe.jpg",
 "splashScreenStyle": "Dark",
-"backgroundColor": "#222C36"
+"backgroundColor": "#FFFFFF"
 }
