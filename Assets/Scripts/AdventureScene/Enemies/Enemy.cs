@@ -1,13 +1,10 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using System;
 
-public class Enemy : MonoBehaviour {
+public abstract class Enemy : Entity<EnemyStats> {
 
 	public Transform target;
-	public float curHP;
-	public EnemyStats stats;
 	public bool attackingPlayer;
 	public float actionTime = 1f;
 	public float nextAction = 0;
@@ -15,20 +12,18 @@ public class Enemy : MonoBehaviour {
 	public Point lastTargetPos;
 	public BreadCrumb currentBr;
 	//public bool onSpecialCaseMovement;
-	public DateTime spectialCaseMovEnd;
-	public DateTime lastCollisionTime;
+	public float spectialCaseMovEnd;
+	public float lastCollisionTime;
 	//public Vector3 specialCaseDirection;
 	public bool targetInRange = false;
 
 	// Use this for initialization
-	void Start () {
-		transform.SetParent (GameObject.FindGameObjectWithTag ("Grid").transform);
-		lastCollisionTime = DateTime.Now;
-		spectialCaseMovEnd = DateTime.MinValue;
+	new void Start () {
+		base.Start ();
+		lastCollisionTime = Time.time;
+		spectialCaseMovEnd = Time.time;
 		//onSpecialCaseMovement = false;
 		grid = GetComponentInParent<Grid> ();
-		SetStats ();
-		curHP = stats.maxHP;
 	}
 
 	void OnTriggerEnter2D(Collider2D coll) {
@@ -56,8 +51,7 @@ public class Enemy : MonoBehaviour {
 		return target != null;
 	}
 
-	// Update is called once per frame
-	void Update () {
+	protected override void Move () {
 		if (!HasTarget ()) {
 			if (!FindNewTarget ()) {
 				return;
@@ -67,7 +61,7 @@ public class Enemy : MonoBehaviour {
 		if (targetInRange) {
 			// pathfinding
 			Point curTargetPos = CurrentTargetPoint();
-				// RECALCULATE
+			// RECALCULATE
 			if (!curTargetPos.Equals (lastTargetPos)) {
 				lastTargetPos = curTargetPos;
 
@@ -99,7 +93,7 @@ public class Enemy : MonoBehaviour {
 
 	void OnCollisionEnter2D(Collision2D coll) {
 		if (coll.gameObject.tag.Equals("Player")) {
-			PlayAttackAnimation ();
+			StartCoroutine (PlayAttackAnimation ());
 			attackingPlayer = true;
 		} else {
 			if (currentBr != null) {
@@ -245,19 +239,7 @@ public class Enemy : MonoBehaviour {
 
 	}
 
-	public virtual void SetStats () {
-		// use child function
-	}
-
-	public virtual void PlayAttackAnimation () {
-		// use child function
-	}
-
 	public virtual void PlayNormalAnimation () {
-		// use child function
-	}
-
-	public virtual void GetHit (Player player) {
 		// use child function
 	}
 
@@ -284,5 +266,26 @@ public class Enemy : MonoBehaviour {
 				GetComponent<Rigidbody2D> ().velocity = new Vector2(0,0);
 			}
 		//}
+	}
+
+	public override void GetHit<E> (Entity<E> entity) { 
+		base.GetHit<E> (entity);
+	}
+
+	protected override IEnumerator PlayDeadAnimation () {
+		gameObject.SetActive (false);
+		yield return null;
+	}
+
+	protected virtual IEnumerator PlayAttackAnimation() {
+		yield return null;
+	}
+
+	protected override void OnSendNext (PhotonStream stream, PhotonMessageInfo info) {
+
+	}
+
+	protected override void OnReceiveNext (PhotonStream stream, PhotonMessageInfo info) {
+
 	}
 }

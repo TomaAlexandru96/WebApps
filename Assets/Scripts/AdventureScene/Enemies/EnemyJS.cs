@@ -4,19 +4,14 @@ using UnityEngine;
 
 public class EnemyJS : Enemy {
 
-	public override void SetStats() {
+	protected override void SetStats() {
 		this.stats = new EnemyStats (5f, 1f, 0.5f);
 	}
 
-	public override void GetHit (Player player) {
-		float hit = player.stats.javascript;
-
-		if (curHP > hit) {
-			curHP -= hit;
-		} else {
-			curHP = 0;
-			gameObject.SetActive (false);
-		}
+	public override void GetHit<E> (Entity<E> entity) {
+		float hit = (entity.stats as PlayerStats).javascript;
+		curHP = Mathf.Clamp(curHP - hit, 0, stats.maxHP);
+		base.GetHit (entity);
 	}
 
 	public override void Rotate() {

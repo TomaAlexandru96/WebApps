@@ -10,28 +10,24 @@ public class EnemyGit : Enemy {
 		// Do nothing
 	}
 
-	public override void PlayAttackAnimation() {
+	protected override IEnumerator PlayAttackAnimation() {
 		GetComponent<Animator> ().Play ("EnemyGitAttackAnim");
+		yield return GetEmptyIE ();
 	}
 
 	public override void PlayNormalAnimation() {
 		GetComponent<Animator> ().Play ("EnemyGitAnim");
 	}
 
-	public override void SetStats() {
+	protected override void SetStats() {
 		this.startAttack = Time.time;
 		this.stats = new EnemyStats (7f, 2f, 0.5f);
 	}
 
-	public override void GetHit (Player player) {
-		float hit = player.stats.git;
-
-		if (curHP > hit) {
-			curHP -= hit;
-		} else {
-			curHP = 0;
-			gameObject.SetActive (false);
-		}
+	public override void GetHit<E> (Entity<E> entity) {
+		float hit = (entity.stats as PlayerStats).git;
+		curHP = Mathf.Clamp(curHP - hit, 0, stats.maxHP);
+		base.GetHit (entity);
 	}
 
 	void OnCollisionStay2D(Collision2D coll) {
@@ -39,7 +35,7 @@ public class EnemyGit : Enemy {
 			if (startAttack + 0.5f < Time.time) {
 				startAttack = Time.time;
 				Player player = coll.gameObject.GetComponent<Player> ();
-				if (player.dead) {
+				if (player.isDead ()) {
 					PlayNormalAnimation ();
 				} else {
 					if (Time.time > nextAction) {

@@ -5,6 +5,8 @@ using UnityEngine;
 public class Player3MoveAnim : Player {
 
 	protected override void Animate () {
+		Animator animator = GetComponent<Animator> ();
+
 		switch (move) {
 		case Direction.Still:
 			animator.Play ("P3_Still");
