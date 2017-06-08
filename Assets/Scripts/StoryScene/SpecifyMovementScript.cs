@@ -9,7 +9,9 @@ public class SpecifyMovementScript : MonoBehaviour {
 	public GameObject directionPanel;
 	public int maxSize;
 	public string[] text;
+	public string repeatingText;
 	public int index = 0;
+	public bool repeating;
 	protected bool firstContact;
 	protected bool inside;
 	protected float dateTime;
@@ -46,8 +48,12 @@ public class SpecifyMovementScript : MonoBehaviour {
 			Conversation();
 		}
 		if (inside && index >= maxSize && (Time.time - dateTime) > 1) {
-			directionPanel.SetActive (false);
-//			dateTime = DateTime.MaxValue;
+			if (repeating) {
+				directionPanel.SetActive (true);
+				directionPanel.transform.GetComponent<DirectionPanel> ().DisplayText (repeatingText);
+			} else {
+				directionPanel.SetActive (false);
+			}
 		}
 	}
 }
