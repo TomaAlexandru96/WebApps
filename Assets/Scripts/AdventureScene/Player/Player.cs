@@ -10,17 +10,17 @@ public class Player : Entity<PlayerStats> {
 	public GameObject attackRadius;
 	public RuntimeAnimatorController[] playerControllers;
 
-	private string username;
 	private PlayerAbilities abilities;
+	private User user;
 
 	void Awake () {
-		this.username = (string) photonView.instantiationData [0];
+		this.user = (User) photonView.instantiationData [0];
 	}
 
 	new void Start () {
 		base.Start ();
-		GetComponent<SpriteRenderer> ().sprite = CurrentUser.GetInstance ().GetUserInfo ().character.GetImage ();
-		GetComponent<Animator> ().runtimeAnimatorController = playerControllers [CurrentUser.GetInstance ().GetUserInfo ().character.type];
+		GetComponent<SpriteRenderer> ().sprite = user.character.GetImage ();
+		GetComponent<Animator> ().runtimeAnimatorController = playerControllers [user.character.type];
 		mainCamera.enabled = photonView.isMine;
 		mainCamera.GetComponent<AudioListener> ().enabled = photonView.isMine;
 		InvokeRepeating ("GetHitOvertime", 10, 20);
@@ -36,7 +36,7 @@ public class Player : Entity<PlayerStats> {
 	}
 
 	private bool IsStory () {
-		return CurrentUser.GetInstance ().GetUserInfo ().party.state == PartyMembers.STORY;
+		return user.character.type == PartyMembers.STORY;
 	}
 
 	private Vector2 GetMouseInput () {
@@ -149,7 +149,7 @@ public class Player : Entity<PlayerStats> {
 	}
 
 	public string GetName () {
-		return username;
+		return user.username;
 	}
 
 	// ----------------------------------------------------------------------------------------------------------
@@ -175,7 +175,7 @@ public class Player : Entity<PlayerStats> {
 		isAttacking = true;
 		attackRadius.GetComponent<Animator> ().Play ("Slash");
 		attackRadius.GetComponent<PlayerAttack> ().StartAttack ();
-		GetComponent<Animator> ().Play ("P"+(CurrentUser.GetInstance ().GetUserInfo ().character.type+1)+"_LaptopAttack");
+		GetComponent<Animator> ().Play ("P"+(user.character.type+1)+"_LaptopAttack");
 		yield return new WaitForSeconds (0.1f);
 		attackRadius.GetComponent<Animator> ().Play ("Default");
 		attackRadius.GetComponent<PlayerAttack> ().StopAttack ();
@@ -200,7 +200,7 @@ public class Player : Entity<PlayerStats> {
 			Animator animator = GetComponent<Animator> ();
 			animator.speed = curSpeed;
 
-			int index = CurrentUser.GetInstance ().GetUserInfo ().character.type + 1;
+			int index = user.character.type + 1;
 
 			switch (move) {
 			case Direction.Still:
