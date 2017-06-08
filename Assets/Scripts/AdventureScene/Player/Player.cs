@@ -31,7 +31,7 @@ public class Player : Entity<PlayerStats> {
 	protected override IEnumerator PlayDeadAnimation () {
 		move = Direction.Dead;
 		GetComponent<Rigidbody2D> ().velocity = Vector2.zero;
-		Animate ();
+		photonView.RPC ("Animate", PhotonTargets.All);
 		yield return GetEmptyIE ();
 	}
 
@@ -138,7 +138,7 @@ public class Player : Entity<PlayerStats> {
 				move = Direction.Still;
 			}
 		}
-		Animate ();
+		photonView.RPC ("Animate", PhotonTargets.All);
 	}
 		
 	public void GetHitOvertime () {
@@ -170,6 +170,7 @@ public class Player : Entity<PlayerStats> {
 		return username;
 	}
 
+	[PunRPC]
 	protected virtual void Animate () {
 		// used by children
 	}
@@ -180,7 +181,6 @@ public class Player : Entity<PlayerStats> {
 
 	protected override void OnReceiveNext (PhotonStream stream, PhotonMessageInfo info) {
 		move = (Direction) stream.ReceiveNext ();
-		Animate ();
 	}
 }
 

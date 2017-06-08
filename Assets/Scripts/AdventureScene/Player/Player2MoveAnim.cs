@@ -1,7 +1,8 @@
 ﻿using UnityEngine;
 
 public class Player2MoveAnim : Player {
-	
+
+	[PunRPC]
 	protected override void Animate () {
 		Animator animator = GetComponent<Animator> ();
 		animator.speed = curSpeed;

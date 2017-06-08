@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class Player4MoveAnim : Player {
 
+	[PunRPC]
 	protected override void Animate () {
 		Animator animator = GetComponent<Animator> ();
 		animator.speed = curSpeed;
