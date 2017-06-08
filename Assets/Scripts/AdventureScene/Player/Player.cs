@@ -53,7 +53,8 @@ public class Player : Photon.PunBehaviour, IPunObservable {
 	}
 
 	private Vector2 GetMouseInput () {
-		RaycastHit2D hit = Physics2D.Raycast(mainCamera.ScreenToWorldPoint(Input.mousePosition), Vector2.zero);
+		RaycastHit2D hit = Physics2D.Raycast (mainCamera.ScreenToWorldPoint (Input.mousePosition), 
+			Vector2.zero, 1f, LayerMask.GetMask (new string[] {"Map"}));
 		return (new Vector3 (hit.point.x, hit.point.y, transform.position.z) - transform.position).normalized;
 	}
 
@@ -67,24 +68,23 @@ public class Player : Photon.PunBehaviour, IPunObservable {
 			}
 		}*/
 
-		if (Input.GetKeyDown (KeyCode.Space)) {
+		if (Input.GetKeyUp (KeyCode.Space)) {
 			Vector3 mouseDirection = GetMouseInput ();
 
 			bool inverted = Vector3.Cross (attackRadius.transform.localPosition, mouseDirection).z < 0;
 			float angle = Vector3.Angle (attackRadius.transform.localPosition, mouseDirection);
 			angle = inverted ? -angle : angle;
 			attackRadius.transform.RotateAround (transform.position, Vector3.forward, angle);
-		}
-
-		if(Input.GetKeyUp(KeyCode.Space)){
 			StartCoroutine (PlayAttackAnimation ());
 		}
 	}
 
 	private IEnumerator PlayAttackAnimation () {
 		attackRadius.GetComponent<Animator> ().Play ("Slash");
+		attackRadius.GetComponent<PlayerAttack> ().StartAttack ();
 		yield return new WaitForSeconds (0.1f);
 		attackRadius.GetComponent<Animator> ().Play ("Default");
+		attackRadius.GetComponent<PlayerAttack> ().StopAttack ();
 	}
 
 	private void Move () {

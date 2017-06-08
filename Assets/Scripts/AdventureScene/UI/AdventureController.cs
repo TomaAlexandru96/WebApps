@@ -18,6 +18,11 @@ public class AdventureController : Photon.PunBehaviour {
 	}
 
 	public void OnApplicationQuit () {
+		DBServer.GetInstance ().Logout (false, () => {
+			
+		}, (error) => {
+			
+		});
 		ExitGame ();
 	}
 

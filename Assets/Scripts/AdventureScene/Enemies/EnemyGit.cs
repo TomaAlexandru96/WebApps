@@ -35,7 +35,7 @@ public class EnemyGit : Enemy {
 	}
 
 	void OnCollisionStay2D(Collision2D coll) {
-		if (coll.gameObject.tag == "Player") {
+		if (coll.gameObject.tag.Equals("Player")) {
 			if (startAttack + 0.5f < Time.time) {
 				startAttack = Time.time;
 				Player player = coll.gameObject.GetComponent<Player> ();
