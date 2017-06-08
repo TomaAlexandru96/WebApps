@@ -5,6 +5,7 @@ using UnityEngine;
 public class PlayerAbilities : MonoBehaviour {
 
 	public GameObject abilityPrefab;
+	public RectTransform sprintBar;
 	private Player player;
 	private List<AbilityElement> abilities = new List<AbilityElement> ();
 	private AbilityElement selected;
@@ -35,5 +36,9 @@ public class PlayerAbilities : MonoBehaviour {
 
 	public Ability GetSelectedAbility () {
 		return selected.ability;
+	}
+
+	public bool Sprint () {
+		return true;
 	}
 }
