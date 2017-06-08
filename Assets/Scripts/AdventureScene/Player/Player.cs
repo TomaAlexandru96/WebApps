@@ -142,7 +142,7 @@ public class Player : Entity<PlayerStats> {
 	}
 		
 	public void GetHitOvertime () {
-		ClampHealth (curHP - 1);
+		ChangeHealth (curHP - 1);
 	}
 
 	public void GetBuff (Buff buff) {
@@ -152,7 +152,7 @@ public class Player : Entity<PlayerStats> {
 	}
 
 	public void IncreaseHealth (float points) {
-		ClampHealth (curHP + points);
+		ChangeHealth (curHP + points);
 	}
 
 	protected override IEnumerator PlayGetHitAnimation () {
@@ -162,7 +162,7 @@ public class Player : Entity<PlayerStats> {
 	}
 
 	public override void GetHit<E> (Entity<E> entity) {
-		ClampHealth (curHP - entity.stats.damage);
+		ChangeHealth (curHP - entity.stats.damage);
 		base.GetHit (entity);
 	}
 

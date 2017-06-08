@@ -46,13 +46,13 @@ public abstract class Entity<T> : Photon.PunBehaviour, IPunObservable where T : 
 
 	public virtual void GetHit<E> (Entity<E> entity) where E : EntityStats {
 		StartCoroutine (PlayGetHitAnimation ());
+	}
+
+	protected void ChangeHealth (float newHealth) {
+		curHP = Mathf.Clamp (newHealth, 0, stats.maxHP);
 		if (isDead ()) {
 			StartCoroutine (PlayDeadAnimation ());
 		}
-	}
-
-	protected void ClampHealth (float newHealth) {
-		curHP = Mathf.Clamp (newHealth, 0, stats.maxHP);
 	}
 
 	#region IPunObservable implementation
