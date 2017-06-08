@@ -8,6 +8,7 @@ public class Player : Entity<PlayerStats> {
 	public Camera mainCamera;
 
 	public GameObject attackRadius;
+	public RuntimeAnimatorController[] playerControllers;
 
 	protected string username;
 	protected PlayerAbilities abilities;
@@ -18,6 +19,8 @@ public class Player : Entity<PlayerStats> {
 
 	new void Start () {
 		base.Start ();
+		GetComponent<SpriteRenderer> ().sprite = CurrentUser.GetInstance ().GetUserInfo ().character.GetImage ();
+		GetComponent<Animator> ().runtimeAnimatorController = playerControllers [CurrentUser.GetInstance ().GetUserInfo ().character.type];
 		mainCamera.enabled = photonView.isMine;
 		mainCamera.GetComponent<AudioListener> ().enabled = photonView.isMine;
 		InvokeRepeating ("GetHitOvertime", 10, 20);
