@@ -26,6 +26,14 @@ public class PlayerGameUIController : Photon.PunBehaviour {
 		if (player == null) {
 			return;
 		}
-		healthObj.localScale = new Vector2 ((float) player.curHP / (float) player.stats.maxHP, 1);
+		Vector2 newHP = Vector2.Lerp (healthObj.localScale, new Vector2 ((float) player.curHP / (float) player.stats.maxHP, 1), 0.1f);
+		healthObj.localScale = newHP;
+		if (newHP.x >= 0.2 && newHP.x < 0.5) {
+			healthObj.GetComponent<Image> ().color = Color.yellow;
+		} else if (newHP.x < 0.2) {
+			healthObj.GetComponent<Image> ().color = Color.red;
+		} else {
+			healthObj.GetComponent<Image> ().color = Color.green;
+		}
 	}
 }

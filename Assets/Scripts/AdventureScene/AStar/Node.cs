@@ -41,6 +41,19 @@ public class Node {
 			BadNode = true;
 		}
 
+		RectTransform gridRect = grid.GetComponent<RectTransform> ();
+
+		if (position.x > gridRect.rect.width + gridRect.position.x ||
+			position.y > gridRect.rect.height + gridRect.position.y) {
+			DisableConnections ();
+			BadNode = true;
+		}
+
+		if (position.x - gridRect.position.x < 0 || position.y - gridRect.position.y < 0) {
+			DisableConnections ();
+			BadNode = true;
+		}
+
 		//Draw Node on screen for debugging purposes
 		/*Draw = GameObject.Instantiate (Resources.Load ("Node")) as GameObject;
 		Draw.transform.position = Position;

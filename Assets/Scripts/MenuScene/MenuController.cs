@@ -85,6 +85,11 @@ public class MenuController : MonoBehaviour {
 		return mode;
 	}
 
+	public void PlayStory () {
+		SetMode (PartyMembers.STORY);
+		CreateParty ();
+	}
+
 	public void StartServices () {
 		if (hasLoadedServices) {
 			loadingScreen.SetActive (false);
