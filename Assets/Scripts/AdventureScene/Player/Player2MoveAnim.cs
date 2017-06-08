@@ -3,6 +3,8 @@
 public class Player2MoveAnim : Player {
 	
 	protected override void Animate () {
+		Animator animator = GetComponent<Animator> ();
+
 		switch (move) {
 		case Direction.Still:
 			animator.Play ("P2_Still");

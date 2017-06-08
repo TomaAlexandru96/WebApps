@@ -2,28 +2,27 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerStats {
-
-	public float attackSpeed = 0.5f;
-	public float speed = 1f;
-	public float runSpeed = 3f;
+public class PlayerStats : EntityStats {
+	
 	public int level;
-	public float maxHP;
 	public int javascript;
 	public int html;
 	public int python;
 	public int java;
 	public int mySQL;
 	public int git;
+	public float runSpeed = 3f;
 
 	public List<Ability> abilities = new List<Ability> () {new Ability(Ability.Mele), 
-		new Ability(Ability.ForkBomb), new Ability(Ability.DebugGun), new Ability(Ability.ForkBomb)};
+		new Ability(Ability.ForkBomb), new Ability(Ability.DebugGun), new Ability(Ability.ElectricShock)};
 
 	public const int increaseLevelUp = 3;
 
-	public PlayerStats(PlayerType type) {
+	public PlayerStats (PlayerType type) {
 		level = 1;
 		maxHP = 20;
+		speed = 1f;
+		damage = 1f;
 		switch (type) {
 		case PlayerType.FrontEndDev: 
 			javascript = 8;
