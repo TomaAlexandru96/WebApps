@@ -12,6 +12,7 @@ public class Player : Entity<PlayerStats> {
 
 	private PlayerAbilities abilities;
 	private User user;
+	private bool canAttack = true;
 
 	void Awake () {
 		this.user = (User) photonView.instantiationData [0];
@@ -29,6 +30,10 @@ public class Player : Entity<PlayerStats> {
 			abilities = GameObject.FindGameObjectWithTag ("PlayerAbilities").GetComponent<PlayerAbilities> ();
 			abilities.Init (this);
 		}
+	}
+
+	public void SetAttack (bool value) {
+		this.canAttack = value;
 	}
 
 	protected override void SetStats () {
@@ -69,7 +74,7 @@ public class Player : Entity<PlayerStats> {
 	protected override void Attack () {
 		SelectAbility ();
 
-		if (Input.GetKeyUp (KeyCode.Space)) {
+		if (Input.GetKeyUp (KeyCode.Space) && canAttack) {
 			if (!abilities.UseAbility ()) {
 				return;
 			}

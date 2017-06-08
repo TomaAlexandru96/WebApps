@@ -1520,7 +1520,7 @@ function _emscripten_asm_const_v(code) {
  return ASM_CONSTS[code]();
 }
 STATIC_BASE = 8;
-STATICTOP = Runtime.alignMemory(STATIC_BASE, 16) + 2358416;
+STATICTOP = Runtime.alignMemory(STATIC_BASE, 16) + 2381008;
 __ATINIT__.push({
  func: (function() {
   __GLOBAL__sub_I_runtime_ai_internal_builder_lump_cpp();
@@ -8243,6 +8243,9 @@ function _SocketClose(socketInstance) {
  var socket = webSocketInstances[socketInstance];
  socket.socket.close();
 }
+function _emscripten_glMatrixMode() {
+ throw "Legacy GL function (glMatrixMode) called. If you want legacy GL emulation, you need to compile with -s LEGACY_GL_EMULATION=1 to enable legacy GL emulation.";
+}
 function _emscripten_glGetTexParameteriv(target, pname, params) {
  if (!params) {
   GL.recordError(1281);
@@ -8481,8 +8484,274 @@ function _dlsym(handle, symbol) {
   }
  }
 }
-function _emscripten_glMatrixMode() {
- throw "Legacy GL function (glMatrixMode) called. If you want legacy GL emulation, you need to compile with -s LEGACY_GL_EMULATION=1 to enable legacy GL emulation.";
+function __isLeapYear(year) {
+ return year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0);
+}
+function __arraySum(array, index) {
+ var sum = 0;
+ for (var i = 0; i <= index; sum += array[i++]) ;
+ return sum;
+}
+var __MONTH_DAYS_LEAP = [ 31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 ];
+var __MONTH_DAYS_REGULAR = [ 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 ];
+function __addDays(date, days) {
+ var newDate = new Date(date.getTime());
+ while (days > 0) {
+  var leap = __isLeapYear(newDate.getFullYear());
+  var currentMonth = newDate.getMonth();
+  var daysInCurrentMonth = (leap ? __MONTH_DAYS_LEAP : __MONTH_DAYS_REGULAR)[currentMonth];
+  if (days > daysInCurrentMonth - newDate.getDate()) {
+   days -= daysInCurrentMonth - newDate.getDate() + 1;
+   newDate.setDate(1);
+   if (currentMonth < 11) {
+    newDate.setMonth(currentMonth + 1);
+   } else {
+    newDate.setMonth(0);
+    newDate.setFullYear(newDate.getFullYear() + 1);
+   }
+  } else {
+   newDate.setDate(newDate.getDate() + days);
+   return newDate;
+  }
+ }
+ return newDate;
+}
+function _strftime(s, maxsize, format, tm) {
+ var tm_zone = HEAP32[tm + 40 >> 2];
+ var date = {
+  tm_sec: HEAP32[tm >> 2],
+  tm_min: HEAP32[tm + 4 >> 2],
+  tm_hour: HEAP32[tm + 8 >> 2],
+  tm_mday: HEAP32[tm + 12 >> 2],
+  tm_mon: HEAP32[tm + 16 >> 2],
+  tm_year: HEAP32[tm + 20 >> 2],
+  tm_wday: HEAP32[tm + 24 >> 2],
+  tm_yday: HEAP32[tm + 28 >> 2],
+  tm_isdst: HEAP32[tm + 32 >> 2],
+  tm_gmtoff: HEAP32[tm + 36 >> 2],
+  tm_zone: tm_zone ? Pointer_stringify(tm_zone) : ""
+ };
+ var pattern = Pointer_stringify(format);
+ var EXPANSION_RULES_1 = {
+  "%c": "%a %b %d %H:%M:%S %Y",
+  "%D": "%m/%d/%y",
+  "%F": "%Y-%m-%d",
+  "%h": "%b",
+  "%r": "%I:%M:%S %p",
+  "%R": "%H:%M",
+  "%T": "%H:%M:%S",
+  "%x": "%m/%d/%y",
+  "%X": "%H:%M:%S"
+ };
+ for (var rule in EXPANSION_RULES_1) {
+  pattern = pattern.replace(new RegExp(rule, "g"), EXPANSION_RULES_1[rule]);
+ }
+ var WEEKDAYS = [ "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday" ];
+ var MONTHS = [ "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" ];
+ function leadingSomething(value, digits, character) {
+  var str = typeof value === "number" ? value.toString() : value || "";
+  while (str.length < digits) {
+   str = character[0] + str;
+  }
+  return str;
+ }
+ function leadingNulls(value, digits) {
+  return leadingSomething(value, digits, "0");
+ }
+ function compareByDay(date1, date2) {
+  function sgn(value) {
+   return value < 0 ? -1 : value > 0 ? 1 : 0;
+  }
+  var compare;
+  if ((compare = sgn(date1.getFullYear() - date2.getFullYear())) === 0) {
+   if ((compare = sgn(date1.getMonth() - date2.getMonth())) === 0) {
+    compare = sgn(date1.getDate() - date2.getDate());
+   }
+  }
+  return compare;
+ }
+ function getFirstWeekStartDate(janFourth) {
+  switch (janFourth.getDay()) {
+  case 0:
+   return new Date(janFourth.getFullYear() - 1, 11, 29);
+  case 1:
+   return janFourth;
+  case 2:
+   return new Date(janFourth.getFullYear(), 0, 3);
+  case 3:
+   return new Date(janFourth.getFullYear(), 0, 2);
+  case 4:
+   return new Date(janFourth.getFullYear(), 0, 1);
+  case 5:
+   return new Date(janFourth.getFullYear() - 1, 11, 31);
+  case 6:
+   return new Date(janFourth.getFullYear() - 1, 11, 30);
+  }
+ }
+ function getWeekBasedYear(date) {
+  var thisDate = __addDays(new Date(date.tm_year + 1900, 0, 1), date.tm_yday);
+  var janFourthThisYear = new Date(thisDate.getFullYear(), 0, 4);
+  var janFourthNextYear = new Date(thisDate.getFullYear() + 1, 0, 4);
+  var firstWeekStartThisYear = getFirstWeekStartDate(janFourthThisYear);
+  var firstWeekStartNextYear = getFirstWeekStartDate(janFourthNextYear);
+  if (compareByDay(firstWeekStartThisYear, thisDate) <= 0) {
+   if (compareByDay(firstWeekStartNextYear, thisDate) <= 0) {
+    return thisDate.getFullYear() + 1;
+   } else {
+    return thisDate.getFullYear();
+   }
+  } else {
+   return thisDate.getFullYear() - 1;
+  }
+ }
+ var EXPANSION_RULES_2 = {
+  "%a": (function(date) {
+   return WEEKDAYS[date.tm_wday].substring(0, 3);
+  }),
+  "%A": (function(date) {
+   return WEEKDAYS[date.tm_wday];
+  }),
+  "%b": (function(date) {
+   return MONTHS[date.tm_mon].substring(0, 3);
+  }),
+  "%B": (function(date) {
+   return MONTHS[date.tm_mon];
+  }),
+  "%C": (function(date) {
+   var year = date.tm_year + 1900;
+   return leadingNulls(year / 100 | 0, 2);
+  }),
+  "%d": (function(date) {
+   return leadingNulls(date.tm_mday, 2);
+  }),
+  "%e": (function(date) {
+   return leadingSomething(date.tm_mday, 2, " ");
+  }),
+  "%g": (function(date) {
+   return getWeekBasedYear(date).toString().substring(2);
+  }),
+  "%G": (function(date) {
+   return getWeekBasedYear(date);
+  }),
+  "%H": (function(date) {
+   return leadingNulls(date.tm_hour, 2);
+  }),
+  "%I": (function(date) {
+   var twelveHour = date.tm_hour;
+   if (twelveHour == 0) twelveHour = 12; else if (twelveHour > 12) twelveHour -= 12;
+   return leadingNulls(twelveHour, 2);
+  }),
+  "%j": (function(date) {
+   return leadingNulls(date.tm_mday + __arraySum(__isLeapYear(date.tm_year + 1900) ? __MONTH_DAYS_LEAP : __MONTH_DAYS_REGULAR, date.tm_mon - 1), 3);
+  }),
+  "%m": (function(date) {
+   return leadingNulls(date.tm_mon + 1, 2);
+  }),
+  "%M": (function(date) {
+   return leadingNulls(date.tm_min, 2);
+  }),
+  "%n": (function() {
+   return "\n";
+  }),
+  "%p": (function(date) {
+   if (date.tm_hour >= 0 && date.tm_hour < 12) {
+    return "AM";
+   } else {
+    return "PM";
+   }
+  }),
+  "%S": (function(date) {
+   return leadingNulls(date.tm_sec, 2);
+  }),
+  "%t": (function() {
+   return "\t";
+  }),
+  "%u": (function(date) {
+   var day = new Date(date.tm_year + 1900, date.tm_mon + 1, date.tm_mday, 0, 0, 0, 0);
+   return day.getDay() || 7;
+  }),
+  "%U": (function(date) {
+   var janFirst = new Date(date.tm_year + 1900, 0, 1);
+   var firstSunday = janFirst.getDay() === 0 ? janFirst : __addDays(janFirst, 7 - janFirst.getDay());
+   var endDate = new Date(date.tm_year + 1900, date.tm_mon, date.tm_mday);
+   if (compareByDay(firstSunday, endDate) < 0) {
+    var februaryFirstUntilEndMonth = __arraySum(__isLeapYear(endDate.getFullYear()) ? __MONTH_DAYS_LEAP : __MONTH_DAYS_REGULAR, endDate.getMonth() - 1) - 31;
+    var firstSundayUntilEndJanuary = 31 - firstSunday.getDate();
+    var days = firstSundayUntilEndJanuary + februaryFirstUntilEndMonth + endDate.getDate();
+    return leadingNulls(Math.ceil(days / 7), 2);
+   }
+   return compareByDay(firstSunday, janFirst) === 0 ? "01" : "00";
+  }),
+  "%V": (function(date) {
+   var janFourthThisYear = new Date(date.tm_year + 1900, 0, 4);
+   var janFourthNextYear = new Date(date.tm_year + 1901, 0, 4);
+   var firstWeekStartThisYear = getFirstWeekStartDate(janFourthThisYear);
+   var firstWeekStartNextYear = getFirstWeekStartDate(janFourthNextYear);
+   var endDate = __addDays(new Date(date.tm_year + 1900, 0, 1), date.tm_yday);
+   if (compareByDay(endDate, firstWeekStartThisYear) < 0) {
+    return "53";
+   }
+   if (compareByDay(firstWeekStartNextYear, endDate) <= 0) {
+    return "01";
+   }
+   var daysDifference;
+   if (firstWeekStartThisYear.getFullYear() < date.tm_year + 1900) {
+    daysDifference = date.tm_yday + 32 - firstWeekStartThisYear.getDate();
+   } else {
+    daysDifference = date.tm_yday + 1 - firstWeekStartThisYear.getDate();
+   }
+   return leadingNulls(Math.ceil(daysDifference / 7), 2);
+  }),
+  "%w": (function(date) {
+   var day = new Date(date.tm_year + 1900, date.tm_mon + 1, date.tm_mday, 0, 0, 0, 0);
+   return day.getDay();
+  }),
+  "%W": (function(date) {
+   var janFirst = new Date(date.tm_year, 0, 1);
+   var firstMonday = janFirst.getDay() === 1 ? janFirst : __addDays(janFirst, janFirst.getDay() === 0 ? 1 : 7 - janFirst.getDay() + 1);
+   var endDate = new Date(date.tm_year + 1900, date.tm_mon, date.tm_mday);
+   if (compareByDay(firstMonday, endDate) < 0) {
+    var februaryFirstUntilEndMonth = __arraySum(__isLeapYear(endDate.getFullYear()) ? __MONTH_DAYS_LEAP : __MONTH_DAYS_REGULAR, endDate.getMonth() - 1) - 31;
+    var firstMondayUntilEndJanuary = 31 - firstMonday.getDate();
+    var days = firstMondayUntilEndJanuary + februaryFirstUntilEndMonth + endDate.getDate();
+    return leadingNulls(Math.ceil(days / 7), 2);
+   }
+   return compareByDay(firstMonday, janFirst) === 0 ? "01" : "00";
+  }),
+  "%y": (function(date) {
+   return (date.tm_year + 1900).toString().substring(2);
+  }),
+  "%Y": (function(date) {
+   return date.tm_year + 1900;
+  }),
+  "%z": (function(date) {
+   var off = date.tm_gmtoff;
+   var ahead = off >= 0;
+   off = Math.abs(off) / 60;
+   off = off / 60 * 100 + off % 60;
+   return (ahead ? "+" : "-") + String("0000" + off).slice(-4);
+  }),
+  "%Z": (function(date) {
+   return date.tm_zone;
+  }),
+  "%%": (function() {
+   return "%";
+  })
+ };
+ for (var rule in EXPANSION_RULES_2) {
+  if (pattern.indexOf(rule) >= 0) {
+   pattern = pattern.replace(new RegExp(rule, "g"), EXPANSION_RULES_2[rule](date));
+  }
+ }
+ var bytes = intArrayFromString(pattern, false);
+ if (bytes.length > maxsize) {
+  return 0;
+ }
+ writeArrayToMemory(bytes, s);
+ return bytes.length - 1;
+}
+function _strftime_l(s, maxsize, format, tm) {
+ return _strftime(s, maxsize, format, tm);
 }
 function _abort() {
  Module["abort"]();
@@ -12006,272 +12275,6 @@ function ___syscall146(which, varargs) {
   return -e.errno;
  }
 }
-function __isLeapYear(year) {
- return year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0);
-}
-function __arraySum(array, index) {
- var sum = 0;
- for (var i = 0; i <= index; sum += array[i++]) ;
- return sum;
-}
-var __MONTH_DAYS_LEAP = [ 31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 ];
-var __MONTH_DAYS_REGULAR = [ 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 ];
-function __addDays(date, days) {
- var newDate = new Date(date.getTime());
- while (days > 0) {
-  var leap = __isLeapYear(newDate.getFullYear());
-  var currentMonth = newDate.getMonth();
-  var daysInCurrentMonth = (leap ? __MONTH_DAYS_LEAP : __MONTH_DAYS_REGULAR)[currentMonth];
-  if (days > daysInCurrentMonth - newDate.getDate()) {
-   days -= daysInCurrentMonth - newDate.getDate() + 1;
-   newDate.setDate(1);
-   if (currentMonth < 11) {
-    newDate.setMonth(currentMonth + 1);
-   } else {
-    newDate.setMonth(0);
-    newDate.setFullYear(newDate.getFullYear() + 1);
-   }
-  } else {
-   newDate.setDate(newDate.getDate() + days);
-   return newDate;
-  }
- }
- return newDate;
-}
-function _strftime(s, maxsize, format, tm) {
- var tm_zone = HEAP32[tm + 40 >> 2];
- var date = {
-  tm_sec: HEAP32[tm >> 2],
-  tm_min: HEAP32[tm + 4 >> 2],
-  tm_hour: HEAP32[tm + 8 >> 2],
-  tm_mday: HEAP32[tm + 12 >> 2],
-  tm_mon: HEAP32[tm + 16 >> 2],
-  tm_year: HEAP32[tm + 20 >> 2],
-  tm_wday: HEAP32[tm + 24 >> 2],
-  tm_yday: HEAP32[tm + 28 >> 2],
-  tm_isdst: HEAP32[tm + 32 >> 2],
-  tm_gmtoff: HEAP32[tm + 36 >> 2],
-  tm_zone: tm_zone ? Pointer_stringify(tm_zone) : ""
- };
- var pattern = Pointer_stringify(format);
- var EXPANSION_RULES_1 = {
-  "%c": "%a %b %d %H:%M:%S %Y",
-  "%D": "%m/%d/%y",
-  "%F": "%Y-%m-%d",
-  "%h": "%b",
-  "%r": "%I:%M:%S %p",
-  "%R": "%H:%M",
-  "%T": "%H:%M:%S",
-  "%x": "%m/%d/%y",
-  "%X": "%H:%M:%S"
- };
- for (var rule in EXPANSION_RULES_1) {
-  pattern = pattern.replace(new RegExp(rule, "g"), EXPANSION_RULES_1[rule]);
- }
- var WEEKDAYS = [ "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday" ];
- var MONTHS = [ "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" ];
- function leadingSomething(value, digits, character) {
-  var str = typeof value === "number" ? value.toString() : value || "";
-  while (str.length < digits) {
-   str = character[0] + str;
-  }
-  return str;
- }
- function leadingNulls(value, digits) {
-  return leadingSomething(value, digits, "0");
- }
- function compareByDay(date1, date2) {
-  function sgn(value) {
-   return value < 0 ? -1 : value > 0 ? 1 : 0;
-  }
-  var compare;
-  if ((compare = sgn(date1.getFullYear() - date2.getFullYear())) === 0) {
-   if ((compare = sgn(date1.getMonth() - date2.getMonth())) === 0) {
-    compare = sgn(date1.getDate() - date2.getDate());
-   }
-  }
-  return compare;
- }
- function getFirstWeekStartDate(janFourth) {
-  switch (janFourth.getDay()) {
-  case 0:
-   return new Date(janFourth.getFullYear() - 1, 11, 29);
-  case 1:
-   return janFourth;
-  case 2:
-   return new Date(janFourth.getFullYear(), 0, 3);
-  case 3:
-   return new Date(janFourth.getFullYear(), 0, 2);
-  case 4:
-   return new Date(janFourth.getFullYear(), 0, 1);
-  case 5:
-   return new Date(janFourth.getFullYear() - 1, 11, 31);
-  case 6:
-   return new Date(janFourth.getFullYear() - 1, 11, 30);
-  }
- }
- function getWeekBasedYear(date) {
-  var thisDate = __addDays(new Date(date.tm_year + 1900, 0, 1), date.tm_yday);
-  var janFourthThisYear = new Date(thisDate.getFullYear(), 0, 4);
-  var janFourthNextYear = new Date(thisDate.getFullYear() + 1, 0, 4);
-  var firstWeekStartThisYear = getFirstWeekStartDate(janFourthThisYear);
-  var firstWeekStartNextYear = getFirstWeekStartDate(janFourthNextYear);
-  if (compareByDay(firstWeekStartThisYear, thisDate) <= 0) {
-   if (compareByDay(firstWeekStartNextYear, thisDate) <= 0) {
-    return thisDate.getFullYear() + 1;
-   } else {
-    return thisDate.getFullYear();
-   }
-  } else {
-   return thisDate.getFullYear() - 1;
-  }
- }
- var EXPANSION_RULES_2 = {
-  "%a": (function(date) {
-   return WEEKDAYS[date.tm_wday].substring(0, 3);
-  }),
-  "%A": (function(date) {
-   return WEEKDAYS[date.tm_wday];
-  }),
-  "%b": (function(date) {
-   return MONTHS[date.tm_mon].substring(0, 3);
-  }),
-  "%B": (function(date) {
-   return MONTHS[date.tm_mon];
-  }),
-  "%C": (function(date) {
-   var year = date.tm_year + 1900;
-   return leadingNulls(year / 100 | 0, 2);
-  }),
-  "%d": (function(date) {
-   return leadingNulls(date.tm_mday, 2);
-  }),
-  "%e": (function(date) {
-   return leadingSomething(date.tm_mday, 2, " ");
-  }),
-  "%g": (function(date) {
-   return getWeekBasedYear(date).toString().substring(2);
-  }),
-  "%G": (function(date) {
-   return getWeekBasedYear(date);
-  }),
-  "%H": (function(date) {
-   return leadingNulls(date.tm_hour, 2);
-  }),
-  "%I": (function(date) {
-   var twelveHour = date.tm_hour;
-   if (twelveHour == 0) twelveHour = 12; else if (twelveHour > 12) twelveHour -= 12;
-   return leadingNulls(twelveHour, 2);
-  }),
-  "%j": (function(date) {
-   return leadingNulls(date.tm_mday + __arraySum(__isLeapYear(date.tm_year + 1900) ? __MONTH_DAYS_LEAP : __MONTH_DAYS_REGULAR, date.tm_mon - 1), 3);
-  }),
-  "%m": (function(date) {
-   return leadingNulls(date.tm_mon + 1, 2);
-  }),
-  "%M": (function(date) {
-   return leadingNulls(date.tm_min, 2);
-  }),
-  "%n": (function() {
-   return "\n";
-  }),
-  "%p": (function(date) {
-   if (date.tm_hour >= 0 && date.tm_hour < 12) {
-    return "AM";
-   } else {
-    return "PM";
-   }
-  }),
-  "%S": (function(date) {
-   return leadingNulls(date.tm_sec, 2);
-  }),
-  "%t": (function() {
-   return "\t";
-  }),
-  "%u": (function(date) {
-   var day = new Date(date.tm_year + 1900, date.tm_mon + 1, date.tm_mday, 0, 0, 0, 0);
-   return day.getDay() || 7;
-  }),
-  "%U": (function(date) {
-   var janFirst = new Date(date.tm_year + 1900, 0, 1);
-   var firstSunday = janFirst.getDay() === 0 ? janFirst : __addDays(janFirst, 7 - janFirst.getDay());
-   var endDate = new Date(date.tm_year + 1900, date.tm_mon, date.tm_mday);
-   if (compareByDay(firstSunday, endDate) < 0) {
-    var februaryFirstUntilEndMonth = __arraySum(__isLeapYear(endDate.getFullYear()) ? __MONTH_DAYS_LEAP : __MONTH_DAYS_REGULAR, endDate.getMonth() - 1) - 31;
-    var firstSundayUntilEndJanuary = 31 - firstSunday.getDate();
-    var days = firstSundayUntilEndJanuary + februaryFirstUntilEndMonth + endDate.getDate();
-    return leadingNulls(Math.ceil(days / 7), 2);
-   }
-   return compareByDay(firstSunday, janFirst) === 0 ? "01" : "00";
-  }),
-  "%V": (function(date) {
-   var janFourthThisYear = new Date(date.tm_year + 1900, 0, 4);
-   var janFourthNextYear = new Date(date.tm_year + 1901, 0, 4);
-   var firstWeekStartThisYear = getFirstWeekStartDate(janFourthThisYear);
-   var firstWeekStartNextYear = getFirstWeekStartDate(janFourthNextYear);
-   var endDate = __addDays(new Date(date.tm_year + 1900, 0, 1), date.tm_yday);
-   if (compareByDay(endDate, firstWeekStartThisYear) < 0) {
-    return "53";
-   }
-   if (compareByDay(firstWeekStartNextYear, endDate) <= 0) {
-    return "01";
-   }
-   var daysDifference;
-   if (firstWeekStartThisYear.getFullYear() < date.tm_year + 1900) {
-    daysDifference = date.tm_yday + 32 - firstWeekStartThisYear.getDate();
-   } else {
-    daysDifference = date.tm_yday + 1 - firstWeekStartThisYear.getDate();
-   }
-   return leadingNulls(Math.ceil(daysDifference / 7), 2);
-  }),
-  "%w": (function(date) {
-   var day = new Date(date.tm_year + 1900, date.tm_mon + 1, date.tm_mday, 0, 0, 0, 0);
-   return day.getDay();
-  }),
-  "%W": (function(date) {
-   var janFirst = new Date(date.tm_year, 0, 1);
-   var firstMonday = janFirst.getDay() === 1 ? janFirst : __addDays(janFirst, janFirst.getDay() === 0 ? 1 : 7 - janFirst.getDay() + 1);
-   var endDate = new Date(date.tm_year + 1900, date.tm_mon, date.tm_mday);
-   if (compareByDay(firstMonday, endDate) < 0) {
-    var februaryFirstUntilEndMonth = __arraySum(__isLeapYear(endDate.getFullYear()) ? __MONTH_DAYS_LEAP : __MONTH_DAYS_REGULAR, endDate.getMonth() - 1) - 31;
-    var firstMondayUntilEndJanuary = 31 - firstMonday.getDate();
-    var days = firstMondayUntilEndJanuary + februaryFirstUntilEndMonth + endDate.getDate();
-    return leadingNulls(Math.ceil(days / 7), 2);
-   }
-   return compareByDay(firstMonday, janFirst) === 0 ? "01" : "00";
-  }),
-  "%y": (function(date) {
-   return (date.tm_year + 1900).toString().substring(2);
-  }),
-  "%Y": (function(date) {
-   return date.tm_year + 1900;
-  }),
-  "%z": (function(date) {
-   var off = date.tm_gmtoff;
-   var ahead = off >= 0;
-   off = Math.abs(off) / 60;
-   off = off / 60 * 100 + off % 60;
-   return (ahead ? "+" : "-") + String("0000" + off).slice(-4);
-  }),
-  "%Z": (function(date) {
-   return date.tm_zone;
-  }),
-  "%%": (function() {
-   return "%";
-  })
- };
- for (var rule in EXPANSION_RULES_2) {
-  if (pattern.indexOf(rule) >= 0) {
-   pattern = pattern.replace(new RegExp(rule, "g"), EXPANSION_RULES_2[rule](date));
-  }
- }
- var bytes = intArrayFromString(pattern, false);
- if (bytes.length > maxsize) {
-  return 0;
- }
- writeArrayToMemory(bytes, s);
- return bytes.length - 1;
-}
 function ___syscall145(which, varargs) {
  SYSCALLS.varargs = varargs;
  try {
@@ -14754,6 +14757,11 @@ function nullFunc_viiifiii(x) {
  Module["printErr"]("Build with ASSERTIONS=2 for more info.");
  abort(x);
 }
+function nullFunc_iiiiiid(x) {
+ Module["printErr"]("Invalid function pointer called with signature 'iiiiiid'. Perhaps this is an invalid value (e.g. caused by calling a virtual method on a NULL pointer)? Or calling a function with an incorrect type, which will fail? (it is worth building your source files with -Werror (warnings are errors), as warnings can indicate undefined behavior which can cause this)");
+ Module["printErr"]("Build with ASSERTIONS=2 for more info.");
+ abort(x);
+}
 function nullFunc_diddi(x) {
  Module["printErr"]("Invalid function pointer called with signature 'diddi'. Perhaps this is an invalid value (e.g. caused by calling a virtual method on a NULL pointer)? Or calling a function with an incorrect type, which will fail? (it is worth building your source files with -Werror (warnings are errors), as warnings can indicate undefined behavior which can cause this)");
  Module["printErr"]("Build with ASSERTIONS=2 for more info.");
@@ -15171,6 +15179,11 @@ function nullFunc_viidii(x) {
 }
 function nullFunc_viiiififi(x) {
  Module["printErr"]("Invalid function pointer called with signature 'viiiififi'. Perhaps this is an invalid value (e.g. caused by calling a virtual method on a NULL pointer)? Or calling a function with an incorrect type, which will fail? (it is worth building your source files with -Werror (warnings are errors), as warnings can indicate undefined behavior which can cause this)");
+ Module["printErr"]("Build with ASSERTIONS=2 for more info.");
+ abort(x);
+}
+function nullFunc_iiiiid(x) {
+ Module["printErr"]("Invalid function pointer called with signature 'iiiiid'. Perhaps this is an invalid value (e.g. caused by calling a virtual method on a NULL pointer)? Or calling a function with an incorrect type, which will fail? (it is worth building your source files with -Werror (warnings are errors), as warnings can indicate undefined behavior which can cause this)");
  Module["printErr"]("Build with ASSERTIONS=2 for more info.");
  abort(x);
 }
@@ -15697,6 +15710,14 @@ function nullFunc_viffffi(x) {
 function invoke_viiifiii(index, a1, a2, a3, a4, a5, a6, a7) {
  try {
   Module["dynCall_viiifiii"](index, a1, a2, a3, a4, a5, a6, a7);
+ } catch (e) {
+  if (typeof e !== "number" && e !== "longjmp") throw e;
+  asm["setThrew"](1, 0);
+ }
+}
+function invoke_iiiiiid(index, a1, a2, a3, a4, a5, a6) {
+ try {
+  return Module["dynCall_iiiiiid"](index, a1, a2, a3, a4, a5, a6);
  } catch (e) {
   if (typeof e !== "number" && e !== "longjmp") throw e;
   asm["setThrew"](1, 0);
@@ -16369,6 +16390,14 @@ function invoke_viidii(index, a1, a2, a3, a4, a5) {
 function invoke_viiiififi(index, a1, a2, a3, a4, a5, a6, a7, a8) {
  try {
   Module["dynCall_viiiififi"](index, a1, a2, a3, a4, a5, a6, a7, a8);
+ } catch (e) {
+  if (typeof e !== "number" && e !== "longjmp") throw e;
+  asm["setThrew"](1, 0);
+ }
+}
+function invoke_iiiiid(index, a1, a2, a3, a4, a5) {
+ try {
+  return Module["dynCall_iiiiid"](index, a1, a2, a3, a4, a5);
  } catch (e) {
   if (typeof e !== "number" && e !== "longjmp") throw e;
   asm["setThrew"](1, 0);
@@ -17227,6 +17256,7 @@ Module.asmLibraryArg = {
  "abortOnCannotGrowMemory": abortOnCannotGrowMemory,
  "abortStackOverflow": abortStackOverflow,
  "nullFunc_viiifiii": nullFunc_viiifiii,
+ "nullFunc_iiiiiid": nullFunc_iiiiiid,
  "nullFunc_diddi": nullFunc_diddi,
  "nullFunc_fiff": nullFunc_fiff,
  "nullFunc_fifi": nullFunc_fifi,
@@ -17311,6 +17341,7 @@ Module.asmLibraryArg = {
  "nullFunc_viiiiiiffii": nullFunc_viiiiiiffii,
  "nullFunc_viidii": nullFunc_viidii,
  "nullFunc_viiiififi": nullFunc_viiiififi,
+ "nullFunc_iiiiid": nullFunc_iiiiid,
  "nullFunc_iiiiiifiif": nullFunc_iiiiiifiif,
  "nullFunc_viiii": nullFunc_viiii,
  "nullFunc_viiiii": nullFunc_viiiii,
@@ -17416,6 +17447,7 @@ Module.asmLibraryArg = {
  "nullFunc_iiiiiiiii": nullFunc_iiiiiiiii,
  "nullFunc_viffffi": nullFunc_viffffi,
  "invoke_viiifiii": invoke_viiifiii,
+ "invoke_iiiiiid": invoke_iiiiiid,
  "invoke_diddi": invoke_diddi,
  "invoke_fiff": invoke_fiff,
  "invoke_fifi": invoke_fifi,
@@ -17500,6 +17532,7 @@ Module.asmLibraryArg = {
  "invoke_viiiiiiffii": invoke_viiiiiiffii,
  "invoke_viidii": invoke_viidii,
  "invoke_viiiififi": invoke_viiiififi,
+ "invoke_iiiiid": invoke_iiiiid,
  "invoke_iiiiiifiif": invoke_iiiiiifiif,
  "invoke_viiii": invoke_viiii,
  "invoke_viiiii": invoke_viiiii,
@@ -17662,7 +17695,7 @@ Module.asmLibraryArg = {
  "_glBeginQuery": _glBeginQuery,
  "_glAttachShader": _glAttachShader,
  "_emscripten_glTexCoordPointer": _emscripten_glTexCoordPointer,
- "_emscripten_set_blur_callback": _emscripten_set_blur_callback,
+ "__addDays": __addDays,
  "_emscripten_glLoadMatrixf": _emscripten_glLoadMatrixf,
  "_emscripten_glStencilFuncSeparate": _emscripten_glStencilFuncSeparate,
  "_emscripten_glVertexAttrib3f": _emscripten_glVertexAttrib3f,
@@ -17682,7 +17715,7 @@ Module.asmLibraryArg = {
  "_glGetTexParameteriv": _glGetTexParameteriv,
  "_pthread_getspecific": _pthread_getspecific,
  "_glDrawArrays": _glDrawArrays,
- "_glGetError": _glGetError,
+ "_pthread_cond_signal": _pthread_cond_signal,
  "_emscripten_glDepthRange": _emscripten_glDepthRange,
  "_glActiveTexture": _glActiveTexture,
  "_emscripten_asm_const_iii": _emscripten_asm_const_iii,
@@ -17848,6 +17881,7 @@ Module.asmLibraryArg = {
  "___cxa_find_matching_catch_3": ___cxa_find_matching_catch_3,
  "_emscripten_glDeleteTextures": _emscripten_glDeleteTextures,
  "_emscripten_exit_fullscreen": _emscripten_exit_fullscreen,
+ "_strftime_l": _strftime_l,
  "_JS_UNETWebSockets_HostsContainingMessagesPush": _JS_UNETWebSockets_HostsContainingMessagesPush,
  "_glGetShaderiv": _glGetShaderiv,
  "_llvm_eh_typeid_for": _llvm_eh_typeid_for,
@@ -17979,6 +18013,7 @@ Module.asmLibraryArg = {
  "_emscripten_glUniformMatrix4fv": _emscripten_glUniformMatrix4fv,
  "_emscripten_glGetPointerv": _emscripten_glGetPointerv,
  "_pthread_cond_wait": _pthread_cond_wait,
+ "_emscripten_set_blur_callback": _emscripten_set_blur_callback,
  "_clock": _clock,
  "_emscripten_glIsRenderbuffer": _emscripten_glIsRenderbuffer,
  "_emscripten_request_pointerlock": _emscripten_request_pointerlock,
@@ -18042,7 +18077,6 @@ Module.asmLibraryArg = {
  "___cxa_begin_catch": ___cxa_begin_catch,
  "_emscripten_glGetProgramiv": _emscripten_glGetProgramiv,
  "_glDeleteSync": _glDeleteSync,
- "__addDays": __addDays,
  "_JS_UNETWebSockets_SocketRecvEvntBuffFromHost": _JS_UNETWebSockets_SocketRecvEvntBuffFromHost,
  "_emscripten_glTexImage2D": _emscripten_glTexImage2D,
  "_glRenderbufferStorage": _glRenderbufferStorage,
@@ -18153,7 +18187,7 @@ Module.asmLibraryArg = {
  "___gxx_personality_v0": ___gxx_personality_v0,
  "_emscripten_get_fullscreen_status": _emscripten_get_fullscreen_status,
  "_glVertexAttribPointer": _glVertexAttribPointer,
- "_pthread_cond_signal": _pthread_cond_signal,
+ "_glGetError": _glGetError,
  "_glGenRenderbuffers": _glGenRenderbuffers,
  "_emscripten_glSampleCoverage": _emscripten_glSampleCoverage,
  "_emscripten_glFrustum": _emscripten_glFrustum,
@@ -19597,6 +19631,7 @@ var __GLOBAL__sub_I_Assembly_cpp_8305 = Module["__GLOBAL__sub_I_Assembly_cpp_830
 var __GLOBAL__sub_I_Error_cpp = Module["__GLOBAL__sub_I_Error_cpp"] = asm["__GLOBAL__sub_I_Error_cpp"];
 var __GLOBAL__sub_I_runtime_network_playercommunicator_lump_cpp = Module["__GLOBAL__sub_I_runtime_network_playercommunicator_lump_cpp"] = asm["__GLOBAL__sub_I_runtime_network_playercommunicator_lump_cpp"];
 var dynCall_viiifiii = Module["dynCall_viiifiii"] = asm["dynCall_viiifiii"];
+var dynCall_iiiiiid = Module["dynCall_iiiiiid"] = asm["dynCall_iiiiiid"];
 var dynCall_diddi = Module["dynCall_diddi"] = asm["dynCall_diddi"];
 var dynCall_fiff = Module["dynCall_fiff"] = asm["dynCall_fiff"];
 var dynCall_fifi = Module["dynCall_fifi"] = asm["dynCall_fifi"];
@@ -19681,6 +19716,7 @@ var dynCall_viiiifii = Module["dynCall_viiiifii"] = asm["dynCall_viiiifii"];
 var dynCall_viiiiiiffii = Module["dynCall_viiiiiiffii"] = asm["dynCall_viiiiiiffii"];
 var dynCall_viidii = Module["dynCall_viidii"] = asm["dynCall_viidii"];
 var dynCall_viiiififi = Module["dynCall_viiiififi"] = asm["dynCall_viiiififi"];
+var dynCall_iiiiid = Module["dynCall_iiiiid"] = asm["dynCall_iiiiid"];
 var dynCall_iiiiiifiif = Module["dynCall_iiiiiifiif"] = asm["dynCall_iiiiiifiif"];
 var dynCall_viiii = Module["dynCall_viiii"] = asm["dynCall_viiii"];
 var dynCall_viiiii = Module["dynCall_viiiii"] = asm["dynCall_viiiii"];
