@@ -12,7 +12,7 @@ public class PlayerStats : EntityStats {
 	public int mySQL;
 	public int git;
 	public float runSpeed = 2f;
-	public float defaultStamina = 5f;
+	public float defaultStamina = 50f;
 	public float runStaminaBurn = 0.05f;
 	public float staminaChargeCooldown = 1f;
 	public float runStaminaGain = 0.02f;
