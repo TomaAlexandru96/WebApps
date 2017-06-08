@@ -80,7 +80,7 @@ public class Player : Entity<PlayerStats> {
 				float angle = Vector3.Angle (attackRadius.transform.localPosition, mouseDirection);
 				angle = inverted ? -angle : angle;
 				attackRadius.transform.RotateAround (transform.position, Vector3.forward, angle);
-				StartCoroutine (PlayMeleAttackAnimation ());
+				PlayAnimation ("PlayMeleAttackAnimation");
 			} else {
 				Debug.LogWarning ("Not yet implemented: " + selectedAbility.ToString ());
 			}
