@@ -9,6 +9,8 @@ public class PlayerAbilities : MonoBehaviour {
 	private Player player;
 	private List<AbilityElement> abilities = new List<AbilityElement> ();
 	private AbilityElement selected;
+	public float stamina;
+	public float lastSprint;
 
 	public void Init (Player player) {
 		this.player = player;
@@ -22,6 +24,9 @@ public class PlayerAbilities : MonoBehaviour {
 		}
 		selected = abilities [0];
 		selected.Select ();
+
+		stamina = player.stats.defaultStamina;
+		lastSprint = Time.time;
 	}
 
 	public bool UseAbility () {
@@ -39,6 +44,17 @@ public class PlayerAbilities : MonoBehaviour {
 	}
 
 	public bool Sprint () {
-		return true;
+		stamina = Mathf.Clamp (stamina - player.stats.runStaminaBurn, 0, player.stats.defaultStamina);
+		lastSprint = Time.time;
+		return stamina != 0;
+	}
+
+	public void Update () {
+		sprintBar.localScale = Vector3.Lerp (sprintBar.localScale, 
+						new Vector3 (stamina / player.stats.defaultStamina, 1, 1), 0.1f);
+
+		if (lastSprint + player.stats.staminaChargeCooldown < Time.time) {
+			stamina = Mathf.Clamp (stamina + player.stats.runStaminaGain, 0, player.stats.defaultStamina);
+		}
 	}
 }

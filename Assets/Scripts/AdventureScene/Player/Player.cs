@@ -22,7 +22,7 @@ public class Player : Entity<PlayerStats> {
 		mainCamera.GetComponent<AudioListener> ().enabled = photonView.isMine;
 		InvokeRepeating ("GetHitOvertime", 10, 20);
 
-		if (photonView.isMine && !IsStory ()) {
+		if (photonView.isMine) {
 			abilities = GameObject.FindGameObjectWithTag ("PlayerAbilities").GetComponent<PlayerAbilities> ();
 			abilities.Init (this);
 		}
@@ -30,6 +30,7 @@ public class Player : Entity<PlayerStats> {
 
 	protected override IEnumerator PlayDeadAnimation () {
 		move = Direction.Dead;
+		GetComponent<Rigidbody2D> ().velocity = Vector2.zero;
 		Animate ();
 		yield return GetEmptyIE ();
 	}
@@ -57,8 +58,14 @@ public class Player : Entity<PlayerStats> {
 			abilities.SelectAbility (3);
 		} else if (Input.GetKeyUp (KeyCode.Alpha4)) {
 			abilities.SelectAbility (4);
-		} else if (Input.GetKeyDown (KeyCode.LeftShift)) {
+		}
+
+		curSpeed = stats.speed;
+		if (Input.GetKey (KeyCode.LeftShift)) {
 			if (abilities.Sprint ()) {
+				curSpeed = stats.runSpeed;
+			} else {
+				curSpeed = stats.speed;
 			}
 		}
 	}
@@ -98,7 +105,6 @@ public class Player : Entity<PlayerStats> {
 	protected override void Move () {
 		// GET MOVEMENT INPUT
 		float h = Input.GetAxisRaw ("Horizontal");
-
 		float v = Input.GetAxisRaw ("Vertical");
 
 		// MOVEMENT

@@ -11,7 +11,11 @@ public class PlayerStats : EntityStats {
 	public int java;
 	public int mySQL;
 	public int git;
-	public float runSpeed = 3f;
+	public float runSpeed = 2f;
+	public float defaultStamina = 5f;
+	public float runStaminaBurn = 0.05f;
+	public float staminaChargeCooldown = 1f;
+	public float runStaminaGain = 0.02f;
 
 	public List<Ability> abilities = new List<Ability> () {new Ability(Ability.Mele), 
 		new Ability(Ability.ForkBomb), new Ability(Ability.DebugGun), new Ability(Ability.ElectricShock)};

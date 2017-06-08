@@ -6,6 +6,7 @@ public class Player3MoveAnim : Player {
 
 	protected override void Animate () {
 		Animator animator = GetComponent<Animator> ();
+		animator.speed = curSpeed;
 
 		switch (move) {
 		case Direction.Still:
