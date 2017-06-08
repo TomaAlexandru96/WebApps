@@ -18,12 +18,10 @@ public class Player : Photon.PunBehaviour, IPunObservable {
 	protected Rigidbody2D rb;
 	protected Animator animator;
 	protected string username;
-
-	private float lastAttack;
+	protected PlayerAbilities abilities;
 
 	void Awake () {
 		this.username = (string) photonView.instantiationData [0];
-		this.lastAttack = Time.time;
 	}
 
 	void Start () {
@@ -36,8 +34,12 @@ public class Player : Photon.PunBehaviour, IPunObservable {
 		curHP = stats.maxHP;
 		weapon = new Item ("Sword", 3, 2, false);
 		InvokeRepeating ("GetHitOvertime", 10, 20);
-	}
 
+		if (photonView.isMine) {
+			abilities = GameObject.FindGameObjectWithTag ("PlayerAbilities").GetComponent<PlayerAbilities> ();
+			abilities.Init (this);
+		}
+	}
 
 	void Update () {
 		if (!photonView.isMine || ChatController.GetChat ().IsFocused ()) {
@@ -45,6 +47,7 @@ public class Player : Photon.PunBehaviour, IPunObservable {
 		}
 
 		if (!dead) {
+			SelectAbility ();
 			Attack ();
 			Move ();
 		} else {
@@ -60,25 +63,37 @@ public class Player : Photon.PunBehaviour, IPunObservable {
 		return (new Vector3 (hit.point.x, hit.point.y, transform.position.z) - transform.position).normalized;
 	}
 
+	private void SelectAbility () {
+		if (Input.GetKeyUp (KeyCode.Alpha1)) {
+			abilities.SelectAbility (1);
+		} else if (Input.GetKeyUp (KeyCode.Alpha2)) {
+			abilities.SelectAbility (2);
+		} else if (Input.GetKeyUp (KeyCode.Alpha3)) {
+			abilities.SelectAbility (3);
+		} else if (Input.GetKeyUp (KeyCode.Alpha4)) {
+			abilities.SelectAbility (4);
+		}
+	}
+
 	private void Attack () {
-		/*// GET ATTACK INPUT
-		if (Input.GetMouseButtonDown(0)) {
-			Vector3 pz = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-			pz.z = 0;
-			if (weapon.longRange) {
-				// for now do nothing
+		if (Input.GetKeyUp (KeyCode.Space)) {
+			if (!abilities.UseAbility ()) {
+				return;
 			}
-		}*/
 
-		if (Input.GetKeyUp (KeyCode.Space) && lastAttack + stats.attackSpeed < Time.time) {
-			lastAttack = Time.time;
-			Vector3 mouseDirection = GetMouseInput ();
+			Ability selectedAbility = abilities.GetSelectedAbility ();
 
-			bool inverted = Vector3.Cross (attackRadius.transform.localPosition, mouseDirection).z < 0;
-			float angle = Vector3.Angle (attackRadius.transform.localPosition, mouseDirection);
-			angle = inverted ? -angle : angle;
-			attackRadius.transform.RotateAround (transform.position, Vector3.forward, angle);
-			StartCoroutine (PlayAttackAnimation ());
+			if (selectedAbility.type == Ability.Mele) {
+				Vector3 mouseDirection = GetMouseInput ();
+
+				bool inverted = Vector3.Cross (attackRadius.transform.localPosition, mouseDirection).z < 0;
+				float angle = Vector3.Angle (attackRadius.transform.localPosition, mouseDirection);
+				angle = inverted ? -angle : angle;
+				attackRadius.transform.RotateAround (transform.position, Vector3.forward, angle);
+				StartCoroutine (PlayAttackAnimation ());	
+			} else {
+				Debug.LogWarning ("Not yet implemented: " + selectedAbility.ToString ());
+			}
 		}
 	}
 
