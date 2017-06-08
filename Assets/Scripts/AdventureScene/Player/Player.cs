@@ -2,21 +2,13 @@
 using System.Collections;
 using UnityEngine;
 
-public class Player : Photon.PunBehaviour, IPunObservable {
+public class Player : Entity<PlayerStats>, IPunObservable {
 	
 	public Direction move;
-	public PlayerStats stats;
 	public Camera mainCamera;
 
-	public bool dead = false;
-	public float curHP;
-
-	public Inventory inventory;
-	public Item weapon;
 	public GameObject attackRadius;
 
-	protected Rigidbody2D rb;
-	protected Animator animator;
 	protected string username;
 	protected PlayerAbilities abilities;
 
@@ -24,15 +16,10 @@ public class Player : Photon.PunBehaviour, IPunObservable {
 		this.username = (string) photonView.instantiationData [0];
 	}
 
-	void Start () {
+	new void Start () {
+		base.Start ();
 		mainCamera.enabled = photonView.isMine;
 		mainCamera.GetComponent<AudioListener> ().enabled = photonView.isMine;
-		transform.SetParent (GameObject.FindGameObjectWithTag ("Grid").transform);
-		rb = GetComponent<Rigidbody2D> ();
-		animator = GetComponent<Animator>();
-		stats = new PlayerStats (PlayerType.FrontEndDev);
-		curHP = stats.maxHP;
-		weapon = new Item ("Sword", 3, 2, false);
 		InvokeRepeating ("GetHitOvertime", 10, 20);
 
 		if (photonView.isMine && !IsStory ()) {
@@ -41,26 +28,18 @@ public class Player : Photon.PunBehaviour, IPunObservable {
 		}
 	}
 
-	private bool IsStory () {
-		return CurrentUser.GetInstance ().GetUserInfo ().party.state == PartyMembers.STORY;
+	protected override IEnumerator PlayDeadAnimation () {
+		move = Direction.Dead;
+		Animate ();
+		yield return GetEmptyIE ();
 	}
 
-	void Update () {
-		if (!photonView.isMine || ChatController.GetChat ().IsFocused ()) {
-			return;
-		}
+	protected override void SetStats () {
+		stats = new PlayerStats (PlayerType.FrontEndDev);
+	}
 
-		if (!dead) {
-			if (!IsStory ()) {
-				SelectAbility ();
-				Attack ();
-			}
-			Move ();
-		} else {
-			move = Direction.Dead;
-		}
-
-		Animate ();
+	private bool IsStory () {
+		return CurrentUser.GetInstance ().GetUserInfo ().party.state == PartyMembers.STORY;
 	}
 
 	private Vector2 GetMouseInput () {
@@ -78,10 +57,15 @@ public class Player : Photon.PunBehaviour, IPunObservable {
 			abilities.SelectAbility (3);
 		} else if (Input.GetKeyUp (KeyCode.Alpha4)) {
 			abilities.SelectAbility (4);
+		} else if (Input.GetKeyDown (KeyCode.LeftShift)) {
+			if (abilities.Sprint ()) {
+			}
 		}
 	}
 
-	private void Attack () {
+	protected override void Attack () {
+		SelectAbility ();
+
 		if (Input.GetKeyUp (KeyCode.Space)) {
 			if (!abilities.UseAbility ()) {
 				return;
@@ -96,14 +80,14 @@ public class Player : Photon.PunBehaviour, IPunObservable {
 				float angle = Vector3.Angle (attackRadius.transform.localPosition, mouseDirection);
 				angle = inverted ? -angle : angle;
 				attackRadius.transform.RotateAround (transform.position, Vector3.forward, angle);
-				StartCoroutine (PlayAttackAnimation ());	
+				StartCoroutine (PlayMeleAttackAnimation ());
 			} else {
 				Debug.LogWarning ("Not yet implemented: " + selectedAbility.ToString ());
 			}
 		}
 	}
 
-	private IEnumerator PlayAttackAnimation () {
+	protected IEnumerator PlayMeleAttackAnimation () {
 		attackRadius.GetComponent<Animator> ().Play ("Slash");
 		attackRadius.GetComponent<PlayerAttack> ().StartAttack ();
 		yield return new WaitForSeconds (0.1f);
@@ -111,7 +95,7 @@ public class Player : Photon.PunBehaviour, IPunObservable {
 		attackRadius.GetComponent<PlayerAttack> ().StopAttack ();
 	}
 
-	private void Move () {
+	protected override void Move () {
 		// GET MOVEMENT INPUT
 		float h = Input.GetAxisRaw ("Horizontal");
 
@@ -119,8 +103,7 @@ public class Player : Photon.PunBehaviour, IPunObservable {
 
 		// MOVEMENT
 		Vector2 movement = new Vector2 (h, v).normalized;
-		rb.velocity = movement * stats.speed;
-
+		GetComponent<Rigidbody2D> ().velocity = movement * curSpeed;
 		// RIGHT
 		if (h > 0.1) {
 			if (v > 0.1) {
@@ -149,49 +132,40 @@ public class Player : Photon.PunBehaviour, IPunObservable {
 				move = Direction.Still;
 			}
 		}
-	}
-
-	public void GetHit (Enemy enemy) {
-		StartCoroutine (PlayGetHitAnimation ());
-		curHP -= enemy.stats.damage;
-		if (curHP <= 0) {
-			curHP = 0;
-			dead = true;
-		}
+		Animate ();
 	}
 		
 	public void GetHitOvertime () {
-		curHP -= 1f;
+		ClampHealth (curHP - 1);
 	}
 
 	public void GetBuff (Buff buff) {
 		if (buff == Buff.Coffee) {
-			IncreaseHealth(10);
+			IncreaseHealth(10f);
 		}
 	}
 
 	public void IncreaseHealth (float points) {
-		curHP = Mathf.Clamp (points + curHP, 0, stats.maxHP);
+		ClampHealth (curHP + points);
 	}
 
-	private IEnumerator PlayGetHitAnimation () {
+	protected override IEnumerator PlayGetHitAnimation () {
 		GetComponent<SpriteRenderer> ().color = UnityEngine.Color.red;
 		yield return new WaitForSeconds (0.1f);
 		GetComponent<SpriteRenderer> ().color = UnityEngine.Color.white;
 	}
 
-	private void HitEnemy (GameObject enemy) {
-		enemy.transform.GetComponent <Enemy> ().GetHit (this);
+	public override void GetHit<E> (Entity<E> entity) {
+		ClampHealth (curHP - entity.stats.damage);
+		base.GetHit (entity);
 	}
 
 	#region IPunObservable implementation
 	void IPunObservable.OnPhotonSerializeView (PhotonStream stream, PhotonMessageInfo info) {
 		if (stream.isWriting) {
 			stream.SendNext (move);
-			stream.SendNext (curHP);
 		} else {
 			move = (Direction) stream.ReceiveNext ();
-			curHP = (float)  stream.ReceiveNext ();
 			Animate ();
 		}
 	}
@@ -201,6 +175,8 @@ public class Player : Photon.PunBehaviour, IPunObservable {
 		return username;
 	}
 
-	protected virtual void Animate () { }
+	protected virtual void Animate () {
+		// used by children
+	}
 }
 

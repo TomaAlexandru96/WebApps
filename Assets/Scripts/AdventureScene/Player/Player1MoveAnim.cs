@@ -4,6 +4,8 @@ using Photon;
 public class Player1MoveAnim : Player {
 	
 	protected override void Animate () {
+		Animator animator = GetComponent<Animator> ();
+
 		switch (move) {
 		case Direction.Still:
 			animator.Play ("P1_Still");
