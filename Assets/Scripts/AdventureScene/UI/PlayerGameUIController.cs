@@ -9,6 +9,9 @@ public class PlayerGameUIController : Photon.PunBehaviour {
 	public Image avatar;
 	public Text playerName;
 	public RectTransform healthObj;
+	public Color healthNormal;
+	public Color healthDamaged;
+	public Color healthDangerouslyLow;
 
 	private Player player;
 
@@ -29,11 +32,11 @@ public class PlayerGameUIController : Photon.PunBehaviour {
 		Vector2 newHP = Vector2.Lerp (healthObj.localScale, new Vector2 ((float) player.curHP / (float) player.stats.maxHP, 1), 0.1f);
 		healthObj.localScale = newHP;
 		if (newHP.x >= 0.2 && newHP.x < 0.5) {
-			healthObj.GetComponent<Image> ().color = Color.yellow;
+			healthObj.GetComponent<Image> ().color = healthDamaged;
 		} else if (newHP.x < 0.2) {
-			healthObj.GetComponent<Image> ().color = Color.red;
+			healthObj.GetComponent<Image> ().color = healthDangerouslyLow;
 		} else {
-			healthObj.GetComponent<Image> ().color = Color.green;
+			healthObj.GetComponent<Image> ().color = healthNormal;
 		}
 	}
 }
