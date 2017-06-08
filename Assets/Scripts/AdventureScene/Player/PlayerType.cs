@@ -1,7 +1,5 @@
 ﻿using System;
 
 public enum PlayerType {
-	BackEndDev, FrontEndDev, FullStackDev, ProductManager
+	BackEndDev = 0, FrontEndDev = 1, FullStackDev = 2, ProductManager = 3
 };
-
-
