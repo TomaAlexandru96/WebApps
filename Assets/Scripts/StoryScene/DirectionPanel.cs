@@ -9,6 +9,5 @@ public class DirectionPanel : MonoBehaviour {
 
 	public void DisplayText(string text) {
 		textPanel.transform.GetComponent<Text> ().text = text;
-		Debug.Log ("Displaying text " + text);
 	}
 }
