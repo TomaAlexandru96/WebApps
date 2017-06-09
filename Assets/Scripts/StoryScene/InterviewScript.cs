@@ -38,25 +38,26 @@ public class InterviewScript : MonoBehaviour {
 		questionsAsked = 0;
 		questionsGotRight = 0;
 		qaa = new QuestionsAndAnswers[2]; 
+		verdictPanel.text = "";
 		InitializeQuestionsStruct ();
-		NextQuestion ();
+		StartCoroutine (NextQuestion ());
 	}
 
-	private void NextQuestion () {
+	private IEnumerator NextQuestion () {
 
 		if (questionsAsked < numberOfQuestionsToAsk && questionsGotRight < numberOfQuestionsToGetRight) {
 			ShowQuestion ();
-		}else {
+		} else {
 			if (questionsGotRight == numberOfQuestionsToGetRight) {
-		//		verdictPanel.color = Color.green;
-				verdictPanel.text = "Welcome to hell";
+				Debug.Log ("here");
+				verdictPanel.color = Color.green;
+				verdictPanel.text = "Congratulations, welcome to Imperial";
 			} else {
-			//	verdictPanel.color = Color.red;
-				verdictPanel.text = "You no belong here";
+				verdictPanel.color = Color.red;
+				verdictPanel.text = "Try again next year";
 			}
-			StartCoroutine (Wait ());
+			yield return new WaitForSeconds (3f);
 			Close ();
-
 		}
 	}
 
@@ -95,32 +96,28 @@ public class InterviewScript : MonoBehaviour {
 		Destroy (gameObject);
 	}
 
-
-
 	public void Verify (int answerNumber) {
 		bool correct = false;
 		if (answerNumber == qaa [numberOfThisQuestion].numberOfCorrectAnswer) {
 			correct = true;
 			questionsGotRight++;
 		} 		
-		DisplayMessage (correct);
-		NextQuestion ();
-	}
-		
-	void DisplayMessage (bool correct) {
-		if (correct) {
-		//	verdictPanel.color = Color.green;
-			verdictPanel.text = "You're a genius";
-		} else {
-		//	verdictPanel.color = Color.red;
-			verdictPanel.text = "you stupid";
-		}
-		StartCoroutine (Wait ());
-		verdictPanel.text = "";
+		StartCoroutine(DisplayMessage (correct));
 	}
 
-	private IEnumerator Wait () {
-		yield return new WaitForSeconds (3f);
+	private IEnumerator DisplayMessage (bool correct) {
+		if (correct) {
+			verdictPanel.color = Color.green;
+			verdictPanel.text = "CORRECT";
+		} else {
+			verdictPanel.color = Color.red;
+			verdictPanel.text = "INCORRECT";
+		}
+
+		yield return new WaitForSeconds (2f);
+
+		verdictPanel.text = "";
+		StartCoroutine (NextQuestion ());
 	}
 
 	void InitializeQuestionsStruct () {
@@ -128,20 +125,28 @@ public class InterviewScript : MonoBehaviour {
 			qaa [i].askedBefore = false;
 		}
 
-		qaa [0].question = "ce fa nec?";
-		qaa [0].answer0 = "bine tiu";
-		qaa [0].answer1 = "sugi pl";
-		qaa [0].answer2 = "sugi pizda";
-		qaa [0].answer3 = "sugi curu";
-		qaa [0].numberOfCorrectAnswer = 0;
+		qaa [0].question = "Complexity of BubbleSort ?";
+		qaa [0].answer0 = "N";
+		qaa [0].answer1 = "N^2";
+		qaa [0].answer2 = "2^N";
+		qaa [0].answer3 = "NlogN";
+		qaa [0].numberOfCorrectAnswer = 1;
 
-		qaa [1].question = "ce faci nec?";
-		qaa [1].answer0 = "sugi";
-		qaa [1].answer1 = "bugi";
-		qaa [1].answer2 = "bine tiu";
-		qaa [1].answer3 = "fugi";
-		qaa [1].numberOfCorrectAnswer = 2;
-				
+		qaa [1].question = "Complexity of MergeSort";
+		qaa [1].answer0 = "N";
+		qaa [1].answer1 = "N^2";
+		qaa [1].answer2 = "2^N";
+		qaa [1].answer3 = "NlogN";
+		qaa [1].numberOfCorrectAnswer = 3;
+
+		qaa [2].question = "32 in binary";
+		qaa [2].answer0 = "00110011";
+		qaa [2].answer1 = "10000001";
+		qaa [2].answer2 = "11111110";
+		qaa [2].answer3 = "00100000";
+		qaa [2].numberOfCorrectAnswer = 3;
+
+
 	}
 }
 
