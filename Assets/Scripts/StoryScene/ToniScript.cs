@@ -14,6 +14,7 @@ public class ToniScript : MonoBehaviour {
 	public bool foodServed;
 	public bool foodFinished;
 	public bool interview;
+	public bool foodInfo;
 	public string foodServingText;
 	protected bool firstContact;
 	protected bool inside;
@@ -27,6 +28,7 @@ public class ToniScript : MonoBehaviour {
 		foodServed = false;
 		foodFinished = false;
 		interview = false;
+		foodInfo = false;
 		directionPanel = GameObject.FindGameObjectsWithTag ("Canvas")[0].transform.GetChild(0).gameObject;
 		huxely308 = GameObject.FindGameObjectWithTag ("Huxely308").transform;
 	}
@@ -66,26 +68,31 @@ public class ToniScript : MonoBehaviour {
 			//New sudents with position
 			MakeAllFoodStudentAppear ();
 			dateTime = Time.time;
-			foodFinished = true;
+			foodInfo = true;
 			foodServed = false;
 			huxely308.GetComponent<Controller308> ().SetFood();
 		}
 		if (inside && index < maxSize &&  (Time.time - dateTime) > 5) {
 			Conversation();
 		}
-		if (foodFinished && (Time.time - dateTime) > 5) {
+		if (foodInfo && (Time.time - dateTime) > 5) {
 			directionPanel.transform.GetComponent<DirectionPanel> ().DisplayText ("Eating food increase your health, you can grab food with (Space key)");
+			foodFinished = true;
+			foodInfo = false;
+			dateTime = Time.time;
 		}
 		if (foodFinished && (Time.time - dateTime) > 15) {
 			huxely308.GetComponent<Controller308> ().DissapearFood ();
 			FoodGone ();
+			directionPanel.SetActive (true);
+			directionPanel.transform.GetComponent<DirectionPanel> ().DisplayText ("Ohh, no All the food is gone...");
 			foodFinished = false;
 			dateTime = Time.time;
 			interview = true;
 		}
 		if (interview && (Time.time - dateTime) > 5) {
 			directionPanel.SetActive (true);
-			directionPanel.transform.GetComponent<DirectionPanel> ().DisplayText ("Go to 217, 218 for your interview, near main staircase..");
+			directionPanel.transform.GetComponent<DirectionPanel> ().DisplayText ("Go to 341, 342 for your interview, near main staircase..");
 		}
 	}
 
