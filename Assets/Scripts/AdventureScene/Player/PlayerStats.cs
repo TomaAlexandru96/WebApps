@@ -11,7 +11,7 @@ public class PlayerStats : EntityStats {
 	public int java;
 	public int mySQL;
 	public int git;
-	public float runSpeed = 2f;
+	public float runSpeed = 3f;
 	public float defaultStamina = 50f;
 	public float runStaminaBurn = 0.05f;
 	public float staminaChargeCooldown = 1f;
@@ -25,7 +25,7 @@ public class PlayerStats : EntityStats {
 	public PlayerStats (PlayerType type) {
 		level = 1;
 		maxHP = 20;
-		speed = 1f;
+		speed = 1.5f;
 		damage = 1f;
 		switch (type) {
 		case PlayerType.FrontEndDev: 
