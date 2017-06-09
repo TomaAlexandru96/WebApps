@@ -116,4 +116,9 @@ public class ToniScript : MonoBehaviour {
 		int maxChild = Huxely308.childCount;
 		Huxely308.GetChild (maxChild-1).gameObject.SetActive (false);
 	}
+
+	public void Seated () {
+		Debug.Log ("Seated");
+		seated = true;
+	}
 }
