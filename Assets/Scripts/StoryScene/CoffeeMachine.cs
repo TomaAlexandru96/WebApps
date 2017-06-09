@@ -10,7 +10,7 @@ public class CoffeeMachine : SpecifyMovementScript {
 	protected override void Conversation() {
 		directionPanel.SetActive (true);
 		dateTime = Time.time;
-		directionPanel.transform.GetComponent<DirectionPanel> ().DisplayText (text[index]);
+		directionPanel.transform.GetComponent<DirectionPanel> ().DisplayText (repeatingText);
 		index++;
 		spawn = true;
 		GameObject.FindGameObjectWithTag ("Player").GetComponent<Player> ().GetBuff (Buff.Coffee);
