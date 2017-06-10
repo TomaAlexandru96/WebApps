@@ -21,6 +21,7 @@ public class InterviewScript : MonoBehaviour {
 	private int numberOfThisQuestion;
 	private int questionsAsked;
 	private int questionsGotRight;
+	private bool doneIntroduction = false;
 
 
 	public struct QuestionsAndAnswers{
@@ -37,27 +38,41 @@ public class InterviewScript : MonoBehaviour {
 	public void Start () {
 		questionsAsked = 0;
 		questionsGotRight = 0;
-		qaa = new QuestionsAndAnswers[2]; 
+		qaa = new QuestionsAndAnswers[numberOfAvailableQuestions]; 
 		verdictPanel.text = "";
+		questionPanelText.text = "";
 		InitializeQuestionsStruct ();
 		StartCoroutine (NextQuestion ());
 	}
-
+		
 	private IEnumerator NextQuestion () {
 
-		if (questionsAsked < numberOfQuestionsToAsk && questionsGotRight < numberOfQuestionsToGetRight) {
-			ShowQuestion ();
-		} else {
-			if (questionsGotRight == numberOfQuestionsToGetRight) {
-				Debug.Log ("here");
-				verdictPanel.color = Color.green;
-				verdictPanel.text = "Congratulations, welcome to Imperial";
-			} else {
-				verdictPanel.color = Color.red;
-				verdictPanel.text = "Try again next year";
-			}
+
+		if (!doneIntroduction) {
+			questionPanelText.text = "Welcome to your Imperial Interview ! ";
 			yield return new WaitForSeconds (3f);
-			Close ();
+			questionPanelText.text = "You will have to get" + numberOfQuestionsToGetRight + " questions right" + 
+									 ", from the total of " + numberOfQuestionsToAsk + "to secure" + 
+									 " your place in Imperial";
+			yield return new WaitForSeconds (3f);
+			doneIntroduction = true;
+			StartCoroutine (NextQuestion ());
+			
+		} else {
+
+			if (questionsAsked < numberOfQuestionsToAsk && questionsGotRight < numberOfQuestionsToGetRight) {
+				ShowQuestion ();
+			} else {
+				if (questionsGotRight == numberOfQuestionsToGetRight) {
+					verdictPanel.color = Color.green;
+					verdictPanel.text = "Congratulations, welcome to Imperial";
+				} else {
+					verdictPanel.color = Color.red;
+					verdictPanel.text = "Try again next year";
+				}
+				yield return new WaitForSeconds (3f);
+				Close ();
+			}
 		}
 	}
 
