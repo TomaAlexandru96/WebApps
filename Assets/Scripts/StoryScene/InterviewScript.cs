@@ -57,10 +57,10 @@ public class InterviewScript : MonoBehaviour {
 			Debug.Log ("here");
 			yield return new WaitForSeconds (3f);
 			Debug.Log ("here2");
-			questionPanelText.text = "You will have to get " + numberOfQuestionsToGetRight + " questions right to secure your place in Imperial";
+			questionPanelText.text = "You will need to answer " + numberOfQuestionsToGetRight + " questions correctly to secure a place in Imperial !";
 			yield return new WaitForSeconds (3f);
 			questionPanelText.text = "Press any key to start the interview !";
-			yield return new WaitForSeconds (2f);
+			yield return new WaitForSeconds (1f);
 			while (!Input.anyKey) yield return null;
 		
 			button0.SetActive (true);
@@ -164,9 +164,14 @@ public class InterviewScript : MonoBehaviour {
 		CreateQuestion (2, "What is the binary representation of the number 32 ?", "00110011", "10000001", "11111110", "00100000", 3);
 		CreateQuestion (3, "Which language would you use for low-level development ?", "C", "Java", "JavaScript", "C#", 0);
 		CreateQuestion (4, "Which one of these is a functional language ?", "C#", "Java", "Haskell", "Ruby", 2);
-		CreateQuestion (5, "You are given the following formula : ¬(p AND q). Which one of the following formulas is equivalent to it ? " +
-		" ( where ¬ is NOT)", "¬p OR ¬q", "¬(¬p AND ¬q)", "p OR ¬q", "¬p OR q", 0);
+		CreateQuestion (5, "You are given the following formula : ! (p AND q). Which one of the following formulas is equivalent to it ? " +
+		" ( where ! is NOT)", "!p OR !q", "!(!p AND !q)", "p OR !q", "!p OR q", 0);
 		CreateQuestion (6, "Convert 0010 1010 to decimal", "46", "32", "42", "66", 2);
+		CreateQuestion (7, "Which is the best editor ?", "Gedit", "Notepad", "Vim", "Emacs", 2);
+		CreateQuestion (8, "What is the integral of f(x) = ln(x) ?", "x^2", "ln(x)^2", "1 / ln(x)", "1 / x", 3);
+		CreateQuestion (9, "Which one of these algorithms uses the Devide & Conquer technique ?", "Binary Search", "Dijkstra's Algorithm", "Bubble Sort", "KMP", 0);
+		CreateQuestion (10, " (HARD!) What technique would you use to solve the longest common substring problem ? (Determine the longest common substring of 2 strings)",
+			"Divide & Conquer", "Dynammic Programming", "Greedy", "KMP", 1);
 	}
 
 	private void CreateQuestion (int i,string question, string answer0, string answer1, 
