@@ -8,10 +8,10 @@ public class InterviewScript : MonoBehaviour {
 
 	public Text questionPanelText;
 	public Text verdictPanel;
-	public Text button0;
-	public Text button1;
-	public Text button2;
-	public Text button3;
+	public GameObject button0;
+	public GameObject button1;
+	public GameObject button2;
+	public GameObject button3;
 
 	public int numberOfAvailableQuestions;
 	public QuestionsAndAnswers[] qaa;
@@ -41,6 +41,10 @@ public class InterviewScript : MonoBehaviour {
 		qaa = new QuestionsAndAnswers[numberOfAvailableQuestions]; 
 		verdictPanel.text = "";
 		questionPanelText.text = "";
+		button0.SetActive (false);
+		button1.SetActive (false);
+		button2.SetActive (false);
+		button3.SetActive (false);
 		InitializeQuestionsStruct ();
 		StartCoroutine (NextQuestion ());
 	}
@@ -50,14 +54,23 @@ public class InterviewScript : MonoBehaviour {
 
 		if (!doneIntroduction) {
 			questionPanelText.text = "Welcome to your Imperial Interview ! ";
+			Debug.Log ("here");
 			yield return new WaitForSeconds (3f);
-			questionPanelText.text = "You will have to get" + numberOfQuestionsToGetRight + " questions right" + 
-									 ", from the total of " + numberOfQuestionsToAsk + "to secure" + 
-									 " your place in Imperial";
+			Debug.Log ("here2");
+			questionPanelText.text = "You will have to get " + numberOfQuestionsToGetRight + " questions right to secure your place in Imperial";
 			yield return new WaitForSeconds (3f);
+			questionPanelText.text = "Press any key to start the interview !";
+			yield return new WaitForSeconds (2f);
+			while (!Input.anyKey) yield return null;
+		
+			button0.SetActive (true);
+			button1.SetActive (true);
+			button2.SetActive (true);
+			button3.SetActive (true);
+
 			doneIntroduction = true;
+
 			StartCoroutine (NextQuestion ());
-			
 		} else {
 
 			if (questionsAsked < numberOfQuestionsToAsk && questionsGotRight < numberOfQuestionsToGetRight) {
@@ -68,8 +81,11 @@ public class InterviewScript : MonoBehaviour {
 					verdictPanel.text = "Congratulations, welcome to Imperial";
 				} else {
 					verdictPanel.color = Color.red;
-					verdictPanel.text = "Try again next year";
+					verdictPanel.text = "Oh, it looks like you still have some learning to do, don't worry, you can try again after you study a bit !";
 				}
+				yield return new WaitForSeconds (3f);
+				verdictPanel.text = "";
+				questionPanelText.text = "Congratulations, you have completed the first stage, you may now exit Huxley, go home and get some rest, the second stage will begin shortly !";
 				yield return new WaitForSeconds (3f);
 				Close ();
 			}
@@ -80,10 +96,12 @@ public class InterviewScript : MonoBehaviour {
 		numberOfThisQuestion = PickQuestionNumber ();
 		questionPanelText.text = qaa [numberOfThisQuestion].question;
 
-		button0.text = qaa [numberOfThisQuestion].answer0;
-		button1.text = qaa [numberOfThisQuestion].answer1;
-		button2.text = qaa [numberOfThisQuestion].answer2;
-		button3.text = qaa [numberOfThisQuestion].answer3;
+		button0.transform.GetChild(0).GetComponent<Text> ().text = qaa [numberOfThisQuestion].answer0;
+		button1.transform.GetChild(0).GetComponent<Text> ().text  = qaa [numberOfThisQuestion].answer1;
+		button2.transform.GetChild(0).GetComponent<Text> ().text = qaa [numberOfThisQuestion].answer2;
+		button3.transform.GetChild(0).GetComponent<Text> ().text = qaa [numberOfThisQuestion].answer3;
+
+
 
 		questionsAsked++;
 	}
@@ -140,28 +158,26 @@ public class InterviewScript : MonoBehaviour {
 			qaa [i].askedBefore = false;
 		}
 
-		qaa [0].question = "Complexity of BubbleSort ?";
-		qaa [0].answer0 = "N";
-		qaa [0].answer1 = "N^2";
-		qaa [0].answer2 = "2^N";
-		qaa [0].answer3 = "NlogN";
-		qaa [0].numberOfCorrectAnswer = 1;
 
-		qaa [1].question = "Complexity of MergeSort";
-		qaa [1].answer0 = "N";
-		qaa [1].answer1 = "N^2";
-		qaa [1].answer2 = "2^N";
-		qaa [1].answer3 = "NlogN";
-		qaa [1].numberOfCorrectAnswer = 3;
+		CreateQuestion (0, "What is the complexity of BubbleSort ?", "N", "N^2", "2^N", "NlogN", 1);
+		CreateQuestion (1, "What is the complexity of MergeSort ?", "N", "N^2", "2^N", "NlogN", 3);
+		CreateQuestion (2, "What is the binary representation of the number 32 ?", "00110011", "10000001", "11111110", "00100000", 3);
+		CreateQuestion (3, "Which language would you use for low-level development ?", "C", "Java", "JavaScript", "C#", 0);
+		CreateQuestion (4, "Which one of these is a functional language ?", "C#", "Java", "Haskell", "Ruby", 2);
+		CreateQuestion (5, "You are given the following formula : ¬(p AND q). Which one of the following formulas is equivalent to it ? " +
+		" ( where ¬ is NOT)", "¬p OR ¬q", "¬(¬p AND ¬q)", "p OR ¬q", "¬p OR q", 0);
+		CreateQuestion (6, "Convert 0010 1010 to decimal", "46", "32", "42", "66", 2);
+	}
 
-		qaa [2].question = "32 in binary";
-		qaa [2].answer0 = "00110011";
-		qaa [2].answer1 = "10000001";
-		qaa [2].answer2 = "11111110";
-		qaa [2].answer3 = "00100000";
-		qaa [2].numberOfCorrectAnswer = 3;
+	private void CreateQuestion (int i,string question, string answer0, string answer1, 
+								  string answer2, string answer3, int numberOfCorrectAnswer){
 
-
+		qaa [i].question = question;
+		qaa [i].answer0 = answer0;
+		qaa [i].answer1 = answer1;
+		qaa [i].answer2 = answer2;
+		qaa [i].answer3 = answer3;
+		qaa [i].numberOfCorrectAnswer = numberOfCorrectAnswer;
 	}
 }
 

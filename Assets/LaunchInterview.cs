@@ -5,6 +5,7 @@ using UnityEngine;
 public class LaunchInterview : MonoBehaviour {
 
 	public GameObject interviewPanel;
+	public GameObject currentMap;
 
 	public void Start () {
 		interviewPanel.SetActive (false);
@@ -14,5 +15,6 @@ public class LaunchInterview : MonoBehaviour {
 	}
 
 	void OnTriggerExit2D(Collider2D coll) {
-		interviewPanel.SetActive (true);}
+		interviewPanel.SetActive (false);
+	}
 }
