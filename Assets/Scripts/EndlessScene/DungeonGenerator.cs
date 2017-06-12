@@ -25,29 +25,27 @@ public class DungeonGenerator : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		progressText.text = "Initialising rooms";
 		StartCoroutine (GenerateInitialRooms ());
 	}
 
-	private void StartSecondStep () {
-		SelectMainRooms ();
-		DoDelaunayTriangulation (mainRooms);
-		DoMST (mainRooms);
-
-		foreach (var room in mainRooms) {
-			room.SetNode (true);
-			room.SetColor (Color.red);
+	private IEnumerator GenerateInitialRooms () {
+		progressText.text = "Initialising rooms";
+		// startup time
+		yield return new WaitForSeconds (0.5f);
+		for (int i = 0; i < numberOfInitialGeneratedRooms; i++) {
+			rooms.Add (GenerateRoom ());
+			yield return new WaitForSeconds (0.01f);
+		}
+		// wait for collision to finnish
+		yield return new WaitForSeconds (2f);
+		foreach (var room in rooms) {
+			room.RemovePhys ();
 		}
 
-		List<GameObject> lines = new List<GameObject> ();
-		foreach (var room in mainRooms) {
-			foreach (var other in room.DelaunayList) {
-				lines.Add (CreateLine (room.GetPosition (), other.GetPosition ()));
-			}
-		}
+		StartCoroutine (SelectMainRooms ());
 	}
 
-	private void SelectMainRooms () {
+	private IEnumerator SelectMainRooms () {
 		progressText.text = "Selecting main rooms";
 		Vector2 averageSize = new Vector2 (0f, 0f);
 
@@ -64,6 +62,36 @@ public class DungeonGenerator : MonoBehaviour {
 				mainRooms.Add (room);
 			}
 		}
+
+		foreach (var room in mainRooms) {
+			room.SetNode (true);
+			room.SetColor (Color.red);
+			yield return new WaitForSeconds (0.01f);
+		}
+
+		yield return new WaitForSeconds (1f);
+		
+		StartCoroutine (StartGraphAlgorithms ());
+	}
+
+	private IEnumerator StartGraphAlgorithms () {
+		progressText.text = "Applying Delaunay Triangulation";
+		DoDelaunayTriangulation (mainRooms);
+
+		List<GameObject> lines = new List<GameObject> ();
+		foreach (var room in mainRooms) {
+			foreach (var other in room.DelaunayList) {
+				lines.Add (CreateLine (room.GetPosition (), other.GetPosition ()));
+				yield return new WaitForSeconds (0.01f);
+			}
+		}
+
+		yield return new WaitForSeconds (1.5f);
+
+		progressText.text = "Applying Minimum Spanning Tree";
+		DoMST (mainRooms);
+
+		yield return new WaitForSeconds (1.5f);
 	}
 
 	private GameObject CreateLine (Vector3 position1, Vector3 position2) {
@@ -83,19 +111,6 @@ public class DungeonGenerator : MonoBehaviour {
 
 	private void DoMST (List<Room> rooms) {
 		
-	}
-
-	private IEnumerator GenerateInitialRooms () {
-		// startup time
-		yield return new WaitForSeconds (0.5f);
-		for (int i = 0; i < numberOfInitialGeneratedRooms; i++) {
-			rooms.Add (GenerateRoom ());
-			yield return new WaitForSeconds (0.01f);
-		}
-		// wait for collision to finnish
-		yield return new WaitForSeconds (1.5f);
-
-		StartSecondStep ();
 	}
 
 	public Vector2 GetRandomPointInEllipse () {

@@ -79,4 +79,8 @@ public class Room : MonoBehaviour {
 	public Vector3 GetSize () {
 		return outline.transform.localScale;
 	}
+
+	public void RemovePhys () {
+		GetComponent<Rigidbody2D> ().isKinematic = true;
+	}
 }
