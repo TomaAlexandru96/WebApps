@@ -9,6 +9,8 @@ public class Room : MonoBehaviour {
 	public GameObject tilePrefab;
 	public GameObject outline;
 	public GameObject nodePrefab;
+	public List<Room> MSTList = new List<Room> ();
+	public List<Room> DelaunayList = new List<Room> ();
 
 	private GameObject node;
 
