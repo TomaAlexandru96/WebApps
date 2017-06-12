@@ -3,11 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class RoomSetup : MonoBehaviour {
+public class Room : MonoBehaviour {
 
 	public float outlineBorderSize;
 	public GameObject tilePrefab;
 	public GameObject outline;
+	public GameObject nodePrefab;
+
+	private GameObject node;
 
 	public void Init (Vector2 position, int width, int height, Transform parent) {
 		transform.SetParent (parent);
@@ -48,5 +51,30 @@ public class RoomSetup : MonoBehaviour {
 		colliderOffset.x = outlinePos.x;
 		colliderOffset.y = outlinePos.y;
 		GetComponent<BoxCollider2D> ().offset = colliderOffset;
+
+		// instantiate center node
+		node = Instantiate (nodePrefab);
+		node.transform.position = outlinePos;
+		node.transform.SetParent (transform, false);
+		node.transform.localScale *= 2;
+		SetNode (false);
+	}
+
+	public void SetColor (Color color) {
+		for (int i = 1; i < transform.childCount - 1; i++) {
+			transform.GetChild (i).GetComponent<SpriteRenderer> ().color = color;
+		}
+	}
+
+	public Vector3 GetPosition () {
+		return node.transform.position;
+	}
+
+	public void SetNode (bool active) {
+		node.SetActive (active);
+	}
+
+	public Vector3 GetSize () {
+		return outline.transform.localScale;
 	}
 }

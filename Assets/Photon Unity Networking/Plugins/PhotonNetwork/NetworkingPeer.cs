@@ -321,7 +321,7 @@ internal class NetworkingPeer : LoadBalancingPeer, IPhotonPeerListener
     private bool mPlayernameHasToBeUpdated;
 
 
-    public Room CurrentRoom
+    public DungeonGeneratedRoom CurrentRoom
     {
         get
         {
@@ -336,7 +336,7 @@ internal class NetworkingPeer : LoadBalancingPeer, IPhotonPeerListener
         private set { this.currentRoom = value; }
     }
 
-    private Room currentRoom;
+    private DungeonGeneratedRoom currentRoom;
 
     public PhotonPlayer LocalPlayer { get; internal set; }
 
@@ -1191,7 +1191,7 @@ internal class NetworkingPeer : LoadBalancingPeer, IPhotonPeerListener
             return;
         }
 
-        Room current = new Room(this.enterRoomParamsCache.RoomName, null);
+        DungeonGeneratedRoom current = new DungeonGeneratedRoom(this.enterRoomParamsCache.RoomName, null);
         current.IsLocalClientInside = true;
         this.CurrentRoom = current;
 
