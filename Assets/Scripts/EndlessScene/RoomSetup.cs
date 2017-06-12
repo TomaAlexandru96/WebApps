@@ -22,8 +22,8 @@ public class RoomSetup : MonoBehaviour {
 				tile.transform.SetParent (transform);
 				Vector3 pos = tilePrefab.transform.localPosition;
 
-				pos.x = tile.GetComponent<RectTransform> ().rect.width * x;
-				pos.y = tile.GetComponent<RectTransform> ().rect.height * y;
+				pos.x = tile.GetComponent<SpriteRenderer> ().size.x * x;
+				pos.y = tile.GetComponent<SpriteRenderer> ().size.y * y;
 
 				tile.transform.localPosition = pos;
 			}
@@ -35,8 +35,18 @@ public class RoomSetup : MonoBehaviour {
 		outline.transform.localScale = scale;
 
 		Vector3 outlinePos = outline.transform.localPosition;
-		outlinePos.x = tilePrefab.GetComponent<RectTransform> ().rect.width * width / 2 - tilePrefab.GetComponent<RectTransform> ().rect.width / 2;
-		outlinePos.y = tilePrefab.GetComponent<RectTransform> ().rect.height * height / 2 - tilePrefab.GetComponent<RectTransform> ().rect.height / 2;
+		outlinePos.x = tilePrefab.GetComponent<SpriteRenderer> ().size.x * width / 2 - tilePrefab.GetComponent<SpriteRenderer> ().size.x / 2;
+		outlinePos.y = tilePrefab.GetComponent<SpriteRenderer> ().size.y * height / 2 - tilePrefab.GetComponent<SpriteRenderer> ().size.y / 2;
 		outline.transform.localPosition = outlinePos;
+
+		Vector3 colliderSize = GetComponent<BoxCollider2D> ().size;
+		colliderSize.x *= width;
+		colliderSize.y *= height;
+		GetComponent<BoxCollider2D> ().size = colliderSize;
+
+		Vector2 colliderOffset = GetComponent<BoxCollider2D> ().offset;
+		colliderOffset.x = outlinePos.x;
+		colliderOffset.y = outlinePos.y;
+		GetComponent<BoxCollider2D> ().offset = colliderOffset;
 	}
 }
