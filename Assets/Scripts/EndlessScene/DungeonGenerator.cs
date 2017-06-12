@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 /* 
  * All credits for this algorithm are given to 
@@ -17,12 +18,14 @@ public class DungeonGenerator : MonoBehaviour {
 	public int numberOfRooms;
 	public GameObject roomPrefab;
 	public GameObject linePrefab;
+	public Text progressText;
 
 	private List<Room> rooms = new List<Room> ();
 	private List<Room> mainRooms = new List<Room> ();
 
 	// Use this for initialization
 	void Start () {
+		progressText.text = "Initialising rooms";
 		StartCoroutine (GenerateInitialRooms ());
 	}
 
@@ -45,6 +48,7 @@ public class DungeonGenerator : MonoBehaviour {
 	}
 
 	private void SelectMainRooms () {
+		progressText.text = "Selecting main rooms";
 		Vector2 averageSize = new Vector2 (0f, 0f);
 
 		foreach (var room in rooms) {
