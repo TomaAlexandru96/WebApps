@@ -28,21 +28,19 @@ public class DungeonGenerator : MonoBehaviour {
 
 	private void StartSecondStep () {
 		SelectMainRooms ();
+		DoDelaunayTriangulation (mainRooms);
+		DoMST (mainRooms);
 
 		foreach (var room in mainRooms) {
 			room.SetNode (true);
 			room.SetColor (Color.red);
 		}
 
-		for (int i = 0; i < mainRooms.Count - 1; i++) {
-			for (int j = i + 1; j < mainRooms.Count; j++) {
-				GameObject line = Instantiate (linePrefab);
-				line.GetComponent<LineRenderer> ().SetPosition (0, mainRooms[i].GetPosition ());
-				line.GetComponent<LineRenderer> ().SetPosition (1, mainRooms[j].GetPosition ());
-				line.GetComponent<LineRenderer> ().sortingOrder = 10;
-				line.GetComponent<LineRenderer> ().startWidth = 0.10f;
-				line.GetComponent<LineRenderer> ().endWidth = 0.10f;
-			}	
+		List<GameObject> lines = new List<GameObject> ();
+		foreach (var room in mainRooms) {
+			foreach (var other in room.DelaunayList) {
+				lines.Add (CreateLine (room.GetPosition (), other.GetPosition ()));
+			}
 		}
 	}
 
@@ -57,13 +55,30 @@ public class DungeonGenerator : MonoBehaviour {
 		averageSize.x /= rooms.Count;
 		averageSize.y /= rooms.Count;
 
-		Debug.Log (averageSize);
-
 		foreach (var room in rooms) {
 			if (room.GetSize ().x > averageSize.x * 1.10f && room.GetSize ().y > averageSize.y * 1.10f) {
 				mainRooms.Add (room);
 			}
 		}
+	}
+
+	private GameObject CreateLine (Vector3 position1, Vector3 position2) {
+		GameObject line = Instantiate (linePrefab);
+		line.GetComponent<LineRenderer> ().SetPosition (0, position1);
+		line.GetComponent<LineRenderer> ().SetPosition (1, position2);
+		line.GetComponent<LineRenderer> ().sortingOrder = 10;
+		line.GetComponent<LineRenderer> ().startWidth = 0.10f;
+		line.GetComponent<LineRenderer> ().endWidth = 0.10f;
+		line.transform.SetParent (transform, false);
+		return line;
+	}
+
+	private void DoDelaunayTriangulation (List<Room> rooms) {
+		
+	}
+
+	private void DoMST (List<Room> rooms) {
+		
 	}
 
 	private IEnumerator GenerateInitialRooms () {
