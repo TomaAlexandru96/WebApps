@@ -54,9 +54,7 @@ public class InterviewScript : MonoBehaviour {
 
 		if (!doneIntroduction) {
 			questionPanelText.text = "Welcome to your Imperial Interview ! ";
-			Debug.Log ("here");
 			yield return new WaitForSeconds (3f);
-			Debug.Log ("here2");
 			questionPanelText.text = "You will need to answer " + numberOfQuestionsToGetRight + " questions correctly to secure a place in Imperial !";
 			yield return new WaitForSeconds (3f);
 			questionPanelText.text = "Press any key to start the interview !";
@@ -86,7 +84,7 @@ public class InterviewScript : MonoBehaviour {
 				yield return new WaitForSeconds (3f);
 				verdictPanel.text = "";
 				questionPanelText.text = "Congratulations, you have completed the first stage, you may now exit Huxley, go home and get some rest, the second stage will begin shortly !";
-				yield return new WaitForSeconds (3f);
+				yield return new WaitForSeconds (6f);
 				Close ();
 			}
 		}
@@ -116,6 +114,7 @@ public class InterviewScript : MonoBehaviour {
 			if (qaa [numberOfThisQuestion].askedBefore == false)
 				ok = true;
 		}
+		qaa [questionToAsk].askedBefore = true;
 		return questionToAsk;
 	}
 		
@@ -158,6 +157,8 @@ public class InterviewScript : MonoBehaviour {
 			qaa [i].askedBefore = false;
 		}
 
+		//Make sure the number of questions you input is equal to the << numberOfAvailableQuestions>> variable
+
 
 		CreateQuestion (0, "What is the complexity of BubbleSort ?", "N", "N^2", "2^N", "NlogN", 1);
 		CreateQuestion (1, "What is the complexity of MergeSort ?", "N", "N^2", "2^N", "NlogN", 3);
@@ -170,7 +171,7 @@ public class InterviewScript : MonoBehaviour {
 		CreateQuestion (7, "Which is the best editor ?", "Gedit", "Notepad", "Vim", "Emacs", 2);
 		CreateQuestion (8, "What is the integral of f(x) = ln(x) ?", "x^2", "ln(x)^2", "1 / ln(x)", "1 / x", 3);
 		CreateQuestion (9, "Which one of these algorithms uses the Devide & Conquer technique ?", "Binary Search", "Dijkstra's Algorithm", "Bubble Sort", "KMP", 0);
-		CreateQuestion (10, " (HARD!) What technique would you use to solve the longest common substring problem ? (Determine the longest common substring of 2 strings)",
+		CreateQuestion (10, " (HARD!) What technique would you use to determine the longest common substring of 2 strings ?",
 			"Divide & Conquer", "Dynammic Programming", "Greedy", "KMP", 1);
 	}
 
