@@ -7,26 +7,34 @@ public class CanvasScript : MonoBehaviour {
 	float time;
 	private bool event1;
 	private bool event2;
+	private GameObject chatPanel;
+	private GameObject playerAbilities;
+	private GameObject directionPanel;
+	private GameObject partMentionPanel;
 
 	void Start () {
 		time = Time.time;
 		event1 = true;
 		event2 = true;
+		chatPanel = GameObject.FindGameObjectWithTag ("Chat");
+		playerAbilities = GameObject.FindGameObjectWithTag ("PlayerAbilities");
+		directionPanel = GameObject.FindGameObjectWithTag ("DirectionPanel");
+		partMentionPanel = GameObject.FindGameObjectWithTag ("PartMention");
 	}
 
 	void Update () {
 
 		if (event1 && Time.time > time) {
 			event1 = false;
-			GameObject.FindGameObjectWithTag ("Chat").SetActive (false);
-			GameObject.FindGameObjectWithTag ("PlayerAbilities").SetActive (false);
-			GameObject.FindGameObjectWithTag ("DirectionPanel").SetActive (false);
+			chatPanel.SetActive (false);
+			playerAbilities.SetActive (false);
+			directionPanel.SetActive (false);
 		}
 
 		if (event2 && Time.time - time > 3) {
 			event2 = false;
-			GameObject.FindGameObjectWithTag ("PartMention").SetActive (false);
-			GameObject.FindGameObjectWithTag ("Canvas").transform.GetChild (0).gameObject.SetActive (true);
+			partMentionPanel.SetActive (false);
+			directionPanel.SetActive (true);
 		}
 	}
 }
