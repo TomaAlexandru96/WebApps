@@ -13,8 +13,4 @@ public class LaunchInterview : MonoBehaviour {
 	void OnTriggerEnter2D(Collider2D coll) {
 		interviewPanel.SetActive (true);
 	}
-
-	void OnTriggerExit2D(Collider2D coll) {
-		interviewPanel.SetActive (false);
-	}
 }

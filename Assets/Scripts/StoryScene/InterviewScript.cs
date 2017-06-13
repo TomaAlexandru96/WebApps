@@ -19,6 +19,9 @@ public class InterviewScript : MonoBehaviour {
 	public int numberOfQuestionsToAsk;
 	public int numberOfQuestionsToGetRight;
 
+	public GameObject exitGate1;
+	public GameObject exitGate2;
+
 	private int numberOfThisQuestion;
 	private int questionsAsked;
 	private int questionsGotRight;
@@ -90,7 +93,8 @@ public class InterviewScript : MonoBehaviour {
 				button3.SetActive (false);
 				questionPanelText.text = "You have completed the first stage, you may now exit Huxley, go home and get some rest, the second stage will begin shortly !";
 				yield return new WaitForSeconds (5f);
-				Exit ();
+				Exit (exitGate1);
+				Exit (exitGate2);
 				Close ();
 			}
 		}
@@ -189,11 +193,14 @@ public class InterviewScript : MonoBehaviour {
 		qaa [i].numberOfCorrectAnswer = numberOfCorrectAnswer;
 	}
 
-	private void Exit() {
-		GameObject[] gates = GameObject.FindGameObjectsWithTag ("ExitGates");
-		foreach (GameObject gate in gates) {
-			gate.transform.GetComponent<ExitGates> ().exit = true;
+	private void Exit(GameObject exitGate) {
+		GameObject directionPanel = GameObject.FindGameObjectWithTag ("DirectionPanel");
+		if (directionPanel != null) {
+			directionPanel.SetActive (false);
 		}
+		exitGate.GetComponent<ExitGates> ().exit = true;
+		exitGate.transform.GetComponent<SpecifyMovementScript> ().repeating = false;
+		exitGate.transform.GetComponent<SpecifyMovementScript> ().repeating2 = false;
 	}
 
 

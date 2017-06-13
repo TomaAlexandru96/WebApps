@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.UI;
 using UnityEngine;
 
 public class ExitGates : MonoBehaviour {
@@ -20,6 +21,8 @@ public class ExitGates : MonoBehaviour {
 	}
 
 	private void Exit() {
-		floor.SetActive (false);
+		partMention.SetActive (true);
+		partMention.transform.GetChild(0).GetComponent<Text> ().text = "congratulations";
+		partMention.transform.GetChild(1).GetComponent<Text> ().text = "Part 1 complete";
 	}
 }
