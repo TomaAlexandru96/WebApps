@@ -89,7 +89,7 @@ public class InterviewScript : MonoBehaviour {
 				button1.SetActive (false);
 				button2.SetActive (false);
 				button3.SetActive (false);
-				questionPanelText.text = "Congratulations, you have completed the first stage, you may now exit Huxley, go home and get some rest, the second stage will begin shortly !";
+				questionPanelText.text = "You have completed the first stage, you may now exit Huxley, go home and get some rest, the second stage will begin shortly !";
 				yield return new WaitForSeconds (5f);
 				Close ();
 			}
@@ -120,6 +120,7 @@ public class InterviewScript : MonoBehaviour {
 			if (qaa [numberOfThisQuestion].askedBefore == false)
 				ok = true;
 		}
+		qaa [numberOfThisQuestion].askedBefore = true;
 		return questionToAsk;
 	}
 
@@ -178,6 +179,8 @@ public class InterviewScript : MonoBehaviour {
 		CreateQuestion (9, "Which one of these algorithms uses the Devide & Conquer technique ?", "Binary Search", "Dijkstra's Algorithm", "Bubble Sort", "KMP", 0);
 		CreateQuestion (10, " (HARD!) What technique would you use to determine the longest common substring of 2 strings ?",
 			"Divide & Conquer", "Dynammic Programming", "Greedy", "KMP", 1);
+		CreateQuestion (11, "Differentiate f(x) = x ln (x)", "ln (x) + 1/x", "ln (x) + 1", "x^2 ln (x)", "2 * xln(x)", 1);
+		CreateQuestion (12, "What is the equation of a circle with the center on the origin and a radius of 1 ? ", "x^2 + y^2 = 1", "x^2 / y + y^2 / x = 1", "x + y = 1", "x^3 + y^3 = 1", 0); 
 	}
 
 	private void CreateQuestion (int i,string question, string answer0, string answer1, 
