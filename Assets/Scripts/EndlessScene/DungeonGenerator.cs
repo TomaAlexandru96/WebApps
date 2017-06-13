@@ -29,15 +29,15 @@ public class DungeonGenerator : MonoBehaviour {
 	}
 
 	private IEnumerator GenerateInitialRooms () {
-		progressText.text = "Random point samppling in ellipse";
+		progressText.text = "Random point sampling in ellipse";
 		// startup time
 		yield return new WaitForSeconds (0.5f);
 		for (int i = 0; i < numberOfInitialGeneratedRooms; i++) {
 			rooms.Add (GenerateRoom ());
-			yield return new WaitForSeconds (0.01f);
+			yield return new WaitForSeconds (0.005f);
 		}
 		// wait for collision to finnish
-		yield return new WaitForSeconds (2f);
+		yield return new WaitForSeconds (3f);
 		foreach (var room in rooms) {
 			room.RemovePhys ();
 		}
@@ -135,7 +135,7 @@ public class DungeonGenerator : MonoBehaviour {
 
 		progressText.text = "Adding more edges";
 
-		int nrOfExtraEdges = graph.GetNrOfEdges () / 10;
+		int nrOfExtraEdges =  (int) (graph.GetNrOfEdges () * 0.15f);
 
 		for (int i = 0; i < nrOfExtraEdges; i++) {
 			mst.AddEdge (graph.GetRandomEdge ());
@@ -159,6 +159,23 @@ public class DungeonGenerator : MonoBehaviour {
 		foreach (var line in lines) {
 			DestroyImmediate (line);
 		}
+
+		StartCoroutine (CreateHallways ());
+	}
+
+	private IEnumerator CreateHallways () {
+		progressText.text = "Creating hallways";
+
+		foreach (var room in rooms) {
+			room.SetNode (false);
+			room.gameObject.SetActive (false);
+		}
+
+		foreach (var room in mainRooms) {
+			room.gameObject.SetActive (true);
+		}
+
+		yield return new WaitForSeconds (1.5f);
 	}
 
 	private GameObject CreateLine (Vector3 position1, Vector3 position2) {

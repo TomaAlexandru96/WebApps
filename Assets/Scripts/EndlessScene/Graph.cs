@@ -87,7 +87,7 @@ public class Graph {
 	}
 
 	public Edge GetRandomEdge () {
-		int randomNr = UnityEngine.Random.Range (0, GetNrOfEdges ());
+		int randomNr = UnityEngine.Random.Range (0, GetNrOfEdges () - 1);
 
 		int i = 0;
 		foreach (var entry in graph) {
