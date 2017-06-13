@@ -4,10 +4,10 @@ using UnityEngine;
 
 public class Graph {
 
-	private List<Vertex> vertexes;
+	private List<Vertex> nodes;
 
-	public Graph (List<Vertex> vertexes) {
-		this.vertexes = vertexes;
+	public Graph (List<Vertex> nodes) {
+		this.nodes = nodes;
 	}
 
 	public void ApplyDFS () {
