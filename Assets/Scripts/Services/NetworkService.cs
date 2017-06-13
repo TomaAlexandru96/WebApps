@@ -73,6 +73,9 @@ public class NetworkService : NetworkManager {
 	}
 
 	public void LeaveRoom () {
+		if (info == null) {
+			return;
+		}
 		matchMaker.DropConnection (info.networkId, info.nodeId, 0, (success, extendedInfo) => {
 			this.info = null;
 		});

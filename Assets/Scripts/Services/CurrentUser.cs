@@ -31,7 +31,9 @@ public class CurrentUser : MonoBehaviour {
 	}
 
 	public void OnApplicationQuit() {
-		DBServer.GetInstance ().Logout (false, () => { }, (error) => {Debug.LogError (error);});
+		if (IsLoggedIn ()) {
+			DBServer.GetInstance ().Logout (false, () => { }, (error) => {Debug.LogError (error);});	
+		}
 	}
 		
 	public static CurrentUser GetInstance () {
