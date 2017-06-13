@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+
 /* 
  * All credits for this algorithm are given to 
  * http://www.gamasutra.com/blogs/AAdonaac/20150903/252889/Procedural_Dungeon_Generation_Algorithm.php
@@ -29,7 +30,7 @@ public class DungeonGenerator : MonoBehaviour {
 	}
 
 	private IEnumerator GenerateInitialRooms () {
-		progressText.text = "Initialising rooms";
+		progressText.text = "Random point samppling in ellipse";
 		// startup time
 		yield return new WaitForSeconds (0.5f);
 		for (int i = 0; i < numberOfInitialGeneratedRooms; i++) {
@@ -64,34 +65,48 @@ public class DungeonGenerator : MonoBehaviour {
 		}
 
 		foreach (var room in mainRooms) {
-			room.SetNode (true);
 			room.SetColor (Color.red);
-			yield return new WaitForSeconds (0.01f);
+			yield return new WaitForSeconds (0.02f);
 		}
 
 		yield return new WaitForSeconds (1f);
 		
-		StartCoroutine (StartGraphAlgorithms ());
+		StartCoroutine (DoDelaunayTriangulation (mainRooms));
 	}
 
-	private IEnumerator StartGraphAlgorithms () {
+	private IEnumerator DoDelaunayTriangulation (List<Room> rooms) {
 		progressText.text = "Applying Delaunay Triangulation";
-		DoDelaunayTriangulation (mainRooms);
+
+		foreach (var room in mainRooms) {
+			room.SetNode (true);
+			yield return new WaitForSeconds (0.02f);
+		}
+
+		List<Vertex> nodes = new List<Vertex> ();
+
+		foreach (var room in mainRooms) {
+			nodes.Add (new Vertex (room.GetPosition ()));
+		}
+
+		DelauneyTriangulation dt = new DelauneyTriangulation (nodes);
+		Graph g = dt.Apply ();
 
 		List<GameObject> lines = new List<GameObject> ();
-		foreach (var room in mainRooms) {
+		/* foreach (var room in mainRooms) {
 			foreach (var other in room.DelaunayList) {
 				lines.Add (CreateLine (room.GetPosition (), other.GetPosition ()));
 				yield return new WaitForSeconds (0.01f);
 			}
-		}
+		} */
 
 		yield return new WaitForSeconds (1.5f);
+		StartCoroutine (DoMST (mainRooms, g));
+	}
 
+	private IEnumerator DoMST (List<Room> rooms, Graph graph) {
 		progressText.text = "Applying Minimum Spanning Tree";
-		DoMST (mainRooms);
-
-		yield return new WaitForSeconds (1.5f);
+		graph.ApplyDFS ();
+		yield return new WaitForSeconds (0f);
 	}
 
 	private GameObject CreateLine (Vector3 position1, Vector3 position2) {
@@ -103,14 +118,6 @@ public class DungeonGenerator : MonoBehaviour {
 		line.GetComponent<LineRenderer> ().endWidth = 0.10f;
 		line.transform.SetParent (transform, false);
 		return line;
-	}
-
-	private void DoDelaunayTriangulation (List<Room> rooms) {
-		
-	}
-
-	private void DoMST (List<Room> rooms) {
-		
 	}
 
 	public Vector2 GetRandomPointInEllipse () {
