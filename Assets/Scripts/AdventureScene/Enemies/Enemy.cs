@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class Enemy : Entity<EnemyStats> {
+public abstract class Enemy : Entity {
 
 	public Transform target;
 	public bool attackingPlayer;
@@ -109,21 +109,21 @@ public abstract class Enemy : Entity<EnemyStats> {
 		}
 	}
 
-	public override void GetHit<E> (Entity<E> entity) { 
-		base.GetHit<E> (entity);
+	public override void GetHit (Entity entity) { 
+		base.GetHit (entity);
 	}
 
 	// ----------------------------------------------------------------------------------------------------------
 	// -------------------------------------------------SYNCH----------------------------------------------------
 	// ----------------------------------------------------------------------------------------------------------
 
-	protected override void OnSendNext (PhotonStream stream, PhotonMessageInfo info) {
+	/*protected override void OnSendNext (PhotonStream stream, PhotonMessageInfo info) {
 
 	}
 
 	protected override void OnReceiveNext (PhotonStream stream, PhotonMessageInfo info) {
 
-	}
+	}*/
 
 	// ----------------------------------------------------------------------------------------------------------
 	// ----------------------------------------------ANIMATIONS--------------------------------------------------

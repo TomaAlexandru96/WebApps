@@ -3,8 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.Networking;
 
-public class PlayerGameUIController : Photon.PunBehaviour {
+public class PlayerGameUIController : NetworkBehaviour {
 
 	public Image avatar;
 	public Text playerName;

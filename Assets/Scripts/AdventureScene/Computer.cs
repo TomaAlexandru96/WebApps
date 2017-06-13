@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Computer : Entity<ComputerStats> {
+public class Computer : Entity {
 
 	public bool exploded = false;
 	private Object explosion;
@@ -16,13 +16,13 @@ public class Computer : Entity<ComputerStats> {
 		this.stats = new ComputerStats (0, 10, 0);
 	}
 
-	protected override void OnSendNext (PhotonStream stream, PhotonMessageInfo info) {
+	/*protected override void OnSendNext (PhotonStream stream, PhotonMessageInfo info) {
 		
 	}
 
 	protected override void OnReceiveNext (PhotonStream stream, PhotonMessageInfo info) {
 		
-	}
+	}*/
 
 	protected IEnumerator PlayHackingAnimation() {
 		GetComponent<Animator> ().Play ("Hacking");

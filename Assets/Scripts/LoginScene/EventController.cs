@@ -26,9 +26,9 @@ public class EventController : MonoBehaviour {
 	}
 
 	public GameObject GetActivePanel () {
-		if (mainPanel.GetActive ()) {
+		if (mainPanel.activeInHierarchy) {
 			return mainPanel;
-		} else if (loginPanel.GetActive ()) {
+		} else if (loginPanel.activeInHierarchy) {
 			return loginPanel;
 		} else {
 			return registerPanel;

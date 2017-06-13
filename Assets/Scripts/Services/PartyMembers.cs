@@ -33,7 +33,7 @@ public class PartyMembers {
 			return "Not in party";
 		}
 
-		return "[owner: "+owner+", members: "+partyMembers.ToStringFull ()+"]";
+		return "[owner: "+owner+", members: "+partyMembers.ToString ()+"]";
 	}
 }
 

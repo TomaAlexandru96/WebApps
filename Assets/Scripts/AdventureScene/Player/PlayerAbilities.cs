@@ -15,7 +15,7 @@ public class PlayerAbilities : MonoBehaviour {
 	public void Init (Player player) {
 		this.player = player;
 		int i = 1;
-		foreach (var ability in this.player.stats.abilities) {
+		foreach (var ability in (this.player.stats as PlayerStats).abilities) {
 			GameObject newAbility = Instantiate (abilityPrefab);
 			newAbility.transform.SetParent (transform);
 			newAbility.GetComponent<AbilityElement> ().Init (ability, i);
@@ -25,7 +25,7 @@ public class PlayerAbilities : MonoBehaviour {
 		selected = abilities [0];
 		selected.Select ();
 
-		stamina = player.stats.defaultStamina;
+		stamina = (player.stats as PlayerStats).defaultStamina;
 		lastSprint = Time.time;
 	}
 
@@ -44,17 +44,17 @@ public class PlayerAbilities : MonoBehaviour {
 	}
 
 	public bool Sprint () {
-		stamina = Mathf.Clamp (stamina - player.stats.runStaminaBurn, 0, player.stats.defaultStamina);
+		stamina = Mathf.Clamp (stamina - (player.stats as PlayerStats).runStaminaBurn, 0, (player.stats as PlayerStats).defaultStamina);
 		lastSprint = Time.time;
 		return stamina != 0;
 	}
 
 	public void Update () {
 		sprintBar.localScale = Vector3.Lerp (sprintBar.localScale, 
-						new Vector3 (stamina / player.stats.defaultStamina, 1, 1), 0.1f);
+			new Vector3 (stamina / (player.stats as PlayerStats).defaultStamina, 1, 1), 0.1f);
 
-		if (lastSprint + player.stats.staminaChargeCooldown < Time.time) {
-			stamina = Mathf.Clamp (stamina + player.stats.runStaminaGain, 0, player.stats.defaultStamina);
+		if (lastSprint + (player.stats as PlayerStats).staminaChargeCooldown < Time.time) {
+			stamina = Mathf.Clamp (stamina + (player.stats as PlayerStats).runStaminaGain, 0, (player.stats as PlayerStats).defaultStamina);
 		}
 	}
 }

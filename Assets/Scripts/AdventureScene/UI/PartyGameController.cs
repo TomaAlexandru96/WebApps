@@ -1,8 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Networking;
 
-public class PartyGameController : Photon.PunBehaviour {
+public class PartyGameController : NetworkBehaviour {
 
 	public GameObject playerPrefab;
 

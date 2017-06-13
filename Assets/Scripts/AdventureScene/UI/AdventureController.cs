@@ -2,8 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.Networking;
 
-public class AdventureController : Photon.PunBehaviour {
+public class AdventureController : NetworkBehaviour {
 
 	public GameObject loadingScreen;
 	public GameObject party;
@@ -30,10 +31,10 @@ public class AdventureController : Photon.PunBehaviour {
 		GameObject.FindGameObjectWithTag ("Chat").GetComponent<ChatController> ().InitDefaultChat ();
 		SpawnPlayer ();
 		ChatController.GetChat ().withFadeOut = true;
-		photonView.RPC ("OnLoaded", PhotonTargets.All, CurrentUser.GetInstance ().GetUserInfo ().username);
+		//photonView.RPC ("OnLoaded", PhotonTargets.All, CurrentUser.GetInstance ().GetUserInfo ().username);
 	}
 
-	[PunRPC]
+	//[PunRPC]
 	public void OnLoaded (string name) {
 		loadedPlayers.Add (name);
 		if (AllPartyUsersLoaded ()) {

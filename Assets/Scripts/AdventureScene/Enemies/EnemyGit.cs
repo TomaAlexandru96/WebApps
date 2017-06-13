@@ -11,7 +11,7 @@ public class EnemyGit : Enemy {
 		this.stats = new EnemyStats (7f, 2f, 0.5f);
 	}
 
-	public override void GetHit<E> (Entity<E> entity) {
+	public override void GetHit (Entity entity) {
 		float hit = 0;
 		if (entity.stats.GetType() == typeof(PlayerStats)) {
 			hit = (entity.stats as PlayerStats).git;

@@ -8,7 +8,7 @@ public class EnemyJS : Enemy {
 		this.stats = new EnemyStats (5f, 1f, 0.5f);
 	}
 
-	public override void GetHit<E> (Entity<E> entity) {
+	public override void GetHit (Entity entity) {
 		float hit = (entity.stats as PlayerStats).javascript;
 		ChangeHealth (curHP - hit);
 		base.GetHit (entity);

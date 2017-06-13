@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Networking.Match;
 using UnityEngine.UI;
 
 public class GamePartyController : MonoBehaviour {
@@ -17,9 +18,9 @@ public class GamePartyController : MonoBehaviour {
 		joinBtn.interactable = roomPlayers < 4;
 	}
 
-	public void SetRoomStats (RoomInfo info, int mode) {
-		this.roomName = info.Name;
-		this.roomPlayers = info.PlayerCount;
+	public void SetRoomStats (MatchInfoSnapshot info, int mode) {
+		this.roomName = info.name;
+		this.roomPlayers = info.currentSize;
 		this.mode = mode;
 	}
 

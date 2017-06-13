@@ -2,7 +2,7 @@
 using System.Collections;
 using UnityEngine;
 
-public class Player : Entity<PlayerStats> {
+public class Player : Entity {
 	
 	public Direction move;
 	public Camera mainCamera;
@@ -16,21 +16,21 @@ public class Player : Entity<PlayerStats> {
 	private bool canAttack = true;
 
 	void Awake () {
-		this.user = (User) photonView.instantiationData [0];
+		//this.user = (User) photonView.instantiationData [0];
 	}
 
 	new void Start () {
 		base.Start ();
 		GetComponent<SpriteRenderer> ().sprite = user.character.GetImage ();
 		GetComponent<Animator> ().runtimeAnimatorController = playerControllers [user.character.type];
-		mainCamera.enabled = photonView.isMine;
-		mainCamera.GetComponent<AudioListener> ().enabled = photonView.isMine;
+		//mainCamera.enabled = photonView.isMine;
+		//mainCamera.GetComponent<AudioListener> ().enabled = photonView.isMine;
 		InvokeRepeating ("GetHitOvertime", 10, 20);
 
-		if (photonView.isMine) {
-			abilities = GameObject.FindGameObjectWithTag ("PlayerAbilities").GetComponent<PlayerAbilities> ();
-			abilities.Init (this);
-		}
+		//if (photonView.isMine) {
+		//	abilities = GameObject.FindGameObjectWithTag ("PlayerAbilities").GetComponent<PlayerAbilities> ();
+		//	abilities.Init (this);
+		//}
 	}
 
 	public void SetAttack (bool value) {
@@ -65,7 +65,7 @@ public class Player : Entity<PlayerStats> {
 		curSpeed = stats.speed;
 		if (Input.GetKey (KeyCode.LeftShift)) {
 			if (abilities.Sprint ()) {
-				curSpeed = stats.runSpeed;
+				curSpeed = (stats as PlayerStats).runSpeed;
 			} else {
 				curSpeed = stats.speed;
 			}
@@ -156,7 +156,7 @@ public class Player : Entity<PlayerStats> {
 		ChangeHealth (curHP + points);
 	}
 
-	public override void GetHit<E> (Entity<E> entity) {
+	public override void GetHit (Entity entity) {
 		ChangeHealth (curHP - entity.stats.damage);
 		base.GetHit (entity);
 	}
@@ -169,13 +169,13 @@ public class Player : Entity<PlayerStats> {
 	// -------------------------------------------------SYNCH----------------------------------------------------
 	// ----------------------------------------------------------------------------------------------------------
 
-	protected override void OnSendNext (PhotonStream stream, PhotonMessageInfo info) {
+	/*protected override void OnSendNext (PhotonStream stream, PhotonMessageInfo info) {
 		stream.SendNext (move);
 	}
 
 	protected override void OnReceiveNext (PhotonStream stream, PhotonMessageInfo info) {
 		move = (Direction) stream.ReceiveNext ();
-	}
+	}*/
 
 
 	// ----------------------------------------------------------------------------------------------------------

@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections;
 using UnityEngine;
+using UnityEngine.Networking;
 
-public abstract class Entity<T> : Photon.PunBehaviour, IPunObservable where T : EntityStats {
+public abstract class Entity : NetworkBehaviour {
 	
 	public float curHP;
 	public float curSpeed;
-	public T stats;
+	public EntityStats stats;
 
 	protected void Start () {
 		transform.SetParent (GameObject.FindGameObjectWithTag ("Grid").transform);
@@ -20,9 +21,9 @@ public abstract class Entity<T> : Photon.PunBehaviour, IPunObservable where T : 
 			return;
 		}
 
-		if (!photonView.isMine) {
-			return;
-		}
+		//if (!photonView.isMine) {
+		//	return;
+		//}
 
 		Attack ();
 		Move ();
@@ -44,7 +45,7 @@ public abstract class Entity<T> : Photon.PunBehaviour, IPunObservable where T : 
 		return curHP <= 0;
 	}
 
-	public virtual void GetHit<E> (Entity<E> entity) where E : EntityStats {
+	public virtual void GetHit (Entity entity) {
 		PlayAnimation ("PlayGetHitAnimation");
 	}
 
@@ -59,7 +60,7 @@ public abstract class Entity<T> : Photon.PunBehaviour, IPunObservable where T : 
 	// -------------------------------------------------SYNCH----------------------------------------------------
 	// ----------------------------------------------------------------------------------------------------------
 
-	#region IPunObservable implementation
+	/*#region IPunObservable implementation
 	void IPunObservable.OnPhotonSerializeView (PhotonStream stream, PhotonMessageInfo info) {
 		if (stream.isWriting) {
 			stream.SendNext (curHP);
@@ -76,17 +77,17 @@ public abstract class Entity<T> : Photon.PunBehaviour, IPunObservable where T : 
 
 	protected abstract void OnSendNext (PhotonStream stream, PhotonMessageInfo info);
 
-	protected abstract void OnReceiveNext (PhotonStream stream, PhotonMessageInfo info);
+	protected abstract void OnReceiveNext (PhotonStream stream, PhotonMessageInfo info);*/
 
 	// ----------------------------------------------------------------------------------------------------------
 	// ----------------------------------------------ANIMATIONS--------------------------------------------------
 	// ----------------------------------------------------------------------------------------------------------
 
 	protected void PlayAnimation (string name) {
-		photonView.RPC ("PlayAnimationHelper", PhotonTargets.All, name);
+		//photonView.RPC ("PlayAnimationHelper", PhotonTargets.All, name);
 	}
 
-	[PunRPC]
+	//[PunRPC]
 	protected void PlayAnimationHelper (string name) {
 		StartCoroutine (name);
 	}

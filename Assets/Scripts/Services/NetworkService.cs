@@ -3,18 +3,17 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using ExitGames.Client.Photon;
+using UnityEngine.Networking;
+using UnityEngine.Networking.Match;
 using System.Text;
 
-public class NetworkService : Photon.PunBehaviour {
+public class NetworkService : NetworkManager {
 
 	public const String GAME_VERSION = "v0.01";
 	public const String partyPrefabName = "Party";
-	public Text infoLabel;
 	private static NetworkService instance = null;
-	private static TypedLobby adventureLobby = new TypedLobby ("Adventure", LobbyType.Default);
-	private static TypedLobby endlessLobby = new TypedLobby ("Endless", LobbyType.Default);
-	private static TypedLobby storyLobby = new TypedLobby ("Story", LobbyType.Default);
+
+	private MatchInfo info;
 
 	private Action onFinish;
 
@@ -27,93 +26,92 @@ public class NetworkService : Photon.PunBehaviour {
 	}
 
 	public void StartService (Action onFinish) {
-		PhotonNetwork.ConnectUsingSettings (GAME_VERSION);
-		PhotonNetwork.automaticallySyncScene = true;
-		PhotonNetwork.InstantiateInRoomOnly = true;
-		ExitGames.Client.Photon.PhotonPeer.RegisterType	(typeof (User), 2, 
-			new SerializeMethod ((object userObj) => {
-				User cast = (User) userObj;
-				return Encoding.UTF8.GetBytes (JsonUtility.ToJson (cast));
-			}), new DeserializeMethod ((byte[] obj) => {
-				return JsonUtility.FromJson<User> (Encoding.UTF8.GetString(obj));
-			}));
 		this.onFinish = onFinish;
+		StartServer ();
+		StartMatchMaker ();
 	}
 
 	public void StopService () {
-		DestroyConnection ();
+	}
+
+	public override void OnStartServer () {
+		onFinish ();
 	}
 
 	public static NetworkService GetInstance () {
 		return instance;
 	}
 
-	private void DestroyConnection () {
-		PhotonNetwork.Disconnect ();
-	}
-
-	public RoomInfo[] GetRoomList () {
-		return PhotonNetwork.GetRoomList ();
+	public void GetRoomList (Action<List<MatchInfoSnapshot>> func) {
+		matchMaker.ListMatches (0, 10, "", false, 0, 0, (success, extendedInfo, matches) => {
+			func (matches);
+		});
 	}
 
 	public void JoinLobby (int mode) {
-		if (mode == PartyMembers.ADVENTURE) {
-			PhotonNetwork.JoinLobby (adventureLobby);
-		} else if (mode == PartyMembers.ENDLESS) {
-			PhotonNetwork.JoinLobby (endlessLobby);
-		} else {
-			PhotonNetwork.JoinLobby (storyLobby);
-		}
+		/*switch (mode) {
+		case PartyMembers.STORY:
+			selected = storyMaker;
+			break;
+		case PartyMembers.ADVENTURE:
+			selected = adventureMaker;
+			break;
+		case PartyMembers.ENDLESS:
+			selected = endlessMaker;
+			break;
+		}*/
 	}
 
 	public void JoinRoom (string roomName) {
-		PhotonNetwork.JoinRoom (roomName);
+		 // selected.JoinMatch;
 	}
 
 	public void CreateRoom (string roomName) {
-		PhotonNetwork.CreateRoom (roomName, new RoomOptions () {MaxPlayers = 4}, PhotonNetwork.lobby);
+		matchMaker.CreateMatch (roomName, 4, true, "", "", "", 0, 0, (success, extendedInfo, info) => {
+			this.info = info;
+		});
 	}
 
 	public void LeaveRoom () {
-		PhotonNetwork.LeaveRoom ();
+		matchMaker.DropConnection (info.networkId, info.nodeId, 0, (success, extendedInfo) => {
+			this.info = null;
+		});
 	}
 
 	public void LoadScene (int mode) {
 		if (mode == 1) {
-			PhotonNetwork.LoadLevel ("Adventure");
+			ServerChangeScene ("Adventure");
 		} else if (mode == 2) {
-			PhotonNetwork.LoadLevel ("Endless");
+			ServerChangeScene ("Endless");
 		} else {
-			PhotonNetwork.LoadLevel ("Story");
+			ServerChangeScene ("Story");
 		}
 	}
 
 	public GameObject Spawn (string prefabName, Vector3 position, Quaternion rotation, int groupID) {
-		return PhotonNetwork.Instantiate (prefabName, position, rotation, groupID);
+		return null;
 	}
 
 	public GameObject Spawn (string prefabName, Vector3 position, Quaternion rotation, int groupID, object[] data) {
-		return PhotonNetwork.Instantiate (prefabName, position, rotation, groupID, data);
+		return null;
 	}
 
 	public void Destroy (GameObject ob) {
-		PhotonNetwork.Destroy (ob);
 	}
 
 	public GameObject SpawnScene (string prefabName, Vector3 position, Quaternion rotation, int groupID) {
-		return PhotonNetwork.InstantiateSceneObject (prefabName, position, rotation, groupID, new object[0]);
+		return null;
 	}
 
 	public bool IsMasterClient () {
-		return PhotonNetwork.isMasterClient;
+		return false;
 	}
 
-	public override void OnConnectedToPhoton () {
-		base.OnConnectedToPhoton ();
+	public void OnConnectedToPhoton () {
 		onFinish ();
 	}
 
 	public bool IsInRoom () {
-		return PhotonNetwork.inRoom;
+		return false;
 	}
 }
