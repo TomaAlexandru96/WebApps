@@ -5,6 +5,7 @@ using UnityEngine.UI;
 
 public class InterviewScript : MonoBehaviour {
 
+	private ArrayList questionLeft = new ArrayList ();
 
 	public Text questionPanelText;
 	public Text verdictPanel;
@@ -54,9 +55,7 @@ public class InterviewScript : MonoBehaviour {
 
 		if (!doneIntroduction) {
 			questionPanelText.text = "Welcome to your Imperial Interview ! ";
-			Debug.Log ("here");
 			yield return new WaitForSeconds (3f);
-			Debug.Log ("here2");
 			questionPanelText.text = "You will need to answer " + numberOfQuestionsToGetRight + " questions correctly to secure a place in Imperial !";
 			yield return new WaitForSeconds (3f);
 			questionPanelText.text = "Press any key to start the interview !";
@@ -113,15 +112,9 @@ public class InterviewScript : MonoBehaviour {
 
 	private int PickQuestionNumber(){
 
-		bool ok = false;
-		int questionToAsk = 0;
-
-		while (!ok) {
-			questionToAsk= (int) Random.Range (0f, (float)numberOfAvailableQuestions);
-			if (qaa [numberOfThisQuestion].askedBefore == false)
-				ok = true;
-		}
-		qaa [numberOfThisQuestion].askedBefore = true;
+		int index = (int)Random.Range (0f, (float)questionLeft.Count);
+		int questionToAsk = (int)questionLeft [index];
+		questionLeft.Remove (questionLeft.IndexOf(index));
 		return questionToAsk;
 	}
 
@@ -140,7 +133,7 @@ public class InterviewScript : MonoBehaviour {
 		if (answerNumber == qaa [numberOfThisQuestion].numberOfCorrectAnswer) {
 			correct = true;
 			questionsGotRight++;
-		} 		
+		} 	
 		StartCoroutine(DisplayMessage (correct));
 	}
 
@@ -187,6 +180,7 @@ public class InterviewScript : MonoBehaviour {
 	private void CreateQuestion (int i,string question, string answer0, string answer1, 
 								  string answer2, string answer3, int numberOfCorrectAnswer){
 
+		questionLeft.Add (i);
 		qaa [i].question = question;
 		qaa [i].answer0 = answer0;
 		qaa [i].answer1 = answer1;
@@ -201,5 +195,7 @@ public class InterviewScript : MonoBehaviour {
 			gate.transform.GetComponent<ExitGates> ().exit = true;
 		}
 	}
+
+
 }
 
