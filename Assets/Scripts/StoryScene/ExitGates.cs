@@ -7,7 +7,6 @@ public class ExitGates : MonoBehaviour {
 
 	public bool exit;
 	public GameObject partMention;
-	public GameObject directionPanel;
 	public GameObject receptionist;
 	public GameObject floor;
 	public Transform spawn;
@@ -15,11 +14,13 @@ public class ExitGates : MonoBehaviour {
 	private float time;
 	private bool partDone;
 	private bool partShown;
+	private GameObject directionPanel;
 
 	public void Start() {
 		exit = false;
 		partDone = false;
 		partShown = false;
+		directionPanel = GameObject.FindGameObjectsWithTag ("Canvas")[0].transform.GetChild(1).gameObject;
 	}
 
 	void OnTriggerEnter2D(Collider2D coll) {
@@ -31,7 +32,7 @@ public class ExitGates : MonoBehaviour {
 
 	private void Exit() {
 		directionPanel.SetActive (false);
-		receptionist.GetComponent<SpecifyMovementScript> ().repeating = false;
+		transform.GetComponent<SpecifyMovementScript> ().repeating = false;
 		partMention.SetActive (true);
 		partMention.transform.GetChild(0).GetComponent<Text> ().text = "congratulations";
 		partMention.transform.GetChild(1).GetComponent<Text> ().text = "Part 1 complete";
@@ -51,8 +52,20 @@ public class ExitGates : MonoBehaviour {
 			partShown = false;
 			partMention.SetActive (false);
 			GameObject.FindGameObjectWithTag ("Player").transform.position = spawn.position;
-//			directionPanel.GetComponent<DirectionPanel> ().DisplayText ("Welcome to your first week, you are now a student");
 			receptionist.GetComponent<SpecifyMovementScript> ().ChangeRepeatingText ("receptionist: You can find labs through the doors on my right!!");
+			WelcomeScript ();
 		}
+	}
+
+	private void WelcomeScript() {
+		floor.transform.GetComponent<Huxely_2ndFloor> ().index = 0;
+		string[] text = new string[floor.transform.GetComponent<Huxely_2ndFloor> ().maxLen];
+		text [0] = "Welcome back               Congratulations                now you are a student here";
+		text [1] = "Today you need to submit            your first assignment              Lets do it together";
+		text [2] = "You need to submit it both electronically and physically";
+		text [3] = "Go to computing labs";
+		floor.transform.GetComponent<Huxely_2ndFloor> ().text = text;
+		directionPanel.SetActive (true);
+		directionPanel.transform.GetComponent<DirectionPanel> ().DisplayText (text[0]);
 	}
 }

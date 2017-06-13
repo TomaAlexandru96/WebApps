@@ -6,9 +6,9 @@ using System;
 public class Huxely_2ndFloor : MonoBehaviour {
 
 	private GameObject directionPanel;
-	private int maxLen = 4;
+	public int maxLen = 4;
 	public string[] text;
-	private int index; 
+	public int index; 
 	private DateTime dateTime;
 
 	public void Start () {
@@ -26,11 +26,11 @@ public class Huxely_2ndFloor : MonoBehaviour {
 
 	public void Update() {
 		if (Input.GetKeyDown("space") && index < maxLen && (DateTime.Now - dateTime).Seconds > 0.5){
+			directionPanel.SetActive (true);
 			directionPanel.transform.GetComponent<DirectionPanel> ().DisplayText (this.text[index]);
 			dateTime = DateTime.Now;
 			index++;
-		}
-		if (index >= maxLen && (DateTime.Now - dateTime).Seconds > 1) {
+		} else if (index >= maxLen && (DateTime.Now - dateTime).Seconds > 1) {
 			directionPanel.SetActive (false);
 			dateTime = DateTime.MaxValue;
 		}
