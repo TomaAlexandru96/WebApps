@@ -16,7 +16,6 @@ public class DungeonGenerator : MonoBehaviour {
 	public int minRoomWidth;
 	public int minRoomHeight;
 	public int numberOfInitialGeneratedRooms;
-	public int numberOfRooms;
 	public GameObject roomPrefab;
 	public GameObject linePrefab;
 	public Text progressText;
@@ -114,10 +113,10 @@ public class DungeonGenerator : MonoBehaviour {
 
 	private IEnumerator DoMST (List<Room> rooms, Graph graph) {
 		progressText.text = "Applying Minimum Spanning Tree";
-		graph.ApplyMST ();
+		var mst = graph.ApplyMST ();
 
 		List<GameObject> lines = new List<GameObject> ();
-		graph.ForEachEdge ((e) => {
+		mst.ForEachEdge ((e) => {
 			GameObject line = CreateLine (e.p1.point, e.p2.point);
 			lines.Add (line);
 			line.SetActive (false);
@@ -131,7 +130,34 @@ public class DungeonGenerator : MonoBehaviour {
 		yield return new WaitForSeconds (1.5f);
 
 		foreach (var line in lines) {
-			//DestroyImmediate (line);
+			DestroyImmediate (line);
+		}
+
+		progressText.text = "Adding more edges";
+
+		int nrOfExtraEdges = graph.GetNrOfEdges () / 10;
+
+		for (int i = 0; i < nrOfExtraEdges; i++) {
+			mst.AddEdge (graph.GetRandomEdge ());
+		}
+
+		lines.Clear ();
+
+		mst.ForEachEdge ((e) => {
+			GameObject line = CreateLine (e.p1.point, e.p2.point);
+			lines.Add (line);
+			line.SetActive (false);
+		});
+
+		foreach (var line in lines) {
+			line.SetActive (true);
+			yield return new WaitForSeconds (0.02f);
+		}
+
+		yield return new WaitForSeconds (1.5f);
+
+		foreach (var line in lines) {
+			DestroyImmediate (line);
 		}
 	}
 
