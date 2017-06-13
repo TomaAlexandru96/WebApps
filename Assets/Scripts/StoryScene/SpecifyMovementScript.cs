@@ -12,14 +12,16 @@ public class SpecifyMovementScript : MonoBehaviour {
 	public string repeatingText;
 	public int index = 0;
 	public bool repeating;
+	public bool closePanelOnExit;
 	protected bool firstContact;
 	protected bool inside;
-	protected float dateTime;
+	public float dateTime;
 
 	public void Start () {
 		dateTime = Time.time -1;
 		firstContact = true;
 		directionPanel = GameObject.FindGameObjectsWithTag ("Canvas")[0].transform.GetChild(1).gameObject;
+		closePanelOnExit = true;
 	}
 
 	void OnTriggerEnter2D(Collider2D coll) {
@@ -27,7 +29,9 @@ public class SpecifyMovementScript : MonoBehaviour {
 	}
 
 	void OnTriggerExit2D(Collider2D coll) {
-		directionPanel.SetActive (false);
+		if (closePanelOnExit) {
+			directionPanel.SetActive (false);
+		}
 		inside = false;
 	}
 
@@ -51,9 +55,13 @@ public class SpecifyMovementScript : MonoBehaviour {
 			if (repeating) {
 				directionPanel.SetActive (true);
 				directionPanel.transform.GetComponent<DirectionPanel> ().DisplayText (repeatingText);
+				closePanelOnExit = true;
 			} else {
 				directionPanel.SetActive (false);
 			}
+		}
+		if ((Time.time - dateTime) > 1) {
+			closePanelOnExit = true;
 		}
 	}
 

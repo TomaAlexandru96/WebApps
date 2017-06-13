@@ -9,7 +9,9 @@ public class Huxely_2ndFloor : MonoBehaviour {
 	public int maxLen = 4;
 	public string[] text;
 	public int index; 
-	private DateTime dateTime;
+	public DateTime dateTime;
+
+	private bool introFinish;
 
 	public void Start () {
 		text = new string[maxLen];
@@ -22,6 +24,7 @@ public class Huxely_2ndFloor : MonoBehaviour {
 		directionPanel.transform.GetComponent<DirectionPanel> ().DisplayText (this.text[0]);
 		index = 1;
 		dateTime = DateTime.MinValue;
+		introFinish = true;
 	}
 
 	public void Update() {
@@ -30,9 +33,9 @@ public class Huxely_2ndFloor : MonoBehaviour {
 			directionPanel.transform.GetComponent<DirectionPanel> ().DisplayText (this.text[index]);
 			dateTime = DateTime.Now;
 			index++;
-		} else if (index >= maxLen && (DateTime.Now - dateTime).Seconds > 1) {
+		} else if (introFinish && index >= maxLen && (DateTime.Now - dateTime).Seconds > 1) {
 			directionPanel.SetActive (false);
-			dateTime = DateTime.MaxValue;
+			introFinish = false;
 		}
 	}
 }
