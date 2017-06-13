@@ -98,6 +98,10 @@ public class NetworkService : Photon.PunBehaviour {
 		return PhotonNetwork.Instantiate (prefabName, position, rotation, groupID, data);
 	}
 
+	public void Destroy (GameObject ob) {
+		PhotonNetwork.Destroy (ob);
+	}
+
 	public GameObject SpawnScene (string prefabName, Vector3 position, Quaternion rotation, int groupID) {
 		return PhotonNetwork.InstantiateSceneObject (prefabName, position, rotation, groupID, new object[0]);
 	}

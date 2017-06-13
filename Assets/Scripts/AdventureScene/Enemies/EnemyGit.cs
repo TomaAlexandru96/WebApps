@@ -12,9 +12,17 @@ public class EnemyGit : Enemy {
 	}
 
 	public override void GetHit<E> (Entity<E> entity) {
-		float hit = (entity.stats as PlayerStats).git;
+		float hit = 0;
+		if (entity.stats.GetType() == typeof(PlayerStats)) {
+			hit = (entity.stats as PlayerStats).git;
+
+		} else if (entity.stats.GetType() == typeof(ComputerStats)) {
+			hit = entity.stats.damage;
+		}
+
 		ChangeHealth (curHP - hit);
 		base.GetHit (entity);
+
 	}
 
 	void OnCollisionStay2D(Collision2D coll) {
