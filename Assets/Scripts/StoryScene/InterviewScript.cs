@@ -167,19 +167,19 @@ public class InterviewScript : MonoBehaviour {
 
 		CreateQuestion (0, "What is the complexity of BubbleSort ?", "N", "N^2", "2^N", "NlogN", 1);
 		CreateQuestion (1, "What is the complexity of MergeSort ?", "N", "N^2", "2^N", "NlogN", 3);
-		CreateQuestion (2, "What is the binary representation of the number 32 ?", "00110011", "10000001", "11111110", "00100000", 3);
+		CreateQuestion (2, "What is the binary representation of the number 32 ?", "0011 0011", "1000 0001", "1111 1110", "0010 0000", 3);
 		CreateQuestion (3, "Which language would you use for low-level development ?", "C", "Java", "JavaScript", "C#", 0);
 		CreateQuestion (4, "Which one of these is a functional language ?", "C#", "Java", "Haskell", "Ruby", 2);
 		CreateQuestion (5, "You are given the following formula : ! (p AND q). Which one of the following formulas is equivalent to it ? " +
 		" ( where ! is NOT)", "!p OR !q", "!(!p AND !q)", "p OR !q", "!p OR q", 0);
 		CreateQuestion (6, "Convert 0010 1010 to decimal", "46", "32", "42", "66", 2);
-		CreateQuestion (7, "Which is the best editor ?", "Gedit", "Notepad", "Vim", "Emacs", 2);
-		CreateQuestion (8, "What is the integral of f(x) = ln(x) ?", "x^2", "ln(x)^2", "1 / ln(x)", "1 / x", 3);
-		CreateQuestion (9, "Which one of these algorithms uses the Devide & Conquer technique ?", "Binary Search", "Dijkstra's Algorithm", "Bubble Sort", "KMP", 0);
+		CreateQuestion (7, "Which one is the best editor ?", "Gedit", "Notepad", "Vim", "Emacs", 2);
+		CreateQuestion (8, "Differentiate f(x) = ln(x) ", "x^2", "ln(x)^2", "1 / ln(x)", "1 / x", 3);
+		CreateQuestion (9, "Which one of these algorithms uses the Devide & Conquer technique ?", "Binary Search", "Prim's Algorithm", "Bubble Sort", "KMP", 0);
 		CreateQuestion (10, " (HARD!) What technique would you use to determine the longest common substring of 2 strings ?",
 			"Divide & Conquer", "Dynammic Programming", "Greedy", "KMP", 1);
 		CreateQuestion (11, "Differentiate f(x) = x ln (x)", "ln (x) + 1/x", "ln (x) + 1", "x^2 ln (x)", "2 * xln(x)", 1);
-		CreateQuestion (12, "What is the equation of a circle with the center on the origin and a radius of 1 ? ", "x^2 + y^2 = 1", "x^2 / y + y^2 / x = 1", "x + y = 1", "x^3 + y^3 = 1", 0); 
+		CreateQuestion (12, "What is the equation of a circle with the center in the origin and a radius of 1 ? ", "x^2 + y^2 = 1", "x^2 / y + y^2 / x = 1", "x + y = 1", "x^3 + y^3 = 1", 0); 
 	}
 
 	private void CreateQuestion (int i,string question, string answer0, string answer1, 
