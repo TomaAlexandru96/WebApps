@@ -213,7 +213,7 @@ public static class PhotonNetwork
     /// <summary>
     /// Get the room we're currently in. Null if we aren't in any room.
     /// </summary>
-    public static Room room
+    public static DungeonGeneratedRoom room
     {
         get
         {
@@ -512,7 +512,7 @@ public static class PhotonNetwork
     }
 
     private static bool isOfflineMode = false;
-    private static Room offlineModeRoom = null;
+    private static DungeonGeneratedRoom offlineModeRoom = null;
 
 
     /// <summary>Only used in Unity Networking. In PUN, set the number of players in PhotonNetwork.CreateRoom.</summary>
@@ -2020,7 +2020,7 @@ public static class PhotonNetwork
     /// </summary>
     private static void EnterOfflineRoom(string roomName, RoomOptions roomOptions, bool createdRoom)
     {
-        offlineModeRoom = new Room(roomName, roomOptions);
+        offlineModeRoom = new DungeonGeneratedRoom(roomName, roomOptions);
         networkingPeer.ChangeLocalID(1);
         offlineModeRoom.MasterClientId = 1;
 

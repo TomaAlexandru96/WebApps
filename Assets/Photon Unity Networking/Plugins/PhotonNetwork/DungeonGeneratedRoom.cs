@@ -18,7 +18,7 @@ using UnityEngine;
 /// The properties are settable as opposed to those of a RoomInfo and you can close or hide "your" room.
 /// </summary>
 /// \ingroup publicApi
-public class Room : RoomInfo
+public class DungeonGeneratedRoom : RoomInfo
 {
     /// <summary>The name of a room. Unique identifier (per Loadbalancing group) for a room/match.</summary>
     public new string Name
@@ -185,7 +185,7 @@ public class Room : RoomInfo
     }
 
 
-    internal Room(string roomName, RoomOptions options) : base(roomName, null)
+    internal DungeonGeneratedRoom(string roomName, RoomOptions options) : base(roomName, null)
     {
         if (options == null)
         {
