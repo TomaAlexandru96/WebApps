@@ -81,4 +81,8 @@ public class Room : MonoBehaviour {
 	public void RemovePhys () {
 		GetComponent<Rigidbody2D> ().isKinematic = true;
 	}
+
+	public static void CreateHallway (Room r1, Room r2) {
+		
+	}
 }
