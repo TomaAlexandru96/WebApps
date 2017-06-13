@@ -13,7 +13,10 @@ public class DelauneyTriangulation {
 
 	public Graph Apply () {
 		const float max = 150f;
-		Triangle dummy = new Triangle (new Vertex (-max, -max), new Vertex (max, -max), new Vertex (0, max));
+		Vertex a = new Vertex (-max, -max);
+		Vertex b = new Vertex (max, -max);
+		Vertex c = new Vertex (0, max);
+		Triangle dummy = new Triangle (a, b, c);
 
 		dt.Add (dummy);
 
@@ -25,11 +28,6 @@ public class DelauneyTriangulation {
 					main = t;
 					break;
 				}
-			}
-
-			if (main == null) {
-				Debug.Log ("Point not fine " + point);
-				return GetGraph ();
 			}
 
 			Triangle t1 = new Triangle (point, main.a, main.b);
@@ -44,8 +42,28 @@ public class DelauneyTriangulation {
 			t1.ValidateEdge (point, this);
 			t2.ValidateEdge (point, this);
 			t3.ValidateEdge (point, this);
-			Debug.Log ("Point fine " + point);
 		}
+
+		List<Triangle> good = new List<Triangle> ();
+
+		dt.ForEach ((triangle) => {
+			if (a.Equals (triangle.a) || a.Equals (triangle.b) || a.Equals (triangle.c)) {
+				return;
+			}
+
+			if (b.Equals (triangle.a) || b.Equals (triangle.b) || b.Equals (triangle.c)) {
+				return;
+			}
+
+			if (c.Equals (triangle.a) || c.Equals (triangle.b) || c.Equals (triangle.c)) {
+				return;
+			}
+
+			good.Add (triangle);
+		});
+
+		dt = good;
+			
 
 		return GetGraph ();
 	}
