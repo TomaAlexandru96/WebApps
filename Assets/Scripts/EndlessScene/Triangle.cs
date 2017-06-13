@@ -10,7 +10,7 @@ public class Triangle {
 
 	public Triangle (Vertex a, Vertex b, Vertex c) {
 		
-		if (!IsCounterClockwise (a, b, c)) {
+		if (IsCounterClockwise (a, b, c)) {
 			this.a = a;
 			this.b = b;
 			this.c = c;
@@ -48,7 +48,97 @@ public class Triangle {
 		return (b.point.x - a.point.x) * (c.point.y - a.point.y) - (c.point.x - a.point.x) * (b.point.y - a.point.y) > 0;
 	}
 
-	public void ValidateEdge (Edge e) {
-		
+	public void ValidateEdge (Vertex p, DelauneyTriangulation dt) {
+		List<Triangle> triangles = dt.GetDT ();
+		// find triangle adj to this triangle
+		Edge commonEdge = FindOpEdge (p);
+		Triangle adjTriangle = null;
+		foreach (var t in triangles) {
+			if (t.ContainsEdge (commonEdge) && !t.Equals (this)) {
+				adjTriangle = t;
+				break;
+			}
+		}
+
+		if (adjTriangle == null) {
+			return;
+		}
+
+		// flip edge if needed
+		if (adjTriangle.IsPointInCircle (p)) {
+			KeyValuePair<Triangle, Triangle> res = Triangle.filpEdge (this, adjTriangle, commonEdge, dt);
+			res.Key.ValidateEdge (p, dt);
+			res.Value.ValidateEdge (p, dt);
+		}
+	}
+
+	public static KeyValuePair<Triangle, Triangle> filpEdge (Triangle t1, Triangle t2, Edge commonEdge, DelauneyTriangulation dt) {
+		List<Triangle> triangles = dt.GetDT ();
+		triangles.Remove (t1);
+		triangles.Remove (t2);
+
+		Vertex newP1 = t1.FindOpPoint (commonEdge);
+		Vertex newP2 = t2.FindOpPoint (commonEdge);
+
+		Triangle newT1 = new Triangle (newP1, commonEdge.p1, newP2);
+		Triangle newT2 = new Triangle (newP1, commonEdge.p2, newP2);
+
+		triangles.Add (newT1);
+		triangles.Add (newT2);
+
+		return new KeyValuePair<Triangle, Triangle> (newT1, newT2);
+	}
+
+	private bool ContainsEdge (Edge e) {
+		bool p1Found = false;
+		bool p2Found = false;
+
+		p1Found = e.p1.Equals (a) || e.p1.Equals (b) || e.p1.Equals (c);
+		p2Found = e.p2.Equals (a) || e.p2.Equals (b) || e.p2.Equals (c);
+
+		return p1Found && p2Found;
+	}
+
+	private Vertex FindOpPoint (Edge e) {
+		if (e.Equals (FindOpEdge (a))) {
+			return a;
+		} else if (e.Equals (FindOpEdge (b))) {
+			return b;
+		} else if (e.Equals (FindOpEdge (c))) {
+			return c;
+		} else {
+			Debug.LogError ("Edge " + e.ToString () + " does not belong to traignle " + ToString ());
+			return null;
+		}
+	}
+
+	public Edge FindOpEdge (Vertex p) {
+		if (p.Equals (a)) {
+			return new Edge (b, c);
+		} else if (p.Equals (b)) {
+			return new Edge (a, c);
+		} else if (p.Equals (c)) {
+			return new Edge (a, b);
+		} else {
+			Debug.LogError ("Vertex " + p.ToString () + " does not belon to the triangle " + ToString ());
+			return null;
+		}
+	}
+
+	public override string ToString () {
+		return "a: " + a.ToString () + ", b: " + b.ToString () + ", c: " + c.ToString ();
+	}
+
+	public override int GetHashCode () {
+		return base.GetHashCode ();
+	}
+
+	public override bool Equals (object obj) {
+		if (!(obj is Triangle)) {
+			return false;
+		}
+
+		Triangle other = (Triangle) obj;
+		return a.Equals (other.a) && b.Equals (other.b) && c.Equals (other.c);
 	}
 }

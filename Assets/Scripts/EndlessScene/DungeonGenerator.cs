@@ -91,13 +91,15 @@ public class DungeonGenerator : MonoBehaviour {
 		DelauneyTriangulation dt = new DelauneyTriangulation (nodes);
 		Graph g = dt.Apply ();
 
+		Debug.Log (g.ToString ());
+
 		List<GameObject> lines = new List<GameObject> ();
-		/* foreach (var room in mainRooms) {
-			foreach (var other in room.DelaunayList) {
-				lines.Add (CreateLine (room.GetPosition (), other.GetPosition ()));
+		foreach (var node in g.GetNodes ()) {
+			foreach (var neighbour in node.GetConnections ()) {
+				lines.Add (CreateLine (node.point, neighbour.point));
 				yield return new WaitForSeconds (0.01f);
 			}
-		} */
+		}
 
 		yield return new WaitForSeconds (1.5f);
 		StartCoroutine (DoMST (mainRooms, g));
