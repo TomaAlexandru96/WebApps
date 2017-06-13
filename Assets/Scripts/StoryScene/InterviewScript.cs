@@ -91,6 +91,7 @@ public class InterviewScript : MonoBehaviour {
 				button3.SetActive (false);
 				questionPanelText.text = "You have completed the first stage, you may now exit Huxley, go home and get some rest, the second stage will begin shortly !";
 				yield return new WaitForSeconds (5f);
+				Exit ();
 				Close ();
 			}
 		}
@@ -192,6 +193,13 @@ public class InterviewScript : MonoBehaviour {
 		qaa [i].answer2 = answer2;
 		qaa [i].answer3 = answer3;
 		qaa [i].numberOfCorrectAnswer = numberOfCorrectAnswer;
+	}
+
+	private void Exit() {
+		GameObject[] gates = GameObject.FindGameObjectsWithTag ("ExitGates");
+		foreach (GameObject gate in gates) {
+			gate.transform.GetComponent<ExitGates> ().exit = true;
+		}
 	}
 }
 
