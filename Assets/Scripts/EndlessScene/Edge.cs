@@ -12,11 +12,6 @@ public class Edge {
 		this.p2 = p2;
 	}
 
-	public bool IsRightOf (Vertex x) {
-		// TODO
-		return false;
-	}
-
 	public override string ToString () {
 		return p1 + ", " + p2;
 	}
@@ -32,6 +27,7 @@ public class Edge {
 
 		Edge other = (Edge) obj;
 
-		return p1.Equals (other.p1) && p2.Equals (other.p2);
+		return p1.Equals (other.p1) && p2.Equals (other.p2)
+			|| p1.Equals (other.p2) && p2.Equals (other.p1);
 	}
 }
