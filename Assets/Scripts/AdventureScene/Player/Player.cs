@@ -84,12 +84,6 @@ public class Player : Entity<PlayerStats> {
 				if (!abilities.UseAbility ()) {
 					return;
 				}
-				Vector3 mouseDirection = GetMouseInput (new string[] {"MouseInput"});
-
-				bool inverted = Vector3.Cross (attackRadius.transform.localPosition, mouseDirection).z < 0;
-				float angle = Vector3.Angle (attackRadius.transform.localPosition, mouseDirection);
-				angle = inverted ? -angle : angle;
-				attackRadius.transform.RotateAround (transform.position, Vector3.forward, angle);
 				PlayAnimation ("PlayMeleAttackAnimation");
 			} else if (selectedAbility.type == Ability.ForkBomb) {
 				RaycastHit2D hit = Physics2D.Raycast (mainCamera.ScreenToWorldPoint (Input.mousePosition), 
@@ -191,6 +185,13 @@ public class Player : Entity<PlayerStats> {
 	private bool isAttacking = false;
 
 	protected IEnumerator PlayMeleAttackAnimation () {
+		Vector3 mouseDirection = GetMouseInput (new string[] {"MouseInput"});
+
+		bool inverted = Vector3.Cross (attackRadius.transform.localPosition, mouseDirection).z < 0;
+		float angle = Vector3.Angle (attackRadius.transform.localPosition, mouseDirection);
+		angle = inverted ? -angle : angle;
+		attackRadius.transform.RotateAround (transform.position, Vector3.forward, angle);
+
 		isAttacking = true;
 		attackRadius.GetComponent<Animator> ().Play ("Slash");
 		attackRadius.GetComponent<PlayerAttack> ().StartAttack ();
