@@ -9,6 +9,7 @@ public class Player : Entity<PlayerStats> {
 
 	public GameObject attackRadius;
 	public RuntimeAnimatorController[] playerControllers;
+	public GameObject explosionPrefab;
 
 	private PlayerAbilities abilities;
 	private User user;
@@ -44,9 +45,9 @@ public class Player : Entity<PlayerStats> {
 		return user.character.type == PartyMembers.STORY;
 	}
 
-	private Vector2 GetMouseInput () {
+	private Vector2 GetMouseInput (string[] layer) {
 		RaycastHit2D hit = Physics2D.Raycast (mainCamera.ScreenToWorldPoint (Input.mousePosition), 
-			Vector2.zero, 1f, LayerMask.GetMask (new string[] {"MouseInput"}));
+			Vector2.zero, 1f, LayerMask.GetMask (layer[0]));
 		return (new Vector3 (hit.point.x, hit.point.y, transform.position.z) - transform.position).normalized;
 	}
 
@@ -75,22 +76,35 @@ public class Player : Entity<PlayerStats> {
 		SelectAbility ();
 
 		if (Input.GetKeyUp (KeyCode.Space) && canAttack) {
-			if (!abilities.UseAbility ()) {
-				return;
-			}
+			
 
 			Ability selectedAbility = abilities.GetSelectedAbility ();
 
 			if (selectedAbility.type == Ability.Mele) {
-				Vector3 mouseDirection = GetMouseInput ();
+				if (!abilities.UseAbility ()) {
+					return;
+				}
+				Vector3 mouseDirection = GetMouseInput (new string[] {"MouseInput"});
 
 				bool inverted = Vector3.Cross (attackRadius.transform.localPosition, mouseDirection).z < 0;
 				float angle = Vector3.Angle (attackRadius.transform.localPosition, mouseDirection);
 				angle = inverted ? -angle : angle;
 				attackRadius.transform.RotateAround (transform.position, Vector3.forward, angle);
 				PlayAnimation ("PlayMeleAttackAnimation");
-			} else {
-				Debug.LogWarning ("Not yet implemented: " + selectedAbility.ToString ());
+			} else if (selectedAbility.type == Ability.ForkBomb) {
+				RaycastHit2D hit = Physics2D.Raycast (mainCamera.ScreenToWorldPoint (Input.mousePosition), 
+					Vector2.zero, 1f, LayerMask.GetMask ("ForkBomb"));
+				if (hit.transform != null) {
+					if (!abilities.UseAbility ()) {
+						return;
+					}
+					hit.transform.GetComponent<Computer> ().explode ();
+					PlayAnimation ("PlayForkBombAttackAnimation");
+				}
+			} else if (selectedAbility.type == Ability.DebugGun) {
+				//TODO
+			} else if (selectedAbility.type == Ability.ElectricShock) {
+				//TODO
 			}
 		}
 	}
@@ -182,6 +196,18 @@ public class Player : Entity<PlayerStats> {
 		attackRadius.GetComponent<PlayerAttack> ().StartAttack ();
 		GetComponent<Animator> ().Play ("P"+(user.character.type+1)+"_LaptopAttack");
 		yield return new WaitForSeconds (0.1f);
+		attackRadius.GetComponent<Animator> ().Play ("Default");
+		yield return new WaitForSeconds (0.2f);
+		attackRadius.GetComponent<PlayerAttack> ().StopAttack ();
+		isAttacking = false;
+	}
+
+	protected IEnumerator PlayForkBombAttackAnimation () {
+		isAttacking = true;
+		attackRadius.GetComponent<PlayerAttack> ().StartAttack ();
+
+		GetComponent<Animator> ().Play ("P"+(user.character.type+1)+"_LaptopAttack");
+		yield return new WaitForSeconds (0.9f);
 		attackRadius.GetComponent<Animator> ().Play ("Default");
 		attackRadius.GetComponent<PlayerAttack> ().StopAttack ();
 		isAttacking = false;
