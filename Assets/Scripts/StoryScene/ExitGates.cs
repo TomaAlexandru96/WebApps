@@ -10,6 +10,7 @@ public class ExitGates : MonoBehaviour {
 	public GameObject partMention;
 	public GameObject receptionist;
 	public GameObject floor;
+	public GameObject labEntrance;
 	public Transform spawn;
 
 	private float time;
@@ -72,5 +73,6 @@ public class ExitGates : MonoBehaviour {
 		directionPanel.transform.GetComponent<DirectionPanel> ().DisplayText (text [0]);
 		floor.transform.GetComponent<Huxely_2ndFloor> ().dateTime = DateTime.Now;
 		directionPanel.SetActive (true);
+		labEntrance.transform.GetComponent<LabsEntrance> ().student = true;
 	}
 }
