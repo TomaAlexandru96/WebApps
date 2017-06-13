@@ -16,5 +16,22 @@ public class Edge {
 		// TODO
 		return false;
 	}
-		
+
+	public override string ToString () {
+		return p1 + ", " + p2;
+	}
+
+	public override int GetHashCode () {
+		return base.GetHashCode ();
+	}
+
+	public override bool Equals (object obj) {
+		if (!(obj is Edge)) {
+			return false;
+		}
+
+		Edge other = (Edge) obj;
+
+		return p1.Equals (other.p1) && p2.Equals (other.p2);
+	}
 }

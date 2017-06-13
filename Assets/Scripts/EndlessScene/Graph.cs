@@ -13,4 +13,18 @@ public class Graph {
 	public void ApplyDFS () {
 		// TODO
 	}
+
+	public List<Vertex> GetNodes () {
+		return nodes;
+	}
+
+	public override string ToString () {
+		string res = nodes.Count + " ";
+
+		foreach (var node in nodes) {
+			res += node.ToString () + "\n";
+		}
+
+		return res;
+	}
 }
