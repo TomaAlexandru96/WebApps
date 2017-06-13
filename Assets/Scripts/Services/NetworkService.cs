@@ -27,15 +27,12 @@ public class NetworkService : NetworkManager {
 
 	public void StartService (Action onFinish) {
 		this.onFinish = onFinish;
-		StartServer ();
 		StartMatchMaker ();
+		onFinish ();
 	}
 
 	public void StopService () {
-	}
-
-	public override void OnStartServer () {
-		onFinish ();
+		StopMatchMaker ();
 	}
 
 	public static NetworkService GetInstance () {
