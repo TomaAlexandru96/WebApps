@@ -48,19 +48,21 @@ public class InterviewScript : MonoBehaviour {
 		InitializeQuestionsStruct ();
 		StartCoroutine (NextQuestion ());
 	}
-		
+
 	private IEnumerator NextQuestion () {
 
 
 		if (!doneIntroduction) {
 			questionPanelText.text = "Welcome to your Imperial Interview ! ";
+			Debug.Log ("here");
 			yield return new WaitForSeconds (3f);
+			Debug.Log ("here2");
 			questionPanelText.text = "You will need to answer " + numberOfQuestionsToGetRight + " questions correctly to secure a place in Imperial !";
 			yield return new WaitForSeconds (3f);
 			questionPanelText.text = "Press any key to start the interview !";
 			yield return new WaitForSeconds (1f);
 			while (!Input.anyKey) yield return null;
-		
+
 			button0.SetActive (true);
 			button1.SetActive (true);
 			button2.SetActive (true);
@@ -83,8 +85,12 @@ public class InterviewScript : MonoBehaviour {
 				}
 				yield return new WaitForSeconds (3f);
 				verdictPanel.text = "";
+				button0.SetActive (false);
+				button1.SetActive (false);
+				button2.SetActive (false);
+				button3.SetActive (false);
 				questionPanelText.text = "Congratulations, you have completed the first stage, you may now exit Huxley, go home and get some rest, the second stage will begin shortly !";
-				yield return new WaitForSeconds (6f);
+				yield return new WaitForSeconds (5f);
 				Close ();
 			}
 		}
@@ -114,10 +120,9 @@ public class InterviewScript : MonoBehaviour {
 			if (qaa [numberOfThisQuestion].askedBefore == false)
 				ok = true;
 		}
-		qaa [questionToAsk].askedBefore = true;
 		return questionToAsk;
 	}
-		
+
 	public void Update () {
 		if (Input.GetKeyUp (KeyCode.Escape)) {
 			Close ();
