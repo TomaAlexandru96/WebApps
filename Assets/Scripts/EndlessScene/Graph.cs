@@ -13,6 +13,42 @@ public class Graph {
 
 	// prim s algorithm
 	public void ApplyMST () {
+		Dictionary<Vertex, List<Vertex>> tree = new Dictionary<Vertex, List<Vertex>> ();
+		List<Vertex> visited = new List<Vertex> ();
+		Vertex first = null;
+
+		foreach (var entry in graph) {
+			if (first == null) {
+				first = entry.Key;
+			}
+			tree.Add (entry.Key, new List<Vertex> ());
+		}
+
+		visited.Add (first);
+
+		while (visited.Count < graph.Count) {
+			float min = float.MaxValue;
+			Edge current = null;
+
+			foreach (var node in visited) {
+				foreach (var neighbours in graph[node]) {
+					Edge e = new Edge (node, neighbours);
+					if (!visited.Contains (neighbours)) {
+						if (e.GetDistance () < min) {
+							min = e.GetDistance ();
+							current = e;
+						}
+					}
+				}
+			}
+
+			if (current != null) {
+				AddEdge (tree, current.p1, current.p2);
+				visited.Add (current.p2);
+			}
+		}
+
+		graph = tree;
 	}
 
 	public void ForEachEdge (Action<Edge> apply) {
@@ -38,9 +74,9 @@ public class Graph {
 		return res;
 	}
 
-	private void AddEdge (Vertex v1, Vertex v2) {
-		graph [v1].Add (v2);
-		graph [v2].Add (v1);
+	public void AddEdge (Dictionary<Vertex, List<Vertex>> g, Vertex v1, Vertex v2) {
+		g [v1].Add (v2);
+		g [v2].Add (v1);
 	}
 
 	private void GetGraphFrom (DelauneyTriangulation dt) {
@@ -57,11 +93,11 @@ public class Graph {
 				Edge opEdge = t.FindOpEdge (p);
 
 				if (!graph [p].Contains (opEdge.p1)) {
-					AddEdge (p, opEdge.p1);
+					AddEdge (graph, p, opEdge.p1);
 				}
 
 				if (!graph [p].Contains (opEdge.p2)) {
-					AddEdge (p, opEdge.p2);
+					AddEdge (graph, p, opEdge.p2);
 				}
 			}
 		}
