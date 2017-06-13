@@ -66,16 +66,14 @@ public class Triangle {
 
 		// flip edge if needed
 		if (adjTriangle.IsPointInCircle (p)) {
-			KeyValuePair<Triangle, Triangle> res = Triangle.filpEdge (this, adjTriangle, commonEdge, dt);
+			KeyValuePair<Triangle, Triangle> res = Triangle.FilpEdge (this, adjTriangle, commonEdge, dt);
 			res.Key.ValidateEdge (p, dt);
 			res.Value.ValidateEdge (p, dt);
 		}
 	}
 
-	public static KeyValuePair<Triangle, Triangle> filpEdge (Triangle t1, Triangle t2, Edge commonEdge, DelauneyTriangulation dt) {
+	public static KeyValuePair<Triangle, Triangle> FilpEdge (Triangle t1, Triangle t2, Edge commonEdge, DelauneyTriangulation dt) {
 		List<Triangle> triangles = dt.GetDT ();
-		triangles.Remove (t1);
-		triangles.Remove (t2);
 
 		Vertex newP1 = t1.FindOpPoint (commonEdge);
 		Vertex newP2 = t2.FindOpPoint (commonEdge);
@@ -83,6 +81,8 @@ public class Triangle {
 		Triangle newT1 = new Triangle (newP1, commonEdge.p1, newP2);
 		Triangle newT2 = new Triangle (newP1, commonEdge.p2, newP2);
 
+		triangles.Remove (t1);
+		triangles.Remove (t2);
 		triangles.Add (newT1);
 		triangles.Add (newT2);
 
@@ -139,6 +139,21 @@ public class Triangle {
 		}
 
 		Triangle other = (Triangle) obj;
-		return a.Equals (other.a) && b.Equals (other.b) && c.Equals (other.c);
+		return a.Equals (other.a) && b.Equals (other.b) && c.Equals (other.c) ||
+			a.Equals (other.a) && b.Equals (other.c) && c.Equals (other.b) ||
+			a.Equals (other.b) && b.Equals (other.a) && c.Equals (other.c) ||
+			a.Equals (other.b) && b.Equals (other.c) && c.Equals (other.a) ||
+			a.Equals (other.c) && b.Equals (other.a) && c.Equals (other.b) ||
+			a.Equals (other.c) && b.Equals (other.b) && c.Equals (other.a);
+	}
+
+	public bool IsPointInTriangle (Vertex pt) {
+		bool b1, b2, b3;
+
+		b1 = !IsCounterClockwise (pt, a, b);
+		b2 = !IsCounterClockwise (pt, b, c);
+		b3 = !IsCounterClockwise (pt, c, a);
+
+		return ((b1 == b2) && (b2 == b3));
 	}
 }

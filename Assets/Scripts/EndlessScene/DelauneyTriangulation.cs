@@ -17,6 +17,36 @@ public class DelauneyTriangulation {
 
 		dt.Add (dummy);
 
+		foreach (var point in points) {
+			Triangle main = null;
+
+			foreach (var t in dt) {
+				if (t.IsPointInTriangle (point)) {
+					main = t;
+					break;
+				}
+			}
+
+			if (main == null) {
+				Debug.Log ("Point not fine " + point);
+				return GetGraph ();
+			}
+
+			Triangle t1 = new Triangle (point, main.a, main.b);
+			Triangle t2 = new Triangle (point, main.b, main.c);
+			Triangle t3 = new Triangle (point, main.a, main.c);
+
+			dt.Remove (main);
+			dt.Add (t1);
+			dt.Add (t2);
+			dt.Add (t3);
+
+			t1.ValidateEdge (point, this);
+			t2.ValidateEdge (point, this);
+			t3.ValidateEdge (point, this);
+			Debug.Log ("Point fine " + point);
+		}
+
 		return GetGraph ();
 	}
 
