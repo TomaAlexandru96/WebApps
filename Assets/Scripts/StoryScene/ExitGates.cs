@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine.UI;
 using UnityEngine;
+using System;
 
 public class ExitGates : MonoBehaviour {
 
@@ -53,11 +54,14 @@ public class ExitGates : MonoBehaviour {
 			partMention.SetActive (false);
 			GameObject.FindGameObjectWithTag ("Player").transform.position = spawn.position;
 			receptionist.GetComponent<SpecifyMovementScript> ().ChangeRepeatingText ("receptionist: You can find labs through the doors on my right!!");
+			transform.GetComponent<SpecifyMovementScript> ().repeating = true;
 			WelcomeScript ();
 		}
 	}
 
 	private void WelcomeScript() {
+		transform.GetComponent<SpecifyMovementScript> ().closePanelOnExit = false;
+		transform.GetComponent<SpecifyMovementScript> ().dateTime = Time.time;
 		floor.transform.GetComponent<Huxely_2ndFloor> ().index = 0;
 		string[] text = new string[floor.transform.GetComponent<Huxely_2ndFloor> ().maxLen];
 		text [0] = "Welcome back               Congratulations                now you are a student here";
@@ -65,7 +69,8 @@ public class ExitGates : MonoBehaviour {
 		text [2] = "You need to submit it both electronically and physically";
 		text [3] = "Go to computing labs";
 		floor.transform.GetComponent<Huxely_2ndFloor> ().text = text;
+		directionPanel.transform.GetComponent<DirectionPanel> ().DisplayText (text [0]);
+		floor.transform.GetComponent<Huxely_2ndFloor> ().dateTime = DateTime.Now;
 		directionPanel.SetActive (true);
-		directionPanel.transform.GetComponent<DirectionPanel> ().DisplayText (text[0]);
 	}
 }
