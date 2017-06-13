@@ -65,38 +65,7 @@ public class DelauneyTriangulation {
 		dt = good;
 			
 
-		return GetGraph ();
-	}
-
-	private Graph GetGraph () {
-		List<Vertex> nodes = new List<Vertex> ();
-
-		foreach (Triangle t in dt) {
-			Vertex[] ps = new Vertex[] {t.a, t.b, t.c};
-			foreach (var p in ps) {
-				if (!nodes.Contains (p)) {
-					nodes.Add (p);
-				}
-			}
-
-			foreach (var p in ps) {
-				Vertex gn = nodes.Find ((vertex)=> {return vertex.Equals (p);});
-				Edge opEdge = t.FindOpEdge (p);
-
-				Vertex v1 = nodes.Find ((vertex) => {return vertex.Equals (opEdge.p1);});
-				Vertex v2 = nodes.Find ((vertex) => {return vertex.Equals (opEdge.p2);});
-
-				if (!gn.ConnContains (v1)) {
-					gn.AddConnection (v1);
-				}
-					
-				if (!gn.ConnContains (v2)) {
-					gn.AddConnection (v2);
-				}
-			}
-		}
-
-		return new Graph (nodes);
+		return new Graph (this);
 	}
 
 	public List<Triangle> GetDT () {

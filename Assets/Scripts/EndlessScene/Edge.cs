@@ -30,4 +30,8 @@ public class Edge {
 		return p1.Equals (other.p1) && p2.Equals (other.p2)
 			|| p1.Equals (other.p2) && p2.Equals (other.p1);
 	}
+
+	public float GetDistance () {
+		return Vertex.GetDistance (p1, p2);
+	}
 }

@@ -91,24 +91,48 @@ public class DungeonGenerator : MonoBehaviour {
 		DelauneyTriangulation dt = new DelauneyTriangulation (nodes);
 		Graph g = dt.Apply ();
 
-		Debug.Log (g.ToString ());
-
 		List<GameObject> lines = new List<GameObject> ();
-		foreach (var node in g.GetNodes ()) {
-			foreach (var neighbour in node.GetConnections ()) {
-				lines.Add (CreateLine (node.point, neighbour.point));
-				yield return new WaitForSeconds (0.01f);
-			}
+		g.ForEachEdge ((e) => {
+			GameObject line = CreateLine (e.p1.point, e.p2.point);
+			lines.Add (line);
+			line.SetActive (false);
+		});
+
+		foreach (var line in lines) {
+			line.SetActive (true);
+			yield return new WaitForSeconds (0.02f);
 		}
 
 		yield return new WaitForSeconds (1.5f);
+
+		foreach (var line in lines) {
+			DestroyImmediate (line);
+		}
+
 		StartCoroutine (DoMST (mainRooms, g));
 	}
 
 	private IEnumerator DoMST (List<Room> rooms, Graph graph) {
 		progressText.text = "Applying Minimum Spanning Tree";
-		graph.ApplyDFS ();
-		yield return new WaitForSeconds (0f);
+		graph.ApplyMST ();
+
+		List<GameObject> lines = new List<GameObject> ();
+		graph.ForEachEdge ((e) => {
+			GameObject line = CreateLine (e.p1.point, e.p2.point);
+			lines.Add (line);
+			line.SetActive (false);
+		});
+
+		foreach (var line in lines) {
+			line.SetActive (true);
+			yield return new WaitForSeconds (0.02f);
+		}
+
+		yield return new WaitForSeconds (1.5f);
+
+		foreach (var line in lines) {
+			//DestroyImmediate (line);
+		}
 	}
 
 	private GameObject CreateLine (Vector3 position1, Vector3 position2) {

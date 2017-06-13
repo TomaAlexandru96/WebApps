@@ -1,30 +1,69 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 public class Graph {
 
-	private List<Vertex> nodes;
+	private Dictionary<Vertex, List<Vertex>> graph = new Dictionary<Vertex, List<Vertex>> ();
 
-	public Graph (List<Vertex> nodes) {
-		this.nodes = nodes;
+	public Graph (DelauneyTriangulation dt) {
+		GetGraphFrom (dt);
 	}
 
-	public void ApplyDFS () {
-		// TODO
+	// prim s algorithm
+	public void ApplyMST () {
 	}
 
-	public List<Vertex> GetNodes () {
-		return nodes;
+	public void ForEachEdge (Action<Edge> apply) {
+		foreach (var node in graph) {
+			foreach (var neighbour in node.Value) {
+				Edge e = new Edge (node.Key, neighbour);
+				apply (e);
+			}
+		}
+	}
+
+	public Dictionary<Vertex, List<Vertex>> GetGraph () {
+		return graph;
 	}
 
 	public override string ToString () {
-		string res = nodes.Count + " ";
+		string res = graph.Count + " ";
 
-		foreach (var node in nodes) {
-			res += node.ToString () + "\n";
-		}
+		ForEachEdge ((e) => {
+			res += e + "\n";
+		});
 
 		return res;
+	}
+
+	private void AddEdge (Vertex v1, Vertex v2) {
+		graph [v1].Add (v2);
+		graph [v2].Add (v1);
+	}
+
+	private void GetGraphFrom (DelauneyTriangulation dt) {
+		foreach (Triangle t in dt.GetDT ()) {
+			Vertex[] ps = new Vertex[] {t.a, t.b, t.c};
+			foreach (var p in ps) {
+				if (!graph.ContainsKey (p)) {
+					List<Vertex> neighbours = new List<Vertex> ();
+					graph.Add (p, neighbours);
+				}
+			}
+
+			foreach (var p in ps) {
+				Edge opEdge = t.FindOpEdge (p);
+
+				if (!graph [p].Contains (opEdge.p1)) {
+					AddEdge (p, opEdge.p1);
+				}
+
+				if (!graph [p].Contains (opEdge.p2)) {
+					AddEdge (p, opEdge.p2);
+				}
+			}
+		}
 	}
 }
