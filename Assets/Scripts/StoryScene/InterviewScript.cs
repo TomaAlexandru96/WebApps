@@ -21,6 +21,7 @@ public class InterviewScript : MonoBehaviour {
 
 	public GameObject exitGate1;
 	public GameObject exitGate2;
+	public GameObject receptionist;
 
 	private int numberOfThisQuestion;
 	private int questionsAsked;
@@ -194,13 +195,8 @@ public class InterviewScript : MonoBehaviour {
 	}
 
 	private void Exit(GameObject exitGate) {
-		GameObject directionPanel = GameObject.FindGameObjectWithTag ("DirectionPanel");
-		if (directionPanel != null) {
-			directionPanel.SetActive (false);
-		}
 		exitGate.GetComponent<ExitGates> ().exit = true;
-		exitGate.transform.GetComponent<SpecifyMovementScript> ().repeating = false;
-		exitGate.transform.GetComponent<SpecifyMovementScript> ().repeating2 = false;
+		receptionist.GetComponent<SpecifyMovementScript> ().ChangeRepeatingText ("receptionist: The exit is from the gates in the front!!");
 	}
 
 
