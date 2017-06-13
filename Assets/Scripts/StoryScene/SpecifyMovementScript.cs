@@ -10,8 +10,10 @@ public class SpecifyMovementScript : MonoBehaviour {
 	public int maxSize;
 	public string[] text;
 	public string repeatingText;
+	public string repeatingText2;
 	public int index = 0;
 	public bool repeating;
+	public bool repeating2;
 	protected bool firstContact;
 	protected bool inside;
 	protected float dateTime;
@@ -19,7 +21,8 @@ public class SpecifyMovementScript : MonoBehaviour {
 	public void Start () {
 		dateTime = Time.time -1;
 		firstContact = true;
-		directionPanel = GameObject.FindGameObjectsWithTag ("Canvas")[0].transform.GetChild(0).gameObject;
+		repeating2 = false;
+		directionPanel = GameObject.FindGameObjectsWithTag ("Canvas")[0].transform.GetChild(1).gameObject;
 	}
 
 	void OnTriggerEnter2D(Collider2D coll) {
@@ -48,7 +51,11 @@ public class SpecifyMovementScript : MonoBehaviour {
 			Conversation();
 		}
 		if (inside && index >= maxSize && (Time.time - dateTime) > 1) {
-			if (repeating) {
+			if (repeating2) {
+				directionPanel.SetActive (true);
+				directionPanel.transform.GetComponent<DirectionPanel> ().DisplayText (repeatingText2);
+				repeating = false;
+			} else if (repeating) {
 				directionPanel.SetActive (true);
 				directionPanel.transform.GetComponent<DirectionPanel> ().DisplayText (repeatingText);
 			} else {
