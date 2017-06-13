@@ -324,7 +324,7 @@ public static class TurnExtensions
 	/// <param name="room">Room reference</param>
 	/// <param name="turn">Turn index</param>
 	/// <param name="setStartTime">If set to <c>true</c> set start time.</param>
-    public static void SetTurn(this Room room, int turn, bool setStartTime = false)
+    public static void SetTurn(this DungeonGeneratedRoom room, int turn, bool setStartTime = false)
     {
         if (room == null || room.CustomProperties == null)
         {
@@ -379,7 +379,7 @@ public static class TurnExtensions
 	/// <param name="player">Player reference</param>
     public static int GetFinishedTurn(this PhotonPlayer player)
     {
-        Room room = PhotonNetwork.room;
+        DungeonGeneratedRoom room = PhotonNetwork.room;
         if (room == null || room.CustomProperties == null || !room.CustomProperties.ContainsKey(TurnPropKey))
         {
             return 0;
@@ -396,7 +396,7 @@ public static class TurnExtensions
 	/// <param name="turn">Turn Index</param>
     public static void SetFinishedTurn(this PhotonPlayer player, int turn)
     {
-        Room room = PhotonNetwork.room;
+        DungeonGeneratedRoom room = PhotonNetwork.room;
         if (room == null || room.CustomProperties == null)
         {
             return;
