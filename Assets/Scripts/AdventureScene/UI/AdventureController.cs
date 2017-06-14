@@ -15,29 +15,33 @@ public class AdventureController : NetworkBehaviour {
 
 	public void OnApplicationQuit () {
 		DBServer.GetInstance ().Logout (false, () => {
-			
 		}, (error) => {
-			
 		});
 		ExitGame ();
 	}
 
 	public void Start () {
 		GameObject.FindGameObjectWithTag ("Chat").GetComponent<ChatController> ().InitDefaultChat ();
-		SpawnPlayer ();
+		CmdSpawnPlayer ();
 		ChatController.GetChat ().withFadeOut = true;
 		CmdOnLoaded (CurrentUser.GetInstance ().GetUserInfo ().username);
+	}
+
+	[Command]
+	public void CmdSpawnPlayer () {
+		ClientScene.AddPlayer ((short) CurrentUser.GetInstance ().GetPositionInParty ());
 	}
 
 	[Command]
 	public void CmdOnLoaded (string name) {
 		loadedPlayers.Add (name);
 		if (AllPartyUsersLoaded ()) {
-			StartGame ();
+			RpcStartGame ();
 		}
 	}
 
-	public void StartGame () {
+	[ClientRpc]
+	public void RpcStartGame () {
 		if (isServer) {
 			NetworkService.GetInstance ().Spawn (party, Vector3.zero, Quaternion.identity);
 			CmdSpawnEnemies ();
@@ -61,10 +65,6 @@ public class AdventureController : NetworkBehaviour {
 		}, (error) => {
 			Debug.LogError (error);	
 		});
-	}
-		
-	public void SpawnPlayer () {
-		ClientScene.AddPlayer ((short) CurrentUser.GetInstance ().GetPositionInParty ());
 	}
 
 	[Command]
