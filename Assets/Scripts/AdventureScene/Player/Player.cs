@@ -19,6 +19,7 @@ public class Player : Entity {
 
 	new void Start () {
 		base.Start ();
+		user = CurrentUser.GetInstance ().GetUserInfo ();
 		GetComponent<SpriteRenderer> ().sprite = user.character.GetImage ();
 		GetComponent<Animator> ().runtimeAnimatorController = playerControllers [user.character.type];
 		mainCamera.enabled = isLocalPlayer;

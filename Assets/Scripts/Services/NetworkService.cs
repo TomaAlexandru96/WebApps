@@ -63,7 +63,7 @@ public class NetworkService : NetworkManager {
 	public override void OnServerAddPlayer(NetworkConnection conn, short playerControllerId) {
 		GameObject player = Instantiate(playerPrefab);
 		NetworkServer.AddPlayerForConnection(conn, player, playerControllerId);
-		player.GetComponent <Player> ().SetUser (CurrentUser.GetInstance ().GetUserInfo ());
+		//player.GetComponent <Player> ().SetUser (CurrentUser.GetInstance ().GetUserInfo ());
 	}
 
 	public void JoinRoom (string roomName) {
