@@ -57,10 +57,11 @@ public class MenuController : MonoBehaviour {
 
 	public void SwitchToJoinView () {
 		ClearView ();
-		UIPanels [6].SetActive (true);
+		UIPanels [6].GetComponent<RoomController>().Set (true);
 	}
 
 	public void SwitchToPartyView () {
+		UIPanels [6].GetComponent<RoomController>().Set (false);
 		ClearView ();
 		UIPanels [2].SetActive (true);
 	}

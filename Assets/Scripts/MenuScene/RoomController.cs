@@ -10,12 +10,20 @@ public class RoomController : MonoBehaviour {
 	public GameObject gamePartyPrefab;
 	public Text modeName;
 
-	public void Start () {
-		InvokeRepeating ("Refresh", 0f, 1f);
-	}
-
 	public void Update () {
 		modeName.text = menu.GetMode () == PartyMembers.ADVENTURE ? "Adventure" : "Endless";
+	}
+
+	public void Set (bool state) {
+		if (state) {
+			if (!IsInvoking ("Refresh")) {
+				InvokeRepeating ("Refresh", 0f, 1f);
+			}
+		} else {
+			CancelInvoke ();
+		}
+
+		gameObject.SetActive (state);
 	}
 
 	public void Refresh () {
@@ -33,9 +41,5 @@ public class RoomController : MonoBehaviour {
 		foreach (Transform child in content.transform) {
 			Destroy (child.gameObject);
 		}
-	}
-
-	public void OnDestroy () {
-		CancelInvoke ();
 	}
 }
