@@ -20,10 +20,6 @@ public abstract class Entity<T> : Photon.PunBehaviour, IPunObservable where T : 
 			return;
 		}
 
-		if (!photonView.isMine) {
-			return;
-		}
-
 		Attack ();
 		Move ();
 	}
@@ -83,7 +79,7 @@ public abstract class Entity<T> : Photon.PunBehaviour, IPunObservable where T : 
 	// ----------------------------------------------------------------------------------------------------------
 
 	protected void PlayAnimation (string name) {
-		photonView.RPC ("PlayAnimationHelper", PhotonTargets.All, name);
+		// photonView.RPC ("PlayAnimationHelper", PhotonTargets.All, name);
 	}
 
 	[PunRPC]
