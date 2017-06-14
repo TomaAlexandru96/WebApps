@@ -34,4 +34,8 @@ public class RoomController : MonoBehaviour {
 			Destroy (child.gameObject);
 		}
 	}
+
+	public void OnDestroy () {
+		CancelInvoke ();
+	}
 }
