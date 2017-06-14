@@ -12,10 +12,9 @@ public class StoryController : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		ChatController.GetChat ().InitDefaultChat ();
-		GameObject player = NetworkService.GetInstance ().Spawn (playerPrefab.name, spawnPoint.position, Quaternion.identity, 0,
-			new object[1] {CurrentUser.GetInstance ().GetUserInfo ()});
+		GameObject player = NetworkService.GetInstance ().Spawn (playerPrefab, spawnPoint.position, Quaternion.identity);
 		player.GetComponent<Player> ().SetAttack (false);
-		NetworkService.GetInstance ().SpawnScene (partyPrefab.name, Vector3.zero, Quaternion.identity, 0);
+		NetworkService.GetInstance ().Spawn (partyPrefab, Vector3.zero, Quaternion.identity);
 	}
 
 	void OnApplicationQuit () {

@@ -29,7 +29,7 @@ public class Computer : Entity {
 		yield return new WaitForSeconds (0.9f);
 		GetComponent<Animator> ().Play ("Off");
 		explosion = Resources.Load ("Explosion");
-		GameObject ob = NetworkService.GetInstance ().SpawnScene (explosion.name, transform.position, Quaternion.identity, 0);
+		GameObject ob = NetworkService.GetInstance ().Spawn (explosion as GameObject, transform.position, Quaternion.identity);
 		CircleCollider2D explosionRange = gameObject.AddComponent<CircleCollider2D> () as CircleCollider2D;
 		explosionRange.isTrigger = true;
 		explosionRange.radius = 1;

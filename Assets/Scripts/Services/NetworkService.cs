@@ -60,12 +60,18 @@ public class NetworkService : NetworkManager {
 	}
 
 	public void JoinRoom (string roomName) {
-		 // selected.JoinMatch;
+		matchMaker.ListMatches (0, 10, roomName, false, 0, 0, (success, extendedInfo, matches) => {
+			matchMaker.JoinMatch (matches[0].networkId, "", "", "", 0, 0, (succ, extInfo, info) => {
+				this.info = info;
+				StartClient (info);
+			});
+		});
 	}
 
 	public void CreateRoom (string roomName) {
 		matchMaker.CreateMatch (roomName, 4, true, "", "", "", 0, 0, (success, extendedInfo, info) => {
 			this.info = info;
+			StartHost (info);
 		});
 	}
 
@@ -73,7 +79,9 @@ public class NetworkService : NetworkManager {
 		if (info == null) {
 			return;
 		}
+
 		matchMaker.DropConnection (info.networkId, info.nodeId, 0, (success, extendedInfo) => {
+			StopHost ();
 			this.info = null;
 		});
 	}
@@ -88,30 +96,17 @@ public class NetworkService : NetworkManager {
 		}
 	}
 
-	public GameObject Spawn (string prefabName, Vector3 position, Quaternion rotation, int groupID) {
-		return null;
-	}
-
-	public GameObject Spawn (string prefabName, Vector3 position, Quaternion rotation, int groupID, object[] data) {
-		return null;
+	public GameObject Spawn (GameObject prefab, Vector3 position, Quaternion rotation) {
+		GameObject obj = Instantiate (prefab, position, rotation);
+		NetworkServer.Spawn (obj);
+		return obj;
 	}
 
 	public void Destroy (GameObject ob) {
-	}
-
-	public GameObject SpawnScene (string prefabName, Vector3 position, Quaternion rotation, int groupID) {
-		return null;
-	}
-
-	public bool IsMasterClient () {
-		return false;
-	}
-
-	public void OnConnectedToPhoton () {
-		onFinish ();
+		NetworkServer.Destroy (ob);
 	}
 
 	public bool IsInRoom () {
-		return false;
+		return this.info != null;
 	}
 }

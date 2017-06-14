@@ -43,8 +43,8 @@ public class AdventureController : NetworkBehaviour {
 	}
 
 	public void StartGame () {
-		if (NetworkService.GetInstance ().IsMasterClient ()) {
-			NetworkService.GetInstance ().SpawnScene (party.name, Vector3.zero, Quaternion.identity, 0);
+		if (isServer) {
+			NetworkService.GetInstance ().Spawn (party, Vector3.zero, Quaternion.identity);
 			SpawnEnemies ();
 		}
 		loadingScreen.SetActive (false);
@@ -70,14 +70,14 @@ public class AdventureController : NetworkBehaviour {
 
 	public void SpawnPlayer () {
 		// to be changed
-		NetworkService.GetInstance ().Spawn (player.name, 
-			playerSpawnPoints [CurrentUser.GetInstance ().GetPositionInParty ()].position, Quaternion.identity, 0, new object[1] {CurrentUser.GetInstance ().GetUserInfo ()});
+		NetworkService.GetInstance ().Spawn (player, 
+			playerSpawnPoints [CurrentUser.GetInstance ().GetPositionInParty ()].position, Quaternion.identity);
 	}
 
 	public void SpawnEnemies () {
 		for (int i = 0; i < 10; i++) {
-			NetworkService.GetInstance ().SpawnScene (enemies [0].name, new Vector3 (7.795f, -3f, 0f), Quaternion.identity, 0);	
+			NetworkService.GetInstance ().Spawn (enemies [0], new Vector3 (7.795f, -3f, 0f), Quaternion.identity);	
 		}
-		NetworkService.GetInstance ().SpawnScene (enemies [0].name, new Vector3 (7.795f, -4f, 0f), Quaternion.identity, 0);	
+		NetworkService.GetInstance ().Spawn (enemies [0], new Vector3 (7.795f, -4f, 0f), Quaternion.identity);	
 	}
 }
