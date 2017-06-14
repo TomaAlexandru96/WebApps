@@ -22,13 +22,13 @@ public class AdventureController : NetworkBehaviour {
 
 	public void Start () {
 		GameObject.FindGameObjectWithTag ("Chat").GetComponent<ChatController> ().InitDefaultChat ();
-		CmdSpawnPlayer ();
+		SpawnPlayer ();
 		ChatController.GetChat ().withFadeOut = true;
 		CmdOnLoaded (CurrentUser.GetInstance ().GetUserInfo ().username);
 	}
 
-	[Command]
-	public void CmdSpawnPlayer () {
+	public void SpawnPlayer () {
+		Debug.Log ((short) CurrentUser.GetInstance ().GetPositionInParty ());
 		ClientScene.AddPlayer ((short) CurrentUser.GetInstance ().GetPositionInParty ());
 	}
 

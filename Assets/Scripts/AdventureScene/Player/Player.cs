@@ -3,7 +3,8 @@ using System.Collections;
 using UnityEngine;
 
 public class Player : Entity {
-	
+
+	[SyncVar]
 	public Direction move;
 	public Camera mainCamera;
 
@@ -74,6 +75,10 @@ public class Player : Entity {
 	}
 
 	protected override void Attack () {
+		if (!isLocalPlayer) {
+			return;
+		}
+
 		SelectAbility ();
 
 		if (Input.GetKeyUp (KeyCode.Space) && canAttack) {
@@ -85,7 +90,7 @@ public class Player : Entity {
 				if (!abilities.UseAbility ()) {
 					return;
 				}
-				RpcPlayAnimation ("PlayMeleAttackAnimation");
+				CmdPlayAnimation ("PlayMeleAttackAnimation");
 			} else if (selectedAbility.type == Ability.ForkBomb) {
 				RaycastHit2D hit = Physics2D.Raycast (mainCamera.ScreenToWorldPoint (Input.mousePosition), 
 					Vector2.zero, 1f, LayerMask.GetMask ("ForkBomb"));
@@ -94,7 +99,7 @@ public class Player : Entity {
 						return;
 					}
 					hit.transform.GetComponent<Computer> ().explode ();
-					RpcPlayAnimation ("PlayForkBombAttackAnimation");
+					CmdPlayAnimation ("PlayForkBombAttackAnimation");
 				}
 			} else if (selectedAbility.type == Ability.DebugGun) {
 				//TODO
@@ -105,6 +110,10 @@ public class Player : Entity {
 	}
 
 	protected override void Move () {
+		if (!isLocalPlayer) {
+			return;
+		}
+
 		// GET MOVEMENT INPUT
 		float h = Input.GetAxisRaw ("Horizontal");
 		float v = Input.GetAxisRaw ("Vertical");
@@ -140,7 +149,7 @@ public class Player : Entity {
 				move = Direction.Still;
 			}
 		}
-		RpcPlayAnimation ("Animate");
+		CmdPlayAnimation ("Animate");
 	}
 		
 	public void GetHitOvertime () {
@@ -218,7 +227,7 @@ public class Player : Entity {
 	protected override IEnumerator PlayDeadAnimation () {
 		move = Direction.Dead;
 		GetComponent<Rigidbody2D> ().velocity = Vector2.zero;
-		RpcPlayAnimation ("Animate");
+		CmdPlayAnimation ("Animate");
 		yield return GetEmptyIE ();
 	}
 

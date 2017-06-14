@@ -44,13 +44,13 @@ public abstract class Entity : NetworkBehaviour {
 	}
 
 	public virtual void GetHit (Entity entity) {
-		RpcPlayAnimation ("PlayGetHitAnimation");
+		CmdPlayAnimation ("PlayGetHitAnimation");
 	}
 
 	protected void ChangeHealth (float newHealth) {
 		curHP = Mathf.Clamp (newHealth, 0, stats.maxHP);
 		if (isDead ()) {
-			RpcPlayAnimation ("PlayDeadAnimation");
+			CmdPlayAnimation ("PlayDeadAnimation");
 		}
 	}
 
@@ -81,8 +81,13 @@ public abstract class Entity : NetworkBehaviour {
 	// ----------------------------------------------ANIMATIONS--------------------------------------------------
 	// ----------------------------------------------------------------------------------------------------------
 
+	[Command]
+	protected void CmdPlayAnimation (string name) {
+		RpcPlayAnimHelper (name);
+	}
+
 	[ClientRpc]
-	protected void RpcPlayAnimation (string name) {
+	private void RpcPlayAnimHelper (string name) {
 		StartCoroutine (name);
 	}
 
