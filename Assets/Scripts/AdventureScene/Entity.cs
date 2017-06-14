@@ -4,8 +4,10 @@ using UnityEngine;
 using UnityEngine.Networking;
 
 public abstract class Entity : NetworkBehaviour {
-	
+
+	[SyncVar]
 	public float curHP;
+	[SyncVar]
 	public float curSpeed;
 	public EntityStats stats;
 
@@ -18,10 +20,6 @@ public abstract class Entity : NetworkBehaviour {
 
 	protected void Update () {
 		if (isDead ()) {
-			return;
-		}
-
-		if (!isLocalPlayer) {
 			return;
 		}
 
@@ -46,13 +44,13 @@ public abstract class Entity : NetworkBehaviour {
 	}
 
 	public virtual void GetHit (Entity entity) {
-		PlayAnimation ("PlayGetHitAnimation");
+		RpcPlayAnimation ("PlayGetHitAnimation");
 	}
 
 	protected void ChangeHealth (float newHealth) {
 		curHP = Mathf.Clamp (newHealth, 0, stats.maxHP);
 		if (isDead ()) {
-			PlayAnimation ("PlayDeadAnimation");
+			RpcPlayAnimation ("PlayDeadAnimation");
 		}
 	}
 
@@ -83,12 +81,8 @@ public abstract class Entity : NetworkBehaviour {
 	// ----------------------------------------------ANIMATIONS--------------------------------------------------
 	// ----------------------------------------------------------------------------------------------------------
 
-	protected void PlayAnimation (string name) {
-		//photonView.RPC ("PlayAnimationHelper", PhotonTargets.All, name);
-	}
-
-	//[PunRPC]
-	protected void PlayAnimationHelper (string name) {
+	[ClientRpc]
+	protected void RpcPlayAnimation (string name) {
 		StartCoroutine (name);
 	}
 

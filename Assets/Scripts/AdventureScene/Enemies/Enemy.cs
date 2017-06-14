@@ -75,7 +75,7 @@ public abstract class Enemy : Entity {
 			MoveEnemy ();
 		}
 
-		PlayAnimation ("Rotate");
+		RpcPlayAnimation ("Rotate");
 	}
 
 	public Point CurrentTargetPoint() {
@@ -152,7 +152,7 @@ public abstract class Enemy : Entity {
 
 	void OnCollisionEnter2D(Collision2D coll) {
 		if (coll.gameObject.tag.Equals("Player")) {
-			PlayAnimation ("PlayAttackAnimation");
+			RpcPlayAnimation ("PlayAttackAnimation");
 			attackingPlayer = true;
 		} else {
 			if (currentBr != null) {

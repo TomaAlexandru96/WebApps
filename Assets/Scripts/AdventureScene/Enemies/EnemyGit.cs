@@ -31,7 +31,7 @@ public class EnemyGit : Enemy {
 				startAttack = Time.time;
 				Player player = coll.gameObject.GetComponent<Player> ();
 				if (player.isDead ()) {
-					PlayAnimation ("PlayNormalAnimation");
+					RpcPlayAnimation ("PlayNormalAnimation");
 				} else {
 					if (Time.time > nextAction) {
 						player.GetHit (this);

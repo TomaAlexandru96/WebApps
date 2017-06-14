@@ -9,7 +9,7 @@ public class Computer : Entity {
 
 	public void explode() {
 		exploded = true;
-		PlayAnimation ("PlayHackingAnimation");
+		RpcPlayAnimation ("PlayHackingAnimation");
 	}
 
 	protected override void SetStats() {

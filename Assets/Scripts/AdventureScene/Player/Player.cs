@@ -17,6 +17,7 @@ public class Player : Entity {
 
 	new void Start () {
 		base.Start ();
+
 		GetComponent<SpriteRenderer> ().sprite = user.character.GetImage ();
 		GetComponent<Animator> ().runtimeAnimatorController = playerControllers [user.character.type];
 		mainCamera.enabled = isLocalPlayer;
@@ -84,7 +85,7 @@ public class Player : Entity {
 				if (!abilities.UseAbility ()) {
 					return;
 				}
-				PlayAnimation ("PlayMeleAttackAnimation");
+				RpcPlayAnimation ("PlayMeleAttackAnimation");
 			} else if (selectedAbility.type == Ability.ForkBomb) {
 				RaycastHit2D hit = Physics2D.Raycast (mainCamera.ScreenToWorldPoint (Input.mousePosition), 
 					Vector2.zero, 1f, LayerMask.GetMask ("ForkBomb"));
@@ -93,7 +94,7 @@ public class Player : Entity {
 						return;
 					}
 					hit.transform.GetComponent<Computer> ().explode ();
-					PlayAnimation ("PlayForkBombAttackAnimation");
+					RpcPlayAnimation ("PlayForkBombAttackAnimation");
 				}
 			} else if (selectedAbility.type == Ability.DebugGun) {
 				//TODO
@@ -139,7 +140,7 @@ public class Player : Entity {
 				move = Direction.Still;
 			}
 		}
-		PlayAnimation ("Animate");
+		RpcPlayAnimation ("Animate");
 	}
 		
 	public void GetHitOvertime () {
@@ -217,7 +218,7 @@ public class Player : Entity {
 	protected override IEnumerator PlayDeadAnimation () {
 		move = Direction.Dead;
 		GetComponent<Rigidbody2D> ().velocity = Vector2.zero;
-		PlayAnimation ("Animate");
+		RpcPlayAnimation ("Animate");
 		yield return GetEmptyIE ();
 	}
 

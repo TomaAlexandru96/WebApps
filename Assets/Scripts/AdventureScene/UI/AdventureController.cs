@@ -8,7 +8,6 @@ public class AdventureController : NetworkBehaviour {
 
 	public GameObject loadingScreen;
 	public GameObject party;
-	public Transform[] playerSpawnPoints;
 	public GameObject player;
 	public GameObject[] enemies;
 
@@ -25,7 +24,7 @@ public class AdventureController : NetworkBehaviour {
 
 	public void Start () {
 		GameObject.FindGameObjectWithTag ("Chat").GetComponent<ChatController> ().InitDefaultChat ();
-		CmdSpawnPlayer ();
+		SpawnPlayer ();
 		ChatController.GetChat ().withFadeOut = true;
 		CmdOnLoaded (CurrentUser.GetInstance ().GetUserInfo ().username);
 	}
@@ -63,12 +62,9 @@ public class AdventureController : NetworkBehaviour {
 			Debug.LogError (error);	
 		});
 	}
-
-	[Command]
-	public void CmdSpawnPlayer () {
-		//GameObject p = NetworkService.GetInstance ().SpawnWithAuth (player, 
-		//	playerSpawnPoints [CurrentUser.GetInstance ().GetPositionInParty ()].position, Quaternion.identity);
-		//p.GetComponent <Player> ().SetUser (CurrentUser.GetInstance ().GetUserInfo ());
+		
+	public void SpawnPlayer () {
+		ClientScene.AddPlayer ((short) CurrentUser.GetInstance ().GetPositionInParty ());
 	}
 
 	[Command]
