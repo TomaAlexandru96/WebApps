@@ -11,7 +11,7 @@ public class AdventureController : NetworkBehaviour {
 	public GameObject player;
 	public GameObject[] enemies;
 
-	private HashSet<string> loadedPlayers = new HashSet<string> ();
+	private SyncListString loadedPlayers = new SyncListString ();
 
 	public void OnApplicationQuit () {
 		DBServer.GetInstance ().Logout (false, () => {
@@ -22,13 +22,12 @@ public class AdventureController : NetworkBehaviour {
 
 	public void Start () {
 		GameObject.FindGameObjectWithTag ("Chat").GetComponent<ChatController> ().InitDefaultChat ();
-		SpawnPlayer ();
+		// SpawnPlayer ();
 		ChatController.GetChat ().withFadeOut = true;
 		CmdOnLoaded (CurrentUser.GetInstance ().GetUserInfo ().username);
 	}
 
 	public void SpawnPlayer () {
-		Debug.Log ((short) CurrentUser.GetInstance ().GetPositionInParty ());
 		ClientScene.AddPlayer ((short) CurrentUser.GetInstance ().GetPositionInParty ());
 	}
 
