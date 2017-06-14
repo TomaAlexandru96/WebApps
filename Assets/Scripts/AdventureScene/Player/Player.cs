@@ -104,39 +104,41 @@ public class Player : Entity<PlayerStats> {
 	}
 
 	protected override void Move () {
-		// GET MOVEMENT INPUT
-		float h = Input.GetAxisRaw ("Horizontal");
-		float v = Input.GetAxisRaw ("Vertical");
+		if (photonView.isMine) {
+			// GET MOVEMENT INPUT
+			float h = Input.GetAxisRaw ("Horizontal");
+			float v = Input.GetAxisRaw ("Vertical");
 
-		// MOVEMENT
-		Vector2 movement = new Vector2 (h, v).normalized;
-		GetComponent<Rigidbody2D> ().velocity = movement * curSpeed;
-		// RIGHT
-		if (h > 0.1) {
-			if (v > 0.1) {
-				move = Direction.UpRight;
-			} else if (v < -0.1) {
-				move = Direction.DownRight;
+			// MOVEMENT
+			Vector2 movement = new Vector2 (h, v).normalized;
+			GetComponent<Rigidbody2D> ().velocity = movement * curSpeed;
+			// RIGHT
+			if (h > 0.1) {
+				if (v > 0.1) {
+					move = Direction.UpRight;
+				} else if (v < -0.1) {
+					move = Direction.DownRight;
+				} else {
+					move = Direction.Right;
+				}
+				// LEFT
+			} else if (h < -0.1) {
+				if (v > 0.1) {
+					move = Direction.UpLeft;
+				} else if (v < -0.1) {
+					move = Direction.DownLeft;
+				} else {
+					move = Direction.Left;
+				}
+				// STILL
 			} else {
-				move = Direction.Right;
-			}
-			// LEFT
-		} else if (h < -0.1) {
-			if (v > 0.1) {
-				move = Direction.UpLeft;
-			} else if (v < -0.1) {
-				move = Direction.DownLeft;
-			} else {
-				move = Direction.Left;
-			}
-			// STILL
-		} else {
-			if (v > 0.1) {
-				move = Direction.Up;
-			} else if (v < -0.1) {
-				move = Direction.Down;
-			} else {
-				move = Direction.Still;
+				if (v > 0.1) {
+					move = Direction.Up;
+				} else if (v < -0.1) {
+					move = Direction.Down;
+				} else {
+					move = Direction.Still;
+				}
 			}
 		}
 		PlayAnimation ("Animate");
