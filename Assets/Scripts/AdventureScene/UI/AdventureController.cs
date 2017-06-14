@@ -22,21 +22,27 @@ public class AdventureController : NetworkBehaviour {
 
 	public void Start () {
 		GameObject.FindGameObjectWithTag ("Chat").GetComponent<ChatController> ().InitDefaultChat ();
-		// SpawnPlayer ();
+		CmdSpawnPlayer ();
 		ChatController.GetChat ().withFadeOut = true;
 		CmdOnLoaded (CurrentUser.GetInstance ().GetUserInfo ().username);
+		Debug.Log (isServer);
+		Debug.Log (isClient);
 	}
 
-	public void SpawnPlayer () {
+	[Command]
+	public void CmdSpawnPlayer () {
 		ClientScene.AddPlayer ((short) CurrentUser.GetInstance ().GetPositionInParty ());
 	}
 
 	[Command]
 	public void CmdOnLoaded (string name) {
+		Debug.Log ("Scas");
 		loadedPlayers.Add (name);
 		if (AllPartyUsersLoaded ()) {
 			RpcStartGame ();
 		}
+		Debug.Log (loadedPlayers.Count);
+		Debug.Log ("Anything");
 	}
 
 	[ClientRpc]
