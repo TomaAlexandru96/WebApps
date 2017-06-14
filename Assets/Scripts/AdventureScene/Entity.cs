@@ -21,9 +21,9 @@ public abstract class Entity : NetworkBehaviour {
 			return;
 		}
 
-		//if (!photonView.isMine) {
-		//	return;
-		//}
+		if (!isLocalPlayer) {
+			return;
+		}
 
 		Attack ();
 		Move ();

@@ -27,6 +27,7 @@ public class NetworkService : NetworkManager {
 
 	public void StartService (Action onFinish) {
 		this.onFinish = onFinish;
+		this.logLevel = LogFilter.FilterLevel.Error;
 		StartMatchMaker ();
 		onFinish ();
 	}

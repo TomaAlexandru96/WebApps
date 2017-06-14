@@ -12,11 +12,7 @@ public class AdventureController : NetworkBehaviour {
 	public GameObject player;
 	public GameObject[] enemies;
 
-	private HashSet<string> loadedPlayers;
-
-	public void Awake () {
-		loadedPlayers = new HashSet<string> ();
-	}
+	private HashSet<string> loadedPlayers = new HashSet<string> ();
 
 	public void OnApplicationQuit () {
 		DBServer.GetInstance ().Logout (false, () => {
@@ -29,13 +25,13 @@ public class AdventureController : NetworkBehaviour {
 
 	public void Start () {
 		GameObject.FindGameObjectWithTag ("Chat").GetComponent<ChatController> ().InitDefaultChat ();
-		SpawnPlayer ();
+		CmdSpawnPlayer ();
 		ChatController.GetChat ().withFadeOut = true;
-		//photonView.RPC ("OnLoaded", PhotonTargets.All, CurrentUser.GetInstance ().GetUserInfo ().username);
+		CmdOnLoaded (CurrentUser.GetInstance ().GetUserInfo ().username);
 	}
 
-	//[PunRPC]
-	public void OnLoaded (string name) {
+	[Command]
+	public void CmdOnLoaded (string name) {
 		loadedPlayers.Add (name);
 		if (AllPartyUsersLoaded ()) {
 			StartGame ();
@@ -45,7 +41,7 @@ public class AdventureController : NetworkBehaviour {
 	public void StartGame () {
 		if (isServer) {
 			NetworkService.GetInstance ().Spawn (party, Vector3.zero, Quaternion.identity);
-			SpawnEnemies ();
+			CmdSpawnEnemies ();
 		}
 		loadingScreen.SetActive (false);
 	}
@@ -68,13 +64,15 @@ public class AdventureController : NetworkBehaviour {
 		});
 	}
 
-	public void SpawnPlayer () {
-		// to be changed
-		NetworkService.GetInstance ().Spawn (player, 
-			playerSpawnPoints [CurrentUser.GetInstance ().GetPositionInParty ()].position, Quaternion.identity);
+	[Command]
+	public void CmdSpawnPlayer () {
+		//GameObject p = NetworkService.GetInstance ().SpawnWithAuth (player, 
+		//	playerSpawnPoints [CurrentUser.GetInstance ().GetPositionInParty ()].position, Quaternion.identity);
+		//p.GetComponent <Player> ().SetUser (CurrentUser.GetInstance ().GetUserInfo ());
 	}
 
-	public void SpawnEnemies () {
+	[Command]
+	public void CmdSpawnEnemies () {
 		for (int i = 0; i < 10; i++) {
 			NetworkService.GetInstance ().Spawn (enemies [0], new Vector3 (7.795f, -3f, 0f), Quaternion.identity);	
 		}

@@ -14,6 +14,7 @@ public class StoryController : MonoBehaviour {
 		ChatController.GetChat ().InitDefaultChat ();
 		GameObject player = NetworkService.GetInstance ().Spawn (playerPrefab, spawnPoint.position, Quaternion.identity);
 		player.GetComponent<Player> ().SetAttack (false);
+		player.GetComponent <Player> ().SetUser (CurrentUser.GetInstance ().GetUserInfo ());
 		NetworkService.GetInstance ().Spawn (partyPrefab, Vector3.zero, Quaternion.identity);
 	}
 

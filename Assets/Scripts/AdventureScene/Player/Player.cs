@@ -15,22 +15,22 @@ public class Player : Entity {
 	private User user;
 	private bool canAttack = true;
 
-	void Awake () {
-		//this.user = (User) photonView.instantiationData [0];
-	}
-
 	new void Start () {
 		base.Start ();
 		GetComponent<SpriteRenderer> ().sprite = user.character.GetImage ();
 		GetComponent<Animator> ().runtimeAnimatorController = playerControllers [user.character.type];
-		//mainCamera.enabled = photonView.isMine;
-		//mainCamera.GetComponent<AudioListener> ().enabled = photonView.isMine;
+		mainCamera.enabled = isLocalPlayer;
+		mainCamera.GetComponent<AudioListener> ().enabled = isLocalPlayer;
 		InvokeRepeating ("GetHitOvertime", 10, 20);
 
-		//if (photonView.isMine) {
-		//	abilities = GameObject.FindGameObjectWithTag ("PlayerAbilities").GetComponent<PlayerAbilities> ();
-		//	abilities.Init (this);
-		//}
+		if (isLocalPlayer) {
+			abilities = GameObject.FindGameObjectWithTag ("PlayerAbilities").GetComponent<PlayerAbilities> ();
+			abilities.Init (this);
+		}
+	}
+
+	public void SetUser (User user) {
+		this.user = user;
 	}
 
 	public void SetAttack (bool value) {
