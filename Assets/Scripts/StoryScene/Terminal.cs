@@ -18,7 +18,7 @@ public class Terminal : MonoBehaviour {
 		string executable = command.GetComponent<InputField> ().text;
 		executable += " ";
 		string[] execuatableList = executable.Split(new char[] {' '});
-		if (execuatableList [0].Equals ("vim") && execuatableList [1].Equals ("work.txt")) {
+		if (execuatableList [0].Equals ("vim") && execuatableList [1].Equals ("work.hs")) {
 			terminal.SetActive (false);
 			vim.SetActive (true);
 			eventSystem.GetComponent<TerminalEventSystem> ().vimActive = true;
