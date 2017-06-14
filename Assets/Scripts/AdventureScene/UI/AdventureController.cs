@@ -21,6 +21,7 @@ public class AdventureController : NetworkBehaviour {
 	}
 
 	public void Start () {
+		loadingScreen.SetActive (false);
 		GameObject.FindGameObjectWithTag ("Chat").GetComponent<ChatController> ().InitDefaultChat ();
 		SpawnPlayer ();
 		ChatController.GetChat ().withFadeOut = true;
@@ -33,6 +34,7 @@ public class AdventureController : NetworkBehaviour {
 
 	[Command]
 	public void CmdOnLoaded (string name) {
+		Debug.Log (name);
 		loadedPlayers.Add (name);
 		if (AllPartyUsersLoaded ()) {
 			RpcStartGame ();
@@ -45,7 +47,6 @@ public class AdventureController : NetworkBehaviour {
 			NetworkService.GetInstance ().Spawn (party, Vector3.zero, Quaternion.identity);
 			CmdSpawnEnemies ();
 		}
-		loadingScreen.SetActive (false);
 	}
 
 	public bool AllPartyUsersLoaded () {
