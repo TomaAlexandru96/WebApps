@@ -63,6 +63,7 @@ public class NetworkService : NetworkManager {
 	public override void OnServerAddPlayer(NetworkConnection conn, short playerControllerId) {
 		GameObject player = Instantiate(playerPrefab);
 		NetworkServer.AddPlayerForConnection(conn, player, playerControllerId);
+		NetworkServer.SetClientReady (conn);
 		//player.GetComponent <Player> ().SetUser (CurrentUser.GetInstance ().GetUserInfo ());
 	}
 
