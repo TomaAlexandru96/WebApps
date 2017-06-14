@@ -25,8 +25,6 @@ public class AdventureController : NetworkBehaviour {
 		CmdSpawnPlayer ();
 		ChatController.GetChat ().withFadeOut = true;
 		CmdOnLoaded (CurrentUser.GetInstance ().GetUserInfo ().username);
-		Debug.Log (isServer);
-		Debug.Log (isClient);
 	}
 
 	[Command]
@@ -36,13 +34,10 @@ public class AdventureController : NetworkBehaviour {
 
 	[Command]
 	public void CmdOnLoaded (string name) {
-		Debug.Log ("Scas");
 		loadedPlayers.Add (name);
 		if (AllPartyUsersLoaded ()) {
 			RpcStartGame ();
 		}
-		Debug.Log (loadedPlayers.Count);
-		Debug.Log ("Anything");
 	}
 
 	[ClientRpc]

@@ -19,7 +19,6 @@ public class Player : Entity {
 
 	new void Start () {
 		base.Start ();
-
 		GetComponent<SpriteRenderer> ().sprite = user.character.GetImage ();
 		GetComponent<Animator> ().runtimeAnimatorController = playerControllers [user.character.type];
 		mainCamera.enabled = isLocalPlayer;
@@ -239,46 +238,48 @@ public class Player : Entity {
 	}
 
 	protected IEnumerator Animate () {
-		if (!isAttacking) {
-			Animator animator = GetComponent<Animator> ();
-			animator.speed = curSpeed;
+		if (user != null) {
+			if (!isAttacking) {
+				Animator animator = GetComponent<Animator> ();
+				animator.speed = curSpeed;
 
-			int index = user.character.type + 1;
+				int index = user.character.type + 1;
 
-			switch (move) {
-			case Direction.Still:
-				animator.Play ("P"+index+"_Still");
-				break;
-			case Direction.Down:
-				animator.Play ("P"+index+"_Down");
-				break;
-			case Direction.Up:
-				animator.Play ("P"+index+"_Up");
-				break;
-			case Direction.Left:
-				animator.Play ("P"+index+"_Left");
-				break;
-			case Direction.Right:
-				animator.Play ("P"+index+"_Right");
-				break;
-			case Direction.UpRight:
-				animator.Play ("P"+index+"_UpRight");
-				break;
-			case Direction.UpLeft:
-				animator.Play ("P"+index+"_UpLeft");
-				break;
-			case Direction.DownRight:
-				animator.Play ("P"+index+"_DownRight");
-				break;
-			case Direction.DownLeft:
-				animator.Play ("P"+index+"_DownLeft");
-				break;
-			case Direction.Dead:
-				animator.Play ("P"+index+"_Dead");
-				break;
-			}	
+				switch (move) {
+				case Direction.Still:
+					animator.Play ("P"+index+"_Still");
+					break;
+				case Direction.Down:
+					animator.Play ("P"+index+"_Down");
+					break;
+				case Direction.Up:
+					animator.Play ("P"+index+"_Up");
+					break;
+				case Direction.Left:
+					animator.Play ("P"+index+"_Left");
+					break;
+				case Direction.Right:
+					animator.Play ("P"+index+"_Right");
+					break;
+				case Direction.UpRight:
+					animator.Play ("P"+index+"_UpRight");
+					break;
+				case Direction.UpLeft:
+					animator.Play ("P"+index+"_UpLeft");
+					break;
+				case Direction.DownRight:
+					animator.Play ("P"+index+"_DownRight");
+					break;
+				case Direction.DownLeft:
+					animator.Play ("P"+index+"_DownLeft");
+					break;
+				case Direction.Dead:
+					animator.Play ("P"+index+"_Dead");
+					break;
+				}	
+			}
 		}
-
+	
 		yield return GetEmptyIE ();
 	}
 }
