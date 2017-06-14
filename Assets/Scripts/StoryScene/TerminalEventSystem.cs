@@ -9,29 +9,45 @@ public class TerminalEventSystem : MonoBehaviour {
 	private EventSystem es;
 
 	public bool vimActive;
+	public bool writable;
 	public GameObject terminalEntries;
 	public GameObject vimEntries;
+	public GameObject vimText;
 
 	void Start () {
 		es = GetComponent<EventSystem> ();
 		SelectNextItem ();
 		vimActive = false;
+		writable = false;
 	}
 
 	void Update () {
 		if (Input.GetKeyUp (KeyCode.Return)) {
 			if (vimActive){
-				vimEntries.transform.GetComponent<Terminal> ().ExecuteCommand (GetLastEntry ());
+				vimEntries.transform.GetComponent<VimScript> ().ExecuteCommand (GetLastEntry ());
 			} else {
 				terminalEntries.transform.GetComponent<Terminal> ().ExecuteCommand (GetLastEntry ());
 			}
 			SelectNextItem ();
+		} 
+		if (Input.GetKeyUp (KeyCode.I) && vimActive && !writable) {
+			vimEntries.transform.GetComponent<VimScript> ().isActive = true;
+			SelectNextItem ();
+			vimText.GetComponent<Text>().text = "INSERT";
+			writable = true;
+		}
+		if (Input.GetKeyUp (KeyCode.Escape) && vimActive && writable) {
+			vimEntries.transform.GetComponent<VimScript> ().ExecuteCommand (GetLastEntry ());
+			vimEntries.transform.GetComponent<VimScript> ().isActive = false;
+			writable = false;
+			vimText.SetActive (false);
+
 		}
 	}
 
 	private void SelectNextItem () {
 		if (vimActive) {
-			vimEntries.transform.GetComponent<Terminal> ().CreateNewLine ();
+			vimEntries.transform.GetComponent<VimScript> ().CreateNewLine ();
 		} else {
 			terminalEntries.transform.GetComponent<Terminal> ().CreateNewLine ();
 		}
@@ -45,7 +61,10 @@ public class TerminalEventSystem : MonoBehaviour {
 			if (totalEntry > 1) {
 				vimEntries.transform.GetChild (0).GetChild (totalEntry - 2).GetChild (1).GetComponent<InputField> ().interactable = false;
 			}
-			return vimEntries.transform.GetChild (0).GetChild (totalEntry - 1).GetChild (1);
+			if (totalEntry > 0) {
+				return vimEntries.transform.GetChild (0).GetChild (totalEntry - 1).GetChild (1);
+			} 
+			return vimEntries.transform;
 		} else {
 			totalEntry = terminalEntries.transform.GetChild (0).childCount;
 			if (totalEntry > 1) {
