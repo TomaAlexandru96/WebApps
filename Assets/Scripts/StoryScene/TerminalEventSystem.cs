@@ -1,37 +1,54 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
 public class TerminalEventSystem : MonoBehaviour {
 
 	private EventSystem es;
-	private Transform content;
 
+	public bool vimActive;
 	public GameObject terminalEntries;
+	public GameObject vimEntries;
 
 	void Start () {
 		es = GetComponent<EventSystem> ();
 		SelectNextItem ();
-		content = terminalEntries.transform.GetChild (0);
+		vimActive = false;
 	}
 
 	void Update () {
 		if (Input.GetKeyUp (KeyCode.Return)) {
-			terminalEntries.transform.GetComponent<Terminal> ().ExecuteCommand (GetLastEntry ());
+			if (vimActive){
+				vimEntries.transform.GetComponent<Terminal> ().ExecuteCommand (GetLastEntry ());
+			} else {
+				terminalEntries.transform.GetComponent<Terminal> ().ExecuteCommand (GetLastEntry ());
+			}
 			SelectNextItem ();
 		}
 	}
 
 	private void SelectNextItem () {
 		terminalEntries.transform.GetComponent<Terminal> ().CreateNewLine ();
+		vimEntries.transform.GetComponent<Terminal> ().CreateNewLine ();
 		es.SetSelectedGameObject (GetLastEntry().gameObject);
 	}
 
 	private Transform GetLastEntry() {
-		content = terminalEntries.transform.GetChild (0);
-		int totalEntry = content.childCount;
-		Debug.Log (totalEntry);
-		return content.GetChild (totalEntry - 1).GetChild(1);
+		int totalEntry;
+		if (vimActive) {
+			totalEntry = vimEntries.transform.GetChild (0).childCount;
+			if (totalEntry > 1) {
+				vimEntries.transform.GetChild (0).GetChild (totalEntry - 2).GetComponent<InputField> ().interactable = false;
+			}
+			return vimEntries.transform.GetChild (0).GetChild (totalEntry - 1);
+		} else {
+			totalEntry = terminalEntries.transform.GetChild (0).childCount;
+			if (totalEntry > 1) {
+				terminalEntries.transform.GetChild (0).GetChild (totalEntry - 2).GetChild (1).GetComponent<InputField> ().interactable = false;
+			}
+			return terminalEntries.transform.GetChild (0).GetChild (totalEntry - 1).GetChild (1);
+		}
 	}
 }
