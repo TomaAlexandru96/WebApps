@@ -30,8 +30,11 @@ public class TerminalEventSystem : MonoBehaviour {
 	}
 
 	private void SelectNextItem () {
-		terminalEntries.transform.GetComponent<Terminal> ().CreateNewLine ();
-		vimEntries.transform.GetComponent<Terminal> ().CreateNewLine ();
+		if (vimActive) {
+			vimEntries.transform.GetComponent<Terminal> ().CreateNewLine ();
+		} else {
+			terminalEntries.transform.GetComponent<Terminal> ().CreateNewLine ();
+		}
 		es.SetSelectedGameObject (GetLastEntry().gameObject);
 	}
 
@@ -40,9 +43,9 @@ public class TerminalEventSystem : MonoBehaviour {
 		if (vimActive) {
 			totalEntry = vimEntries.transform.GetChild (0).childCount;
 			if (totalEntry > 1) {
-				vimEntries.transform.GetChild (0).GetChild (totalEntry - 2).GetComponent<InputField> ().interactable = false;
+				vimEntries.transform.GetChild (0).GetChild (totalEntry - 2).GetChild (1).GetComponent<InputField> ().interactable = false;
 			}
-			return vimEntries.transform.GetChild (0).GetChild (totalEntry - 1);
+			return vimEntries.transform.GetChild (0).GetChild (totalEntry - 1).GetChild (1);
 		} else {
 			totalEntry = terminalEntries.transform.GetChild (0).childCount;
 			if (totalEntry > 1) {
