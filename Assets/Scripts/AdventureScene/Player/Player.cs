@@ -73,13 +73,15 @@ public class Player : Entity<PlayerStats> {
 	}
 
 	protected override void Attack () {
+		if (abilities == null) {
+			return;
+		}
+
 		SelectAbility ();
 
+		Ability selectedAbility = abilities.GetSelectedAbility ();
+
 		if (Input.GetKeyUp (KeyCode.Space) && canAttack) {
-			
-
-			Ability selectedAbility = abilities.GetSelectedAbility ();
-
 			if (selectedAbility.type == Ability.Mele) {
 				if (!abilities.UseAbility ()) {
 					return;
