@@ -91,21 +91,26 @@ public class Room : MonoBehaviour {
 		GetComponent<Rigidbody2D> ().isKinematic = true;
 	}
 
-	public void CreateHallway (Room r2) {
+	public GameObject CreateHallway (Room r2) {
 		if (connectingRoom.Contains (r2)) {
-			return;
+			return null;
 		}
 
 		connectingRoom.Add (r2);
 		r2.connectingRoom.Add (this);
 
 		if (IsIntersecting (r2)) {
-			Debug.Log (GetPosition ().ToString () + " overlaps " + r2.GetPosition ().ToString ());
-			return;
+			SetNode (true);
+			r2.SetNode (true);
+			return null;
 		}
+
+		SetColor (Color.green);
+		r2.SetColor (Color.green);
 
 		GameObject hall = Instantiate (hallwayPrefab);
 		hall.GetComponent <Hallway> ().Init (this, r2);
+		return hall;
 	}
 
 	public bool IsIntersecting (Room other) {
@@ -113,6 +118,9 @@ public class Room : MonoBehaviour {
 	}
 
 	public Rect GetRect () {
-		return outline.GetComponent<SpriteRenderer> ().sprite.rect;
+		Vector2 s = outline.GetComponent<SpriteRenderer> ().bounds.size;
+		Rect r = new Rect (GetPosition (), s);
+		Debug.Log (r);
+		return r;
 	}
 }
