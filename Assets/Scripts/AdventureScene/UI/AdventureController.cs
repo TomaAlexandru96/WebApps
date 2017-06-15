@@ -26,6 +26,10 @@ public class AdventureController : Photon.MonoBehaviour {
 		ExitGame ();
 	}
 
+	public void Update() {
+		Debug.Log (PhotonNetwork.GetPing());
+	}
+
 	public void Start () {
 		GameObject.FindGameObjectWithTag ("Chat").GetComponent<ChatController> ().InitDefaultChat ();
 		SpawnPlayer ();
@@ -77,6 +81,6 @@ public class AdventureController : Photon.MonoBehaviour {
 		for (int i = 0; i < 10; i++) {
 			// NetworkService.GetInstance ().SpawnScene (enemies [0].name, new Vector3 (7.795f, -3f, 0f), Quaternion.identity, 0);	
 		}
-		NetworkService.GetInstance ().SpawnScene (enemies [0].name, new Vector3 (7.795f, -4f, 0f), Quaternion.identity, 0);	
+		//NetworkService.GetInstance ().SpawnScene (enemies [0].name, new Vector3 (7.795f, -4f, 0f), Quaternion.identity, 0);	
 	}
 }
