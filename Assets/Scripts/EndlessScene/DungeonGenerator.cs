@@ -186,9 +186,21 @@ public class DungeonGenerator : MonoBehaviour {
 			map.Add (room.GetPosition (), room);
 		}
 
+		List<GameObject> hallways = new List<GameObject> ();
+
 		graph.ForEachEdge ((Edge e) => {
-			map[e.p1.point].CreateHallway (map[e.p2.point]);
+			GameObject hall = map[e.p1.point].CreateHallway (map[e.p2.point]);
+			if (hall == null) {
+				return;
+			}
+			hallways.Add (hall);
+			hall.SetActive (false);
 		});
+
+		foreach (var hall in hallways) {
+			hall.SetActive (true);
+			yield return new WaitForSeconds (0.01f);
+		}
 
 		yield return new WaitForSeconds (1.5f);
 	}
