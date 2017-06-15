@@ -8,10 +8,14 @@ public class terminalColliderScript : MonoBehaviour {
 
 	public GameObject terminal;
 	public EventSystem es;
+	private bool canBeActivated = true;
 
 	void OnTriggerEnter2D(Collider2D coll) {
-		terminal.SetActive (true);
-		es.GetComponent<TerminalEventSystem> ().SelectNextItem();
+		if (canBeActivated) {
+			terminal.SetActive (true);
+			es.GetComponent<TerminalEventSystem> ().SelectNextItem();
+			canBeActivated = false;
+		}
 	}
 
 	void OnTriggerExit2D(Collider2D coll) {
