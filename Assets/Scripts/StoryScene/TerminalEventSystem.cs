@@ -32,16 +32,23 @@ public class TerminalEventSystem : MonoBehaviour {
 		} 
 		if (Input.GetKeyUp (KeyCode.I) && vimActive && !writable) {
 			vimEntries.transform.GetComponent<VimScript> ().isActive = true;
-			SelectNextItem ();
+
+			if ( vimEntries.transform.GetChild (0).childCount>0) {
+				es.SetSelectedGameObject (GetLastEntry().gameObject);
+			} else {
+				SelectNextItem ();
+			}
+
 			vimText.GetComponent<Text>().text = "INSERT";
 			writable = true;
 		}
 		if (Input.GetKeyUp (KeyCode.Escape) && vimActive && writable) {
-			vimEntries.transform.GetComponent<VimScript> ().ExecuteCommand (GetLastEntry ());
+			GetLastEntry ().GetComponent<InputField> ().interactable = false;
+
 			vimEntries.transform.GetComponent<VimScript> ().isActive = false;
 			writable = false;
-			vimText.SetActive (false);
 
+			vimText.SetActive (false);
 		}
 	}
 
