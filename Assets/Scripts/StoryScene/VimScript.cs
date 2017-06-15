@@ -43,8 +43,6 @@ public class VimScript : MonoBehaviour {
 				scrollView.GetComponent<ScrollRect> ().velocity = new Vector2 (0f, 100f);
 			}
 			numberOfEntries++;
-		} else {
-			Debug.Log ("Enter I");
 		}
 	}
 }
