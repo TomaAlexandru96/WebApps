@@ -94,7 +94,7 @@ public class TerminalEventSystem : MonoBehaviour {
 		es.SetSelectedGameObject (GetLastEntry().gameObject);
 	}
 
-	private Transform GetLastEntry() {
+	public  Transform GetLastEntry() {
 		int totalEntry;
 		if (vimActive) {
 			totalEntry = vimEntries.transform.GetChild (0).childCount;
