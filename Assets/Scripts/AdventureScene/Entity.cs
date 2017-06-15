@@ -79,7 +79,7 @@ public abstract class Entity<T> : Photon.MonoBehaviour, IPunObservable where T :
 	// ----------------------------------------------------------------------------------------------------------
 
 	protected void PlayAnimation (string name) {
-		photonView.RPC ("PlayAnimationHelper", PhotonTargets.All, name);
+		// photonView.RPC ("PlayAnimationHelper", PhotonTargets.All, name);
 	}
 
 	[PunRPC]
