@@ -20,18 +20,16 @@ public class VimScript : MonoBehaviour {
 		isActive = false;
 	}
 
-	public void ExecuteCommand(Transform command) {
-//		string executable = command.GetComponent<InputField> ().text;
-//		executable += " ";
-//		string[] execuatableList = executable.Split(new char[] {' '});
-
-//		if (execuatableList [0].Equals ("vim") && execuatableList [1].Equals ("work.hs")) {
-//			terminal.SetActive (false);
-//			vim.SetActive (true);
-//			eventSystem.GetComponent<TerminalEventSystem> ().vimActive = true;
-//		} else {
-//			Debug.Log ("try again");
-//		}
+	public void ExecuteCommand(string command) {
+		if (command.Equals (":wq")) {
+			terminal.SetActive (true);
+			vim.SetActive (false);
+			eventSystem.GetComponent<TerminalEventSystem> ().vimActive = false;
+			eventSystem.GetComponent<TerminalEventSystem> ().SelectNextItem();
+		} else {
+			Debug.Log ("try again");
+			eventSystem.GetComponent<TerminalEventSystem> ().resetVimCommand ();
+		}
 	}
 
 	public void CreateNewLine() {

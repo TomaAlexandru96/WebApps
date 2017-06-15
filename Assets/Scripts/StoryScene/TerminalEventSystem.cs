@@ -29,13 +29,14 @@ public class TerminalEventSystem : MonoBehaviour {
 
 	void Update () {
 		if (Input.GetKeyUp (KeyCode.Return)) {
-			if (vimCommand.GetComponent<InputField> ().isFocused && vimActive) {
-				Debug.Log ("uihsf");
+			if (writable2 && vimActive) {
+				es.SetSelectedGameObject (vimCommand);
+				vimEntries.GetComponent<VimScript> ().ExecuteCommand (vimCommand.GetComponent<InputField>().text);
 				return;
 			}
 
 			if (vimActive){
-				vimEntries.transform.GetComponent<VimScript> ().ExecuteCommand (GetLastEntry ());
+				vimEntries.transform.GetComponent<VimScript> ().ExecuteCommand ("");
 			} else {
 				terminalEntries.transform.GetComponent<Terminal> ().ExecuteCommand (GetLastEntry ());
 			}
@@ -47,7 +48,6 @@ public class TerminalEventSystem : MonoBehaviour {
 			if ( vimEntries.transform.GetChild (0).childCount>0) {
 				GetLastEntry ().GetComponent<InputField> ().interactable = true;
 				es.SetSelectedGameObject (GetLastEntry().gameObject);
-				Debug.Log ("called last");
 			} else {
 				SelectNextItem ();
 			}
@@ -59,9 +59,10 @@ public class TerminalEventSystem : MonoBehaviour {
 
 		if (Input.GetKeyDown (";") && vimActive && !writable) {
 			writable2 = true;
-
+			writable = true;
 			vimCommand.SetActive (true);
 			es.SetSelectedGameObject (vimCommand);
+			vimCommand.GetComponent<InputField> ().text = ":";
 		}
 
 		if (Input.GetKeyUp (KeyCode.Escape) && vimActive && (writable || writable2)) {
@@ -84,7 +85,7 @@ public class TerminalEventSystem : MonoBehaviour {
 		}
 	}
 
-	private void SelectNextItem () {
+	public void SelectNextItem () {
 		if (vimActive) {
 			vimEntries.transform.GetComponent<VimScript> ().CreateNewLine ();
 		} else {
@@ -111,5 +112,10 @@ public class TerminalEventSystem : MonoBehaviour {
 			}
 			return terminalEntries.transform.GetChild (0).GetChild (totalEntry - 1).GetChild (1);
 		}
+	}
+
+	public void resetVimCommand() {
+		vimCommand.GetComponent<InputField> ().text = "";
+		es.SetSelectedGameObject (vimCommand);
 	}
 }
