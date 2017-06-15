@@ -8,6 +8,7 @@ public class Terminal : MonoBehaviour {
 
 	public GameObject terminalEntry;
 	public GameObject scrollView;
+	public GameObject instructions;
 
 	public GameObject terminal;
 	public GameObject vim;
@@ -32,11 +33,14 @@ public class Terminal : MonoBehaviour {
 			executionNumeber++;
 			CreateNewLine ();
 			transform.GetChild (0).GetChild (totalEntry).GetChild(0).GetComponent<Text>().text = "Initialized empty Git repository";
-		} else if (executionNumeber == 2 &&execuatableList [0].Equals ("git") && execuatableList [1].Equals ("add") && execuatableList [2].Equals ("work.hs")) {
+		} else if (executionNumeber == 2 &&execuatableList [0].Equals ("git") && execuatableList [1].Equals ("remote") && execuatableList [2].Equals ("add")
+			&& execuatableList [3].Equals ("origin") && execuatableList [4].Equals ("https://github.com/user/repo.git")){
+			executionNumeber++;
+		} else if (executionNumeber == 3 &&execuatableList [0].Equals ("git") && execuatableList [1].Equals ("add") && execuatableList [2].Equals ("work.hs")) {
 			executionNumeber++;
 			CreateNewLine ();
 			transform.GetChild (0).GetChild (totalEntry).GetChild(0).GetComponent<Text>().text = "Added file work.hs";
-		} else if (executionNumeber == 3 &&execuatableList [0].Equals ("git") && execuatableList [1].Equals ("commit")) {
+		} else if (executionNumeber == 4 &&execuatableList [0].Equals ("git") && execuatableList [1].Equals ("commit")) {
 			executionNumeber++;
 			CreateNewLine ();
 			transform.GetChild (0).GetChild (totalEntry).GetChild(0).GetComponent<Text>().text = "[master (root-commit) 39i8fp] add work.hs";
@@ -44,7 +48,7 @@ public class Terminal : MonoBehaviour {
 			transform.GetChild (0).GetChild (totalEntry+1).GetChild(0).GetComponent<Text>().text = "1 file changed, 1 insertion(+)";
 			CreateNewLine ();
 			transform.GetChild (0).GetChild (totalEntry+2).GetChild(0).GetComponent<Text>().text = "create mode 100644 work.hs";
-		} else if (executionNumeber == 4 &&execuatableList [0].Equals ("git") && execuatableList [1].Equals ("push")) {
+		} else if (executionNumeber == 5 &&execuatableList [0].Equals ("git") && execuatableList [1].Equals ("push")) {
 			CreateNewLine ();
 			transform.GetChild (0).GetChild (totalEntry).GetChild(0).GetComponent<Text>().text = "Counting objects: 1, done.";
 			CreateNewLine ();
@@ -56,8 +60,9 @@ public class Terminal : MonoBehaviour {
 			CreateNewLine ();
 			transform.GetChild (0).GetChild (totalEntry+4).GetChild(0).GetComponent<Text>().text = "Press Enter to exit the terminal";
 			executionNumeber++;
-		} else if (executionNumeber == 5) {
+		} else if (executionNumeber == 6) {
 			terminal.SetActive (false);
+			instructions.SetActive (false);
 		} else {
 			Debug.Log ("try again");
 		}
