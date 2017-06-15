@@ -20,7 +20,6 @@ public class TerminalEventSystem : MonoBehaviour {
 
 	void Start () {
 		es = GetComponent<EventSystem> ();
-		SelectNextItem ();
 		vimActive = false;
 		writable = false;
 		writable2 = false;
@@ -86,6 +85,8 @@ public class TerminalEventSystem : MonoBehaviour {
 	}
 
 	public void SelectNextItem () {
+		Debug.Log ("called");
+
 		if (vimActive) {
 			vimEntries.transform.GetComponent<VimScript> ().CreateNewLine ();
 		} else {

@@ -11,7 +11,7 @@ public class terminalColliderScript : MonoBehaviour {
 
 	void OnTriggerEnter2D(Collider2D coll) {
 		terminal.SetActive (true);
-		es.SetSelectedGameObject (es.GetComponent<TerminalEventSystem> ().GetLastEntry().gameObject);
+		es.GetComponent<TerminalEventSystem> ().SelectNextItem();
 	}
 
 	void OnTriggerExit2D(Collider2D coll) {
