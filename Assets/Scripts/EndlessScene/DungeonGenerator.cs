@@ -37,9 +37,17 @@ public class DungeonGenerator : MonoBehaviour {
 			yield return new WaitForSeconds (0.005f);
 		}
 		// wait for collision to finnish
-		yield return new WaitForSeconds (3f);
+		yield return new WaitForSeconds (5f);
+
 		foreach (var room in rooms) {
 			room.RemovePhys ();
+		}
+
+		progressText.text = "Rounding position to nearest int";
+
+		foreach (var room in rooms) {
+			room.RoundPositionToNearestInt ();
+			yield return new WaitForSeconds (0.002f);
 		}
 
 		StartCoroutine (SelectMainRooms ());
@@ -160,10 +168,10 @@ public class DungeonGenerator : MonoBehaviour {
 			DestroyImmediate (line);
 		}
 
-		StartCoroutine (CreateHallways ());
+		StartCoroutine (CreateHallways (mst));
 	}
 
-	private IEnumerator CreateHallways () {
+	private IEnumerator CreateHallways (Graph graph) {
 		progressText.text = "Creating hallways";
 
 		foreach (var room in rooms) {
@@ -171,9 +179,16 @@ public class DungeonGenerator : MonoBehaviour {
 			room.gameObject.SetActive (false);
 		}
 
+		Dictionary<Vector2, Room> map = new Dictionary<Vector2, Room> ();
+
 		foreach (var room in mainRooms) {
 			room.gameObject.SetActive (true);
+			map.Add (room.GetPosition (), room);
 		}
+
+		graph.ForEachEdge ((Edge e) => {
+			map[e.p1.point].CreateHallway (map[e.p2.point]);
+		});
 
 		yield return new WaitForSeconds (1.5f);
 	}

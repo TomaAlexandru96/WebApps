@@ -9,6 +9,8 @@ public class Room : MonoBehaviour {
 	public GameObject tilePrefab;
 	public GameObject outline;
 	public GameObject nodePrefab;
+	public GameObject hallwayPrefab;
+	public List<Room> connectingRoom;
 
 	private GameObject node;
 
@@ -60,6 +62,13 @@ public class Room : MonoBehaviour {
 		SetNode (false);
 	}
 
+	public void RoundPositionToNearestInt () {
+		Vector3 pos = transform.position;
+		pos.x = Mathf.Round (pos.x);
+		pos.y = Mathf.Round (pos.y);
+		transform.position = pos;
+	}
+
 	public void SetColor (Color color) {
 		for (int i = 1; i < transform.childCount - 1; i++) {
 			transform.GetChild (i).GetComponent<SpriteRenderer> ().color = color;
@@ -82,7 +91,28 @@ public class Room : MonoBehaviour {
 		GetComponent<Rigidbody2D> ().isKinematic = true;
 	}
 
-	public static void CreateHallway (Room r1, Room r2) {
-		
+	public void CreateHallway (Room r2) {
+		if (connectingRoom.Contains (r2)) {
+			return;
+		}
+
+		connectingRoom.Add (r2);
+		r2.connectingRoom.Add (this);
+
+		if (IsIntersecting (r2)) {
+			Debug.Log (GetPosition ().ToString () + " overlaps " + r2.GetPosition ().ToString ());
+			return;
+		}
+
+		GameObject hall = Instantiate (hallwayPrefab);
+		hall.GetComponent <Hallway> ().Init (this, r2);
+	}
+
+	public bool IsIntersecting (Room other) {
+		return GetRect ().Overlaps (other.GetRect ());
+	}
+
+	public Rect GetRect () {
+		return outline.GetComponent<SpriteRenderer> ().sprite.rect;
 	}
 }
