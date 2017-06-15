@@ -3,9 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Hallway : MonoBehaviour {
-
-	private Room r1;
-	private Room r2;
+	
+	public Room r1;
+	public Room r2;
+	public bool isHallway2 = false;
+	public bool isHallway3 = false;
+	public List<Vector2> points = new List<Vector2> ();
 
 	public bool Contains (Room r) {
 		return r1.GetPosition ().Equals (r.GetPosition ()) || r2.GetPosition ().Equals (r.GetPosition ());
@@ -28,7 +31,6 @@ public class Hallway : MonoBehaviour {
 		// r2 -> bottom, left, top, right
 		// not overlapping
 
-		bool createHallway2 = false;
 		Vector2 point1 = new Vector2 (0, 0);
 		Vector2 point2 = new Vector2 (0, 0);
 
@@ -39,11 +41,11 @@ public class Hallway : MonoBehaviour {
 			if (deltaRight > 0) {
 				point1.x = deltaRight / 2;
 				point2.x = deltaRight / 2;
-				createHallway2 = true;
+				isHallway2 = true;
 			} else if (deltaLeft > 0) {
 				point1.x = deltaLeft / 2;
 				point2.x = deltaLeft / 2;
-				createHallway2 = true;
+				isHallway2 = true;
 			}
 		} else if (sizeR1.center.x > sizeR2.center.x) {
 			point1.x = sizeR1.xMin;
@@ -52,11 +54,11 @@ public class Hallway : MonoBehaviour {
 			if (deltaBottom > 0) {
 				point1.y = deltaBottom / 2;
 				point2.y = deltaBottom / 2;
-				createHallway2 = true;
+				isHallway2 = true;
 			} else if (deltaTop > 0) {
 				point1.y = deltaTop / 2;
 				point2.y = deltaTop / 2;
-				createHallway2 = true;
+				isHallway2 = true;
 			}
 		} else if (sizeR1.center.y < sizeR2.center.y) {
 			point1.y = sizeR1.yMax;
@@ -65,11 +67,11 @@ public class Hallway : MonoBehaviour {
 			if (deltaRight > 0) {
 				point1.x = deltaRight / 2;
 				point2.x = deltaRight / 2;
-				createHallway2 = true;
+				isHallway2 = true;
 			} else if (deltaLeft > 0) {
 				point1.x = deltaLeft / 2;
 				point2.x = deltaLeft / 2;
-				createHallway2 = true;
+				isHallway2 = true;
 			}
 		} else if (sizeR1.center.x < sizeR2.center.x) {
 			point1.x = sizeR1.xMax;
@@ -78,22 +80,23 @@ public class Hallway : MonoBehaviour {
 			if (deltaBottom > 0) {
 				point1.y = deltaBottom / 2;
 				point2.y = deltaBottom / 2;
-				createHallway2 = true;
+				isHallway2 = true;
 			} else if (deltaTop > 0) {
 				point1.y = deltaTop / 2;
 				point2.y = deltaTop / 2;
-				createHallway2 = true;
+				isHallway2 = true;
 			}
 		}
 
-		if (createHallway2) {
+		if (isHallway2) {
 			CreateHallway2 (point1, point2);
 			return;
 		}
 	}
 
 	public void CreateHallway2 (Vector2 point1, Vector2 point2) {
-		Debug.Log (point1 + " connected to " + point2);
+		points.Add (point1);
+		points.Add (point2);
 	}
 
 	public void CreateHallway3 (Vector2 point1, Vector2 point2) {
