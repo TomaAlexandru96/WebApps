@@ -57,7 +57,7 @@ public abstract class Entity<T> : Photon.MonoBehaviour, IPunObservable where T :
 
 	#region IPunObservable implementation
 	void IPunObservable.OnPhotonSerializeView (PhotonStream stream, PhotonMessageInfo info) {
-		if (stream.isWriting) {
+		/*if (stream.isWriting) {
 			stream.SendNext (curHP);
 			stream.SendNext (curSpeed);
 			OnSendNext (stream, info);
@@ -66,7 +66,7 @@ public abstract class Entity<T> : Photon.MonoBehaviour, IPunObservable where T :
 			curHP = (float) stream.ReceiveNext ();
 			curSpeed = (float) stream.ReceiveNext ();
 			OnReceiveNext (stream, info);
-		}
+		}*/
 	}
 	#endregion
 
@@ -79,7 +79,7 @@ public abstract class Entity<T> : Photon.MonoBehaviour, IPunObservable where T :
 	// ----------------------------------------------------------------------------------------------------------
 
 	protected void PlayAnimation (string name) {
-		photonView.RPC ("PlayAnimationHelper", PhotonTargets.All, name);
+		//photonView.RPC ("PlayAnimationHelper", PhotonTargets.All, name);
 	}
 
 	[PunRPC]
