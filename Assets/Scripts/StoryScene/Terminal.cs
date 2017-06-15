@@ -14,14 +14,45 @@ public class Terminal : MonoBehaviour {
 	public EventSystem eventSystem;
 	public int numberOfEntries = 0;
 
+	public int executionNumeber = 0;
+
 	public void ExecuteCommand(Transform command) {
 		string executable = command.GetComponent<InputField> ().text;
 		executable += " ";
+		int totalEntry = transform.GetChild (0).childCount;
 		string[] execuatableList = executable.Split(new char[] {' '});
-		if (execuatableList [0].Equals ("vim") && execuatableList [1].Equals ("work.hs")) {
+
+
+		if (executionNumeber==0 &&execuatableList [0].Equals ("vim") && execuatableList [1].Equals ("work.hs")) {
 			terminal.SetActive (false);
 			vim.SetActive (true);
 			eventSystem.GetComponent<TerminalEventSystem> ().vimActive = true;
+			executionNumeber++;
+		} else if (executionNumeber == 1 &&execuatableList [0].Equals ("git") && execuatableList [1].Equals ("init")){
+			executionNumeber++;
+			CreateNewLine ();
+			transform.GetChild (0).GetChild (totalEntry).GetChild(0).GetComponent<Text>().text = "Initialized empty Git repository";
+		} else if (executionNumeber == 2 &&execuatableList [0].Equals ("git") && execuatableList [1].Equals ("add") && execuatableList [2].Equals ("work.hs")) {
+			executionNumeber++;
+			CreateNewLine ();
+			transform.GetChild (0).GetChild (totalEntry).GetChild(0).GetComponent<Text>().text = "Added file work.hs";
+		} else if (executionNumeber == 3 &&execuatableList [0].Equals ("git") && execuatableList [1].Equals ("commit")) {
+			executionNumeber++;
+			CreateNewLine ();
+			transform.GetChild (0).GetChild (totalEntry).GetChild(0).GetComponent<Text>().text = "[master (root-commit) 39i8fp] add work.hs";
+			CreateNewLine ();
+			transform.GetChild (0).GetChild (totalEntry+1).GetChild(0).GetComponent<Text>().text = "1 file changed, 1 insertion(+)";
+			CreateNewLine ();
+			transform.GetChild (0).GetChild (totalEntry+2).GetChild(0).GetComponent<Text>().text = "create mode 100644 work.hs";
+		} else if (executionNumeber == 4 &&execuatableList [0].Equals ("git") && execuatableList [1].Equals ("push")) {
+			CreateNewLine ();
+			transform.GetChild (0).GetChild (totalEntry).GetChild(0).GetComponent<Text>().text = "Counting objects: 1, done.";
+			CreateNewLine ();
+			transform.GetChild (0).GetChild (totalEntry+1).GetChild(0).GetComponent<Text>().text = "Delta compression using up to 4 threads.";
+			CreateNewLine ();
+			transform.GetChild (0).GetChild (totalEntry+2).GetChild(0).GetComponent<Text>().text = "remote: Resolving deltas: 100%, completed.";
+			CreateNewLine ();
+			transform.GetChild (0).GetChild (totalEntry+3).GetChild(0).GetComponent<Text>().text = "Successfully pushed to branch master";
 		} else {
 			Debug.Log ("try again");
 		}
