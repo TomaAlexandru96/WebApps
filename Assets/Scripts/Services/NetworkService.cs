@@ -31,7 +31,7 @@ public class NetworkService : Photon.PunBehaviour {
 		PhotonNetwork.automaticallySyncScene = true;
 		PhotonNetwork.InstantiateInRoomOnly = true;
 		PhotonNetwork.sendRate = 20;
-		PhotonNetwork.sendRateOnSerialize = 40;
+		PhotonNetwork.sendRateOnSerialize = 20;
 		ExitGames.Client.Photon.PhotonPeer.RegisterType	(typeof (User), 2, 
 			new SerializeMethod ((object userObj) => {
 				User cast = (User) userObj;
