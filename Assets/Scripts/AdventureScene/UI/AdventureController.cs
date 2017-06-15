@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
 public class AdventureController : Photon.MonoBehaviour {
@@ -10,6 +11,8 @@ public class AdventureController : Photon.MonoBehaviour {
 	public Transform[] playerSpawnPoints;
 	public GameObject player;
 	public GameObject[] enemies;
+	public Text ping;
+	private float pingTest;
 
 	private HashSet<string> loadedPlayers;
 
@@ -25,15 +28,19 @@ public class AdventureController : Photon.MonoBehaviour {
 		});
 		ExitGame ();
 	}
-
+		
 	public void Update() {
-		Debug.Log (PhotonNetwork.GetPing());
+		if (pingTest + 2f < Time.time) {
+			pingTest = Time.time;
+			ping.text = PhotonNetwork.GetPing().ToString ();	
+		}
 	}
 
 	public void Start () {
 		GameObject.FindGameObjectWithTag ("Chat").GetComponent<ChatController> ().InitDefaultChat ();
 		SpawnPlayer ();
 		ChatController.GetChat ().withFadeOut = true;
+		pingTest = Time.time;
 		photonView.RPC ("OnLoaded", PhotonTargets.All, CurrentUser.GetInstance ().GetUserInfo ().username);
 	}
 
@@ -79,8 +86,8 @@ public class AdventureController : Photon.MonoBehaviour {
 
 	public void SpawnEnemies () {
 		for (int i = 0; i < 10; i++) {
-			// NetworkService.GetInstance ().SpawnScene (enemies [0].name, new Vector3 (7.795f, -3f, 0f), Quaternion.identity, 0);	
+			NetworkService.GetInstance ().SpawnScene (enemies [0].name, new Vector3 (7.795f, -3f, 0f), Quaternion.identity, 0);	
 		}
-		//NetworkService.GetInstance ().SpawnScene (enemies [0].name, new Vector3 (7.795f, -4f, 0f), Quaternion.identity, 0);	
+		NetworkService.GetInstance ().SpawnScene (enemies [0].name, new Vector3 (7.795f, -4f, 0f), Quaternion.identity, 0);	
 	}
 }
