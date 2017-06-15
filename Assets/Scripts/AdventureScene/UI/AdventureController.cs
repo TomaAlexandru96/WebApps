@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class AdventureController : Photon.PunBehaviour {
+public class AdventureController : Photon.MonoBehaviour {
 
 	public GameObject loadingScreen;
 	public GameObject party;
