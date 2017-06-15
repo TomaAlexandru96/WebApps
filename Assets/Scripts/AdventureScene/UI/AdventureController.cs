@@ -79,8 +79,8 @@ public class AdventureController : Photon.MonoBehaviour {
 
 	public void SpawnEnemies () {
 		for (int i = 0; i < 10; i++) {
-			// NetworkService.GetInstance ().SpawnScene (enemies [0].name, new Vector3 (7.795f, -3f, 0f), Quaternion.identity, 0);	
+			NetworkService.GetInstance ().SpawnScene (enemies [0].name, new Vector3 (7.795f, -3f, 0f), Quaternion.identity, 0);	
 		}
-		//NetworkService.GetInstance ().SpawnScene (enemies [0].name, new Vector3 (7.795f, -4f, 0f), Quaternion.identity, 0);	
+		NetworkService.GetInstance ().SpawnScene (enemies [0].name, new Vector3 (7.795f, -4f, 0f), Quaternion.identity, 0);	
 	}
 }
