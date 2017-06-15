@@ -69,7 +69,7 @@ public class ExitGates : MonoBehaviour {
 		text [0] = "Welcome back               Congratulations                now you are a student here";
 		text [1] = "Today you need to submit            your first assignment              Lets do it together";
 		text [2] = "You need to submit it both electronically and physically";
-		text [3] = "Go to computing labs";
+		text [3] = "Go to computing labs and loging to one of the computers";
 		floor.transform.GetComponent<Huxely_2ndFloor> ().text = text;
 		directionPanel.transform.GetComponent<DirectionPanel> ().DisplayText (text [0]);
 		floor.transform.GetComponent<Huxely_2ndFloor> ().dateTime = DateTime.Now;
