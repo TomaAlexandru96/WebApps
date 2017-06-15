@@ -64,6 +64,10 @@ public class Graph {
 		}
 	}
 
+	public bool IsConnected (Vertex v1, Vertex v2) {
+		return graph [v1].Contains (v2);
+	}
+
 	public Dictionary<Vertex, List<Vertex>> GetGraph () {
 		return graph;
 	}
@@ -93,7 +97,8 @@ public class Graph {
 		foreach (var entry in graph) {
 			i += entry.Value.Count;
 			if (i >= randomNr) {
-				return new Edge (entry.Key, entry.Value[i - randomNr]);
+				int rand = UnityEngine.Random.Range (0, entry.Value.Count - 1);
+				return new Edge (entry.Key, entry.Value[rand]);
 			}
 		}
 
