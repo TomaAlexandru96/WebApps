@@ -29,7 +29,7 @@ public class ToniScript : MonoBehaviour {
 		foodFinished = false;
 		interview = false;
 		foodInfo = false;
-		directionPanel = GameObject.FindGameObjectsWithTag ("Canvas")[0].transform.GetChild(0).gameObject;
+		directionPanel = GameObject.FindGameObjectWithTag ("Canvas").transform.GetChild(1).gameObject;
 		huxely308 = GameObject.FindGameObjectWithTag ("Huxely308").transform;
 	}
 
