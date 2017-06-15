@@ -199,13 +199,20 @@ public class DungeonGenerator : MonoBehaviour {
 
 		foreach (var hall in hallways) {
 			hall.SetActive (true);
+			Hallway h = hall.GetComponent<Hallway> ();
+			if (h.isHallway2) {
+				CreateLine (new Vector3 (h.points[0].x, h.points[1].x), new Vector3 (h.points[0].y, h.points[1].y));
+				Debug.Log (h.r1.GetPosition ());
+				Debug.Log (h.r2.GetPosition ());
+				Debug.Break ();
+			}
 			yield return new WaitForSeconds (0.01f);
 		}
 
 		yield return new WaitForSeconds (1.5f);
 	}
 
-	private GameObject CreateLine (Vector3 position1, Vector3 position2) {
+	public GameObject CreateLine (Vector3 position1, Vector3 position2) {
 		GameObject line = Instantiate (linePrefab);
 		line.GetComponent<LineRenderer> ().SetPosition (0, position1);
 		line.GetComponent<LineRenderer> ().SetPosition (1, position2);
