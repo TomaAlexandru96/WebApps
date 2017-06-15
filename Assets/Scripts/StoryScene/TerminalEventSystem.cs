@@ -50,6 +50,8 @@ public class TerminalEventSystem : MonoBehaviour {
 
 			vimText.SetActive (false);
 		}
+
+		
 	}
 
 	private void SelectNextItem () {
