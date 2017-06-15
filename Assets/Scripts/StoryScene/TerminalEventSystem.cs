@@ -10,6 +10,7 @@ public class TerminalEventSystem : MonoBehaviour {
 
 	public bool vimActive;
 	public bool writable;
+	public bool writable2;
 	public GameObject terminalEntries;
 	public GameObject vimEntries;
 	public GameObject vimText;
@@ -22,6 +23,7 @@ public class TerminalEventSystem : MonoBehaviour {
 		SelectNextItem ();
 		vimActive = false;
 		writable = false;
+		writable2 = false;
 		vimCommand.SetActive (false);
 	}
 
@@ -43,7 +45,9 @@ public class TerminalEventSystem : MonoBehaviour {
 			vimEntries.transform.GetComponent<VimScript> ().isActive = true;
 
 			if ( vimEntries.transform.GetChild (0).childCount>0) {
+				GetLastEntry ().GetComponent<InputField> ().interactable = true;
 				es.SetSelectedGameObject (GetLastEntry().gameObject);
+				Debug.Log ("called last");
 			} else {
 				SelectNextItem ();
 			}
@@ -53,26 +57,30 @@ public class TerminalEventSystem : MonoBehaviour {
 			writable = true;
 		}
 
-		if (Input.GetKeyUp (KeyCode.I) && vimActive && !writable) {
-			writable = true;
+		if (Input.GetKeyDown (";") && vimActive && !writable) {
+			writable2 = true;
 
 			vimCommand.SetActive (true);
 			es.SetSelectedGameObject (vimCommand);
 		}
 
-		if (Input.GetKeyUp (KeyCode.Escape) && vimActive && writable) {
+		if (Input.GetKeyUp (KeyCode.Escape) && vimActive && (writable || writable2)) {
 			GetLastEntry ().GetComponent<InputField> ().interactable = false;
 			GetLastEntry ().GetComponent<InputField> ().text = inputText;
 
 
 			vimEntries.transform.GetComponent<VimScript> ().isActive = false;
 			writable = false;
+			writable2 = false;
 
 			vimText.SetActive (false);
+			vimCommand.SetActive (false);
 		}
 
 		if (vimActive && vimEntries.transform.GetChild (0).childCount>0) {
-			inputText = GetLastEntry ().GetComponent<InputField> ().text; 
+			if (!GetLastEntry ().GetComponent<InputField> ().text.Equals ("")) {
+				inputText = GetLastEntry ().GetComponent<InputField> ().text; 
+			} 
 		}
 	}
 
