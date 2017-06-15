@@ -2,7 +2,7 @@
 using System.Collections;
 using UnityEngine;
 
-public abstract class Entity<T> : Photon.PunBehaviour, IPunObservable where T : EntityStats {
+public abstract class Entity<T> : Photon.MonoBehaviour, IPunObservable where T : EntityStats {
 	
 	public float curHP;
 	public float curSpeed;
