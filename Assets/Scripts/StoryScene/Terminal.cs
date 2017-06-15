@@ -53,6 +53,11 @@ public class Terminal : MonoBehaviour {
 			transform.GetChild (0).GetChild (totalEntry+2).GetChild(0).GetComponent<Text>().text = "remote: Resolving deltas: 100%, completed.";
 			CreateNewLine ();
 			transform.GetChild (0).GetChild (totalEntry+3).GetChild(0).GetComponent<Text>().text = "Successfully pushed to branch master";
+			CreateNewLine ();
+			transform.GetChild (0).GetChild (totalEntry+4).GetChild(0).GetComponent<Text>().text = "Press Enter to exit the terminal";
+			executionNumeber++;
+		} else if (executionNumeber == 5) {
+			terminal.SetActive (false);
 		} else {
 			Debug.Log ("try again");
 		}
