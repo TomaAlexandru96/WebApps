@@ -48,7 +48,7 @@ public class Validator {
 	}
 
 	public static bool IsImperial (String email) {
-		return email.EndsWith (".imperial.ac.uk") || email.EndsWith (".ic.ac.uk");
+		return email.EndsWith ("@imperial.ac.uk") || email.EndsWith ("@ic.ac.uk");
 	}
 }
 
