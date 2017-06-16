@@ -109,7 +109,6 @@ public class Room : MonoBehaviour {
 	public Rect GetRect () {
 		Vector2 s = new Vector2 (width * tilePrefab.GetComponent<SpriteRenderer> ().size.x, height * tilePrefab.GetComponent<SpriteRenderer> ().size.y);
 		Rect r = new Rect (transform.position, s);
-		Debug.Log (r);
 		return r;
 	}
 }
