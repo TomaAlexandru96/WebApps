@@ -19,24 +19,34 @@ public class DungeonGenerator : MonoBehaviour {
 	public GameObject roomPrefab;
 	public GameObject linePrefab;
 	public Text progressText;
+	public Camera mainCamera;
+	public GameObject loadingScreen;
 
 	private List<Room> rooms = new List<Room> ();
 	private List<Room> mainRooms = new List<Room> ();
+	private bool withAnimation;
 
-	// Use this for initialization
-	void Start () {
+	public void BeginGeneration (bool withAnimation) {
+		this.withAnimation = withAnimation;
+		loadingScreen.SetActive (!withAnimation);
 		StartCoroutine (GenerateInitialRooms ());
 	}
 
 	private IEnumerator GenerateInitialRooms () {
 		progressText.text = "Random point sampling in ellipse";
 		// startup time
-		yield return new WaitForSeconds (0.5f);
+		if (withAnimation) {
+			yield return new WaitForSeconds (0.5f);
+		}
 		for (int i = 0; i < numberOfInitialGeneratedRooms; i++) {
 			rooms.Add (GenerateRoom ());
-			yield return new WaitForSeconds (0.005f);
+			if (withAnimation) {
+				yield return new WaitForSeconds (0.0005f);
+			}
 		}
+
 		// wait for collision to finnish
+		// important not to override animation
 		yield return new WaitForSeconds (5f);
 
 		foreach (var room in rooms) {
@@ -47,7 +57,9 @@ public class DungeonGenerator : MonoBehaviour {
 
 		foreach (var room in rooms) {
 			room.RoundPositionToNearestInt ();
-			yield return new WaitForSeconds (0.002f);
+			if (withAnimation) {
+				yield return new WaitForSeconds (0.002f);
+			}
 		}
 
 		StartCoroutine (SelectMainRooms ());
@@ -73,10 +85,14 @@ public class DungeonGenerator : MonoBehaviour {
 
 		foreach (var room in mainRooms) {
 			room.SetColor (Color.red);
-			yield return new WaitForSeconds (0.02f);
+			if (withAnimation) {
+				yield return new WaitForSeconds (0.02f);
+			}
 		}
 
-		yield return new WaitForSeconds (1f);
+		if (withAnimation) {
+			yield return new WaitForSeconds (1f);
+		}
 		
 		StartCoroutine (DoDelaunayTriangulation (mainRooms));
 	}
@@ -86,7 +102,9 @@ public class DungeonGenerator : MonoBehaviour {
 
 		foreach (var room in mainRooms) {
 			room.SetNode (true);
-			yield return new WaitForSeconds (0.02f);
+			if (withAnimation) {
+				yield return new WaitForSeconds (0.02f);
+			}
 		}
 
 		List<Vertex> nodes = new List<Vertex> ();
@@ -107,10 +125,14 @@ public class DungeonGenerator : MonoBehaviour {
 
 		foreach (var line in lines) {
 			line.SetActive (true);
-			yield return new WaitForSeconds (0.02f);
+			if (withAnimation) {
+				yield return new WaitForSeconds (0.02f);
+			}
 		}
 
-		yield return new WaitForSeconds (1.5f);
+		if (withAnimation) {
+			yield return new WaitForSeconds (1.5f);
+		}
 
 		foreach (var line in lines) {
 			DestroyImmediate (line);
@@ -132,10 +154,14 @@ public class DungeonGenerator : MonoBehaviour {
 
 		foreach (var line in lines) {
 			line.SetActive (true);
-			yield return new WaitForSeconds (0.02f);
+			if (withAnimation) {
+				yield return new WaitForSeconds (0.02f);
+			}
 		}
 
-		yield return new WaitForSeconds (1.5f);
+		if (withAnimation) {
+			yield return new WaitForSeconds (1.5f);
+		}
 
 		foreach (var line in lines) {
 			DestroyImmediate (line);
@@ -159,10 +185,14 @@ public class DungeonGenerator : MonoBehaviour {
 
 		foreach (var line in lines) {
 			line.SetActive (true);
-			yield return new WaitForSeconds (0.02f);
+			if (withAnimation) {
+				yield return new WaitForSeconds (0.02f);
+			}
 		}
 
-		yield return new WaitForSeconds (1.5f);
+		if (withAnimation) {
+			yield return new WaitForSeconds (1.5f);
+		}
 
 		foreach (var line in lines) {
 			DestroyImmediate (line);
@@ -207,10 +237,24 @@ public class DungeonGenerator : MonoBehaviour {
 				CreateLine (new Vector3 (h.points [0].x, h.points [0].y), new Vector3 (h.points [1].x, h.points [1].y));
 				CreateLine (new Vector3 (h.points [2].x, h.points [2].y), new Vector3 (h.points [1].x, h.points [1].y));
 			}
-			yield return new WaitForSeconds (0.01f);
+			if (withAnimation) {
+				yield return new WaitForSeconds (0.01f);
+			}
 		}
 
-		yield return new WaitForSeconds (1.5f);
+		if (withAnimation) {
+			yield return new WaitForSeconds (1.5f);
+		}
+
+		Vector3 spawnPoint;
+
+		int random = Random.Range (0, mainRooms.Count - 1);
+
+		spawnPoint = mainRooms [random].GetPosition ();
+		mainCamera.gameObject.SetActive (false);
+		progressText.gameObject.SetActive (false);
+
+		GameObject.FindGameObjectWithTag ("EndlessScript").GetComponent <EndlessController> ().SpawnPlayer (spawnPoint);
 	}
 
 	public GameObject CreateLine (Vector3 position1, Vector3 position2) {

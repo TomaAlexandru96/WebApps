@@ -11,8 +11,6 @@ public class AdventureController : Photon.MonoBehaviour {
 	public Transform[] playerSpawnPoints;
 	public GameObject player;
 	public GameObject[] enemies;
-	public Text ping;
-	private float pingTest;
 
 	private HashSet<string> loadedPlayers;
 
@@ -28,19 +26,11 @@ public class AdventureController : Photon.MonoBehaviour {
 		});
 		ExitGame ();
 	}
-		
-	public void Update() {
-		if (pingTest + 2f < Time.time) {
-			pingTest = Time.time;
-			ping.text = PhotonNetwork.GetPing().ToString ();	
-		}
-	}
 
 	public void Start () {
 		GameObject.FindGameObjectWithTag ("Chat").GetComponent<ChatController> ().InitDefaultChat ();
 		SpawnPlayer ();
 		ChatController.GetChat ().withFadeOut = true;
-		pingTest = Time.time;
 		photonView.RPC ("OnLoaded", PhotonTargets.All, CurrentUser.GetInstance ().GetUserInfo ().username);
 	}
 
