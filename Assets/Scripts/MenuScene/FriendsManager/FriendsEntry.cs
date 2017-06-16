@@ -16,13 +16,13 @@ public class FriendsEntry : MonoBehaviour {
 	public void Awake () {
 		unsub1 = UpdateService.GetInstance ().Subscribe (UpdateType.LoginUser, (sender, message) => {
 			if (GetName ().Equals (sender)) {
-				ChangeStatus (true);
+				UpdateStatus ();
 			}
 		});
 
 		unsub2 = UpdateService.GetInstance ().Subscribe (UpdateType.LogoutUser, (sender, message) => {
 			if (GetName ().Equals (sender)) {
-				ChangeStatus (false);
+				UpdateStatus ();
 			}
 		});
 
@@ -62,15 +62,15 @@ public class FriendsEntry : MonoBehaviour {
 		GetOptionPanel ().transform.GetComponent<OptionScript> ().SetPlayerName (GetName ());
 	}
 
-	private void ChangeStatus (bool status) {
+	private void ChangeStatus (bool status, string email) {
 		ColorBlock cb = gameObject.GetComponent<Button> ().colors;
-		cb.normalColor = (status ? Color.green : Color.red);
+		cb.normalColor = (status ? (Validator.IsImperial (email) ? Color.blue : Color.green) : Color.red);
 		gameObject.GetComponent<Button> ().colors = cb;
 	}
 
 	private void UpdateStatus () {
 		DBServer.GetInstance ().FindUser (GetName (), (user) => {
-			ChangeStatus (user.active);
+			ChangeStatus (user.active, user.email);
 			avatar.sprite = user.character.GetImage ();
 		}, (error) => {
 			Debug.LogError (error);
