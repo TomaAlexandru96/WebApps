@@ -24,19 +24,18 @@ public class Terminal : MonoBehaviour {
 		string[] execuatableList = executable.Split(new char[] {' '});
 
 
-		if (executionNumeber==0 &&execuatableList [0].Equals ("vim") && execuatableList [1].Equals ("work.hs")) {
+		if (executionNumeber == 0 &&execuatableList [0].Equals ("git") && execuatableList [1].Equals ("clone") && execuatableList [2].Equals ("URL")){
+			executionNumeber++;
+			CreateNewLine ();
+			transform.GetChild (0).GetChild (totalEntry).GetChild(0).GetComponent<Text>().text = "cloning into repo";
+		} else if (executionNumeber == 1 &&execuatableList [0].Equals ("cd") && execuatableList [1].Equals ("repo")){
+			executionNumeber++;
+		} else if (executionNumeber == 2 &&execuatableList [0].Equals ("vim") && execuatableList [1].Equals ("work.hs")) {
 			terminal.SetActive (false);
 			vim.SetActive (true);
 			eventSystem.GetComponent<TerminalEventSystem> ().vimActive = true;
 			executionNumeber++;
-		} else if (executionNumeber == 1 &&execuatableList [0].Equals ("git") && execuatableList [1].Equals ("init")){
-			executionNumeber++;
-			CreateNewLine ();
-			transform.GetChild (0).GetChild (totalEntry).GetChild(0).GetComponent<Text>().text = "Initialized empty Git repository";
-		} else if (executionNumeber == 2 &&execuatableList [0].Equals ("git") && execuatableList [1].Equals ("remote") && execuatableList [2].Equals ("add")
-			&& execuatableList [3].Equals ("origin") && execuatableList [4].Equals ("https://github.com/user/repo.git")){
-			executionNumeber++;
-		} else if (executionNumeber == 3 &&execuatableList [0].Equals ("git") && execuatableList [1].Equals ("add") && execuatableList [2].Equals ("work.hs")) {
+		}else if (executionNumeber == 3 &&execuatableList [0].Equals ("git") && execuatableList [1].Equals ("add") && execuatableList [2].Equals ("work.hs")) {
 			executionNumeber++;
 			CreateNewLine ();
 			transform.GetChild (0).GetChild (totalEntry).GetChild(0).GetComponent<Text>().text = "Added file work.hs";
@@ -63,6 +62,7 @@ public class Terminal : MonoBehaviour {
 		} else if (executionNumeber == 6) {
 			terminal.SetActive (false);
 			instructions.SetActive (false);
+			GameObject.FindGameObjectWithTag ("Player").GetComponent<Player> ().SetMovement (true);
 		} else {
 			Debug.Log ("try again");
 		}
