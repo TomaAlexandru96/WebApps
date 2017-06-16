@@ -86,8 +86,6 @@ public class TerminalEventSystem : MonoBehaviour {
 	}
 
 	public void SelectNextItem () {
-		Debug.Log ("called");
-
 		if (vimActive) {
 			vimEntries.transform.GetComponent<VimScript> ().CreateNewLine ();
 		} else {
