@@ -58,15 +58,15 @@ public class DungeonGenerator : MonoBehaviour {
 		Vector2 averageSize = new Vector2 (0f, 0f);
 
 		foreach (var room in rooms) {
-			averageSize.x += room.GetSize ().x;
-			averageSize.y += room.GetSize ().y;
+			averageSize.x += room.GetRect ().size.x;
+			averageSize.y += room.GetRect ().size.y;
 		}
 
 		averageSize.x /= rooms.Count;
 		averageSize.y /= rooms.Count;
 
 		foreach (var room in rooms) {
-			if (room.GetSize ().x > averageSize.x * 1.10f && room.GetSize ().y > averageSize.y * 1.10f) {
+			if (room.GetRect ().size.x > averageSize.x * 1.10f && room.GetRect ().size.y > averageSize.y * 1.10f) {
 				mainRooms.Add (room);
 			}
 		}
@@ -93,6 +93,7 @@ public class DungeonGenerator : MonoBehaviour {
 
 		foreach (var room in mainRooms) {
 			nodes.Add (new Vertex (room.GetPosition ()));
+			yield return new WaitForSeconds (0.02f);
 		}
 
 		DelauneyTriangulation dt = new DelauneyTriangulation (nodes);
@@ -201,9 +202,9 @@ public class DungeonGenerator : MonoBehaviour {
 			hall.SetActive (true);
 			Hallway h = hall.GetComponent<Hallway> ();
 			if (h.isHallway2) {
-				CreateLine (new Vector3 (h.points[0].x, h.points[1].x), new Vector3 (h.points[0].y, h.points[1].y));
-				Debug.Log (h.r1.GetPosition ());
-				Debug.Log (h.r2.GetPosition ());
+				CreateLine (new Vector3 (h.points[0].x, h.points[0].y), new Vector3 (h.points[1].x, h.points[1].y));
+				map [h.r1.GetPosition ()].SetColor (Color.grey);
+				map [h.r2.GetPosition ()].SetColor (Color.cyan);
 				Debug.Break ();
 			}
 			yield return new WaitForSeconds (0.01f);

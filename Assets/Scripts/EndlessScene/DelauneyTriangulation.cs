@@ -12,7 +12,7 @@ public class DelauneyTriangulation {
 	}
 
 	public Graph Apply () {
-		const float max = 150f;
+		const float max = 350f;
 		Vertex a = new Vertex (-max, -max);
 		Vertex b = new Vertex (max, -max);
 		Vertex c = new Vertex (0, max);

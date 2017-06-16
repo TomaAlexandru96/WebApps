@@ -34,57 +34,81 @@ public class Hallway : MonoBehaviour {
 		Vector2 point1 = new Vector2 (0, 0);
 		Vector2 point2 = new Vector2 (0, 0);
 
-		if (sizeR1.center.y > sizeR2.center.y) {
+		if (sizeR1.center.y > sizeR2.center.y && (deltaRight > 0 || deltaLeft > 0)) {
 			point1.y = sizeR1.yMin;
 			point2.y = sizeR2.yMax;
 
 			if (deltaRight > 0) {
-				point1.x = deltaRight / 2;
-				point2.x = deltaRight / 2;
+				point1.x = sizeR1.center.x + deltaRight / 2;
+				point2.x = sizeR1.center.x + deltaRight / 2;
+				Debug.Log (sizeR1 + " " + sizeR2);
+				Debug.Log (point1 + " " + point2);
+				Debug.Log ("Bottom deltaRight");
 				isHallway2 = true;
 			} else if (deltaLeft > 0) {
-				point1.x = deltaLeft / 2;
-				point2.x = deltaLeft / 2;
+				point1.x = sizeR1.center.x - deltaLeft / 2;
+				point2.x = sizeR1.center.x - deltaLeft / 2;
+				Debug.Log (sizeR1 + " " + sizeR2);
+				Debug.Log (point1 + " " + point2);
+				Debug.Log ("Bottom deltaLeft");
 				isHallway2 = true;
 			}
-		} else if (sizeR1.center.x > sizeR2.center.x) {
+		} else if (sizeR1.center.x > sizeR2.center.x && (deltaBottom > 0 || deltaTop > 0)) {
 			point1.x = sizeR1.xMin;
 			point2.x = sizeR2.xMax;
 
 			if (deltaBottom > 0) {
-				point1.y = deltaBottom / 2;
-				point2.y = deltaBottom / 2;
+				point1.y = sizeR1.center.y - deltaBottom / 2;
+				point2.y = sizeR1.center.y - deltaBottom / 2;
 				isHallway2 = true;
+				Debug.Log (sizeR1 + " " + sizeR2);
+				Debug.Log (point1 + " " + point2);
+				Debug.Log ("Left deltaBottom");
 			} else if (deltaTop > 0) {
-				point1.y = deltaTop / 2;
-				point2.y = deltaTop / 2;
+				point1.y = sizeR1.center.y + deltaTop / 2;
+				point2.y = sizeR1.center.y + deltaTop / 2;
+				Debug.Log (sizeR1 + " " + sizeR2);
+				Debug.Log (point1 + " " + point2);
+				Debug.Log ("Left deltaTop");
 				isHallway2 = true;
 			}
-		} else if (sizeR1.center.y < sizeR2.center.y) {
+		} else if (sizeR1.center.y < sizeR2.center.y && (deltaRight > 0 || deltaLeft > 0)) {
 			point1.y = sizeR1.yMax;
 			point2.y = sizeR2.yMin;
 
 			if (deltaRight > 0) {
-				point1.x = deltaRight / 2;
-				point2.x = deltaRight / 2;
+				point1.x = sizeR1.center.x + deltaRight / 2;
+				point2.x = sizeR1.center.x + deltaRight / 2;
 				isHallway2 = true;
+				Debug.Log (sizeR1 + " " + sizeR2);
+				Debug.Log (point1 + " " + point2);
+				Debug.Log ("Top deltaRight");
 			} else if (deltaLeft > 0) {
-				point1.x = deltaLeft / 2;
-				point2.x = deltaLeft / 2;
+				point1.x = sizeR1.center.x - deltaLeft / 2;
+				point2.x = sizeR1.center.x - deltaLeft / 2;
 				isHallway2 = true;
+				Debug.Log (sizeR1 + " " + sizeR2);
+				Debug.Log (point1 + " " + point2);
+				Debug.Log ("Top deltaLeft");
 			}
-		} else if (sizeR1.center.x < sizeR2.center.x) {
+		} else if (sizeR1.center.x < sizeR2.center.x && (deltaBottom > 0 || deltaTop > 0)) {
 			point1.x = sizeR1.xMax;
 			point2.x = sizeR2.xMin;
 
 			if (deltaBottom > 0) {
-				point1.y = deltaBottom / 2;
-				point2.y = deltaBottom / 2;
+				point1.y = sizeR1.center.y - deltaBottom / 2;
+				point2.y = sizeR1.center.y - deltaBottom / 2;
 				isHallway2 = true;
+				Debug.Log (sizeR1 + " " + sizeR2);
+				Debug.Log (point1 + " " + point2);
+				Debug.Log ("Right deltaBottom");
 			} else if (deltaTop > 0) {
-				point1.y = deltaTop / 2;
-				point2.y = deltaTop / 2;
+				point1.y = sizeR1.center.y + deltaTop / 2;
+				point2.y = sizeR1.center.y + deltaTop / 2;
 				isHallway2 = true;
+				Debug.Log (sizeR1 + " " + sizeR2);
+				Debug.Log (point1 + " " + point2);
+				Debug.Log ("Right deltaTop");
 			}
 		}
 
