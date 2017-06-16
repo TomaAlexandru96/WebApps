@@ -73,6 +73,7 @@ public class Room : MonoBehaviour {
 
 	public void RemovePhys () {
 		GetComponent<Rigidbody2D> ().isKinematic = true;
+		GetComponent<BoxCollider2D> ().isTrigger = true;
 	}
 
 	public GameObject CreateHallway (Room r2) {
