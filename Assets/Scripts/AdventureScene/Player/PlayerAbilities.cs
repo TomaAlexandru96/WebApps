@@ -50,6 +50,10 @@ public class PlayerAbilities : MonoBehaviour {
 	}
 
 	public void Update () {
+		if (player == null) {
+			return;
+		}
+
 		sprintBar.localScale = Vector3.Lerp (sprintBar.localScale, 
 						new Vector3 (stamina / player.stats.defaultStamina, 1, 1), 0.1f);
 
