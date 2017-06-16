@@ -183,6 +183,7 @@ public class DungeonGenerator : MonoBehaviour {
 
 		foreach (var room in mainRooms) {
 			room.gameObject.SetActive (true);
+			room.SetColor (Color.green);
 			map.Add (room.GetPosition (), room);
 		}
 
@@ -201,9 +202,10 @@ public class DungeonGenerator : MonoBehaviour {
 			hall.SetActive (true);
 			Hallway h = hall.GetComponent<Hallway> ();
 			if (h.IsHallway2 ()) {
-				CreateLine (new Vector3 (h.points[0].x, h.points[0].y), new Vector3 (h.points[1].x, h.points[1].y));
-				map [h.r1.GetPosition ()].SetColor (Color.grey);
-				map [h.r2.GetPosition ()].SetColor (Color.cyan);
+				CreateLine (new Vector3 (h.points [0].x, h.points [0].y), new Vector3 (h.points [1].x, h.points [1].y));
+			} else {
+				CreateLine (new Vector3 (h.points [0].x, h.points [0].y), new Vector3 (h.points [1].x, h.points [1].y));
+				CreateLine (new Vector3 (h.points [2].x, h.points [2].y), new Vector3 (h.points [1].x, h.points [1].y));
 			}
 			yield return new WaitForSeconds (0.01f);
 		}
