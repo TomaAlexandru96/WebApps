@@ -6,6 +6,7 @@ public class Hallway : MonoBehaviour {
 	
 	public Room r1;
 	public Room r2;
+	public GameObject tilePrefab;
 	public List<Vector2> points = new List<Vector2> ();
 
 	public bool Contains (Room r) {
@@ -133,6 +134,24 @@ public class Hallway : MonoBehaviour {
 	public void CreateHallway (params Vector2[] ls) {
 		foreach (var p in ls) {
 			points.Add (p);
+		}
+
+		for (int i = 1; i < points.Count; i++) {
+			Vector2 p1 = new Vector2 (points [i - 1].x, points [i - 1].y);
+			Vector2 p2 = new Vector2 (points [i].x, points [i].y);
+
+			GameObject tile1 = Instantiate (tilePrefab, new Vector3 (p1.x, p1.y, 0), Quaternion.identity);
+			GameObject tile2 = Instantiate (tilePrefab, new Vector3 (p2.x, p2.y, 0), Quaternion.identity);
+			tile1.GetComponent<SpriteRenderer> ().sortingOrder = -2;
+			tile2.GetComponent<SpriteRenderer> ().sortingOrder = -2;
+		}
+
+		SetColor (Color.blue);
+	}
+
+	public void SetColor (Color color) {
+		for (int i = 0; i < transform.childCount; i++) {
+			transform.GetChild (i).GetComponent<SpriteRenderer> ().color = color;
 		}
 	}
 	
