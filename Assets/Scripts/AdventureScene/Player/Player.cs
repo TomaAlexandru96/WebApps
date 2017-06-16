@@ -99,7 +99,9 @@ public class Player : Entity<PlayerStats> {
 					PlayAnimation ("PlayForkBombAttackAnimation");
 				}
 			} else if (selectedAbility.type == Ability.DebugGun) {
-				//TODO
+				RaycastHit2D hit = Physics2D.Raycast (mainCamera.ScreenToWorldPoint (Input.mousePosition), 
+					Vector2.zero, 1f, LayerMask.GetMask ("MouseInput"));
+				
 			} else if (selectedAbility.type == Ability.ElectricShock) {
 				CircleCollider2D electricRange = gameObject.AddComponent<CircleCollider2D> () as CircleCollider2D;
 				electricRange.isTrigger = true;
@@ -113,7 +115,7 @@ public class Player : Entity<PlayerStats> {
 						break;
 					}
 					if (coll.gameObject.GetComponent<Enemy> () != null) {
-						// should do another class or something where we divide attack by 2 or something
+						// should do another class or something where we divide attack by 2
 						coll.gameObject.GetComponent<Enemy> ().GetHit (this);
 					}
 				}
