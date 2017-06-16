@@ -93,7 +93,6 @@ public class DungeonGenerator : MonoBehaviour {
 
 		foreach (var room in mainRooms) {
 			nodes.Add (new Vertex (room.GetPosition ()));
-			yield return new WaitForSeconds (0.02f);
 		}
 
 		DelauneyTriangulation dt = new DelauneyTriangulation (nodes);
@@ -201,11 +200,10 @@ public class DungeonGenerator : MonoBehaviour {
 		foreach (var hall in hallways) {
 			hall.SetActive (true);
 			Hallway h = hall.GetComponent<Hallway> ();
-			if (h.isHallway2) {
+			if (h.IsHallway2 ()) {
 				CreateLine (new Vector3 (h.points[0].x, h.points[0].y), new Vector3 (h.points[1].x, h.points[1].y));
 				map [h.r1.GetPosition ()].SetColor (Color.grey);
 				map [h.r2.GetPosition ()].SetColor (Color.cyan);
-				Debug.Break ();
 			}
 			yield return new WaitForSeconds (0.01f);
 		}
