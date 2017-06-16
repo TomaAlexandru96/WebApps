@@ -34,6 +34,7 @@ public class Room : MonoBehaviour {
 				pos.y = tile.GetComponent<SpriteRenderer> ().size.y * y + tile.GetComponent<SpriteRenderer> ().size.y / 2;
 
 				tile.transform.localPosition = pos;
+				tile.GetComponent<SpriteRenderer> ().sortingOrder = -1;
 			}
 		}
 
