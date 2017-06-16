@@ -14,6 +14,7 @@ public class Player : Entity<PlayerStats> {
 	private PlayerAbilities abilities;
 	private User user;
 	private bool canAttack = true;
+	private bool canMove = true;
 
 	void Awake () {
 		this.user = (User) photonView.instantiationData [0];
@@ -106,6 +107,10 @@ public class Player : Entity<PlayerStats> {
 	}
 
 	protected override void Move () {
+		if (!canMove) {
+			return;
+		}
+
 		if (photonView.isMine) {
 			// GET MOVEMENT INPUT
 			float h = Input.GetAxisRaw ("Horizontal");
@@ -273,6 +278,10 @@ public class Player : Entity<PlayerStats> {
 		}
 
 		yield return GetEmptyIE ();
+	}
+
+	public void SetMovement (bool value) {
+		this.canMove = value;
 	}
 }
 
