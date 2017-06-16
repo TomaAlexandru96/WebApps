@@ -1,5 +1,5 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class Player : Entity<PlayerStats> {
@@ -101,7 +101,26 @@ public class Player : Entity<PlayerStats> {
 			} else if (selectedAbility.type == Ability.DebugGun) {
 				//TODO
 			} else if (selectedAbility.type == Ability.ElectricShock) {
-				//TODO
+				CircleCollider2D electricRange = gameObject.AddComponent<CircleCollider2D> () as CircleCollider2D;
+				electricRange.isTrigger = true;
+				electricRange.radius = 1;
+				Collider2D[] colls = new Collider2D[50];
+				ContactFilter2D filter = new ContactFilter2D();
+				filter.NoFilter ();
+				electricRange.OverlapCollider(filter, colls);
+				foreach (Collider2D coll in colls) {
+					if (coll == null) {
+						break;
+					}
+					if (coll.gameObject.GetComponent<Enemy> () != null) {
+						// should do another class or something where we divide attack by 2 or something
+						coll.gameObject.GetComponent<Enemy> ().GetHit (this);
+					}
+				}
+				PlayAnimation ("PlayElectricShockAttackAnimation");
+				if (!abilities.UseAbility ()) {
+					return;
+				}
 			}
 		}
 	}
@@ -220,6 +239,19 @@ public class Player : Entity<PlayerStats> {
 
 		GetComponent<Animator> ().Play ("P"+(user.character.type+1)+"_LaptopAttack");
 		yield return new WaitForSeconds (0.9f);
+		attackRadius.GetComponent<Animator> ().Play ("Default");
+		attackRadius.GetComponent<PlayerAttack> ().StopAttack ();
+		isAttacking = false;
+	}
+
+	protected IEnumerator PlayElectricShockAttackAnimation () {
+		isAttacking = true;
+		attackRadius.GetComponent<PlayerAttack> ().StartAttack ();
+		Object ectricity = Resources.Load ("Electricity");
+		GameObject ob = NetworkService.GetInstance ().SpawnScene (ectricity.name, transform.position, Quaternion.identity, 0);
+		GetComponent<Animator> ().Play ("P"+(user.character.type+1)+"_LaptopAttack");
+		yield return new WaitForSeconds (0.9f);
+		NetworkService.GetInstance().Destroy (ob);
 		attackRadius.GetComponent<Animator> ().Play ("Default");
 		attackRadius.GetComponent<PlayerAttack> ().StopAttack ();
 		isAttacking = false;
