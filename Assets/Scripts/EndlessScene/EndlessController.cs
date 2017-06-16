@@ -7,16 +7,11 @@ public class EndlessController : MonoBehaviour {
 	public GameObject playerPrefab;
 	public GameObject partyPrefab;
 	public GameObject loadingScreen;
-	public bool withAnimation;
+	public GameObject canvas;
 
 	// Use this for initialization
 	void Start () {
-		GameObject.FindGameObjectWithTag ("DungeonGenerator").GetComponent<DungeonGenerator> ().BeginGeneration (withAnimation);
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
+		GameObject.FindGameObjectWithTag ("DungeonGenerator").GetComponent<DungeonGenerator> ().BeginGeneration (PlayerPrefs.GetInt ("endless_animation") != 0);
 	}
 
 	void OnApplicationQuit () {
@@ -29,7 +24,8 @@ public class EndlessController : MonoBehaviour {
 	}
 
 	public void SpawnPlayer (Vector3 position) {
-		/*ChatController.GetChat ().InitDefaultChat ();*/
+		canvas.SetActive (true);
+		ChatController.GetChat ().InitDefaultChat ();
 		GameObject player = NetworkService.GetInstance ().Spawn (playerPrefab.name, position, Quaternion.identity, 0,
 			new object[1] {CurrentUser.GetInstance ().GetUserInfo ()});
 		NetworkService.GetInstance ().SpawnScene (partyPrefab.name, Vector3.zero, Quaternion.identity, 0);

@@ -14,6 +14,7 @@ public class Party : MonoBehaviour {
 	public Text gameModeLabel;
 	public MenuController menuController;
 	public GameObject playButton;
+	public GameObject withAnimationToggle;
 
 	private Action unsub2;
 	private Action unsub3;
@@ -32,6 +33,10 @@ public class Party : MonoBehaviour {
 		unsub4 = UpdateService.GetInstance ().Subscribe (UpdateType.PartyLeft, (sender, message) => {
 			UpdateParty ();
 		});
+	}
+
+	public void Start () {
+		SetWithAnimation (withAnimationToggle.GetComponent<Toggle> ().enabled);
 	}
 
 	public void OnDestroy () {
@@ -139,6 +144,12 @@ public class Party : MonoBehaviour {
 		}
 
 		gameModeLabel.text = text;
+
+		withAnimationToggle.SetActive (GetPartyMode () == PartyMembers.ENDLESS);
+	}
+
+	public void SetWithAnimation (bool value) {
+		PlayerPrefs.SetInt ("endless_animation", value ? 1 : 0);
 	}
 
 	public int GetPartyMode () {
