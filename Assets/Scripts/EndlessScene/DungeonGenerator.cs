@@ -29,6 +29,7 @@ public class DungeonGenerator : MonoBehaviour {
 	public void BeginGeneration (bool withAnimation) {
 		this.withAnimation = withAnimation;
 		loadingScreen.SetActive (!withAnimation);
+		GameObject.FindGameObjectWithTag ("Canvas").SetActive (!withAnimation);
 		StartCoroutine (GenerateInitialRooms ());
 	}
 
