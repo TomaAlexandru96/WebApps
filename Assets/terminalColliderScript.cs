@@ -13,10 +13,12 @@ public class terminalColliderScript : MonoBehaviour {
 
 	void OnTriggerEnter2D(Collider2D coll) {
 		if (canBeActivated) {
+			
 			terminal.SetActive (true);
 			instructionsPanel.SetActive (true);
 			es.GetComponent<TerminalEventSystem> ().SelectNextItem();
 			canBeActivated = false;
+			GameObject.FindGameObjectWithTag ("Player").GetComponent<Player> ().SetMovement (false);
 		}
 	}
 
