@@ -7,6 +7,7 @@ public abstract class Entity<T> : Photon.MonoBehaviour, IPunObservable where T :
 	public float curHP;
 	public float curSpeed;
 	public T stats;
+	public Vector3 networkPosition;
 
 	protected void Start () {
 		transform.SetParent (GameObject.FindGameObjectWithTag ("Grid").transform);
@@ -60,11 +61,15 @@ public abstract class Entity<T> : Photon.MonoBehaviour, IPunObservable where T :
 		if (stream.isWriting) {
 			stream.SendNext (curHP);
 			stream.SendNext (curSpeed);
+			stream.SendNext (transform.position.x);
+			stream.SendNext (transform.position.y);
 			OnSendNext (stream, info);
 
 		} else {
 			curHP = (float) stream.ReceiveNext ();
 			curSpeed = (float) stream.ReceiveNext ();
+			networkPosition.x = (float) stream.ReceiveNext ();
+			networkPosition.y = (float) stream.ReceiveNext ();
 			OnReceiveNext (stream, info);
 		}
 	}

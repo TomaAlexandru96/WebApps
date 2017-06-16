@@ -142,6 +142,8 @@ public class Player : Entity<PlayerStats> {
 					move = Direction.Still;
 				}
 			}
+		} else {
+			transform.position = Vector3.Lerp(transform.position, networkPosition, 0.5f);
 		}
 		PlayAnimation ("Animate");
 	}
