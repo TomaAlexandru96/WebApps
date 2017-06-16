@@ -22,10 +22,11 @@ public class Hallway : MonoBehaviour {
 
 		Vector2 point1 = new Vector2 (0, 0);
 		Vector2 point2 = new Vector2 (0, 0);
+		Vector2 point3 = new Vector2 (0, 0);
 		Vector2 delta = sizeR2.center - sizeR1.center;
 
-		if ((Mathf.Abs (delta.x) < sizeR1.width / 2 + sizeR2.width / 2) 
-					|| (Mathf.Abs (delta.y) < sizeR1.height / 2 + sizeR2.height / 2)) {
+		if ((Mathf.Abs (delta.x) < sizeR1.width / 2 + sizeR2.width / 2)
+		    || (Mathf.Abs (delta.y) < sizeR1.height / 2 + sizeR2.height / 2)) {
 
 			if (sizeR1.center.y > sizeR2.center.y && (Mathf.Abs (delta.y) >= sizeR1.height / 2 + sizeR2.height / 2)) {
 				// bottom
@@ -53,7 +54,75 @@ public class Hallway : MonoBehaviour {
 				point2.x = sizeR2.xMin;
 			}
 
-			CreateHallway2 (point1, point2);
+			CreateHallway (point1, point2);
+		} else {
+			// L shape
+			if (sizeR1.center.x > sizeR2.center.x && sizeR1.center.y > sizeR2.center.y) {
+				if (Mathf.Abs (delta.x) < Mathf.Abs (delta.y)) {
+					point1.x = sizeR1.center.x;
+					point1.y = sizeR1.yMin;
+					point3.x = sizeR2.xMax;
+					point3.y = sizeR2.center.y;
+					point2.x = point1.x;
+					point2.y = point3.y;
+				} else {
+					point1.x = sizeR1.xMin;
+					point1.y = sizeR1.center.y;
+					point3.x = sizeR2.center.x;
+					point3.y = sizeR2.yMax;
+					point2.x = point3.x;
+					point2.y = point1.y;
+				}
+			} else if (sizeR1.center.x > sizeR2.center.x && sizeR1.center.y < sizeR2.center.y) {
+				if (Mathf.Abs (delta.x) < Mathf.Abs (delta.y)) {
+					point1.x = sizeR1.center.x;
+					point1.y = sizeR1.yMax;
+					point3.x = sizeR2.xMax;
+					point3.y = sizeR2.center.y;
+					point2.x = point1.x;
+					point2.y = point3.y;
+				} else {
+					point1.x = sizeR1.xMin;
+					point1.y = sizeR1.center.y;
+					point3.x = sizeR2.center.x;
+					point3.y = sizeR2.yMin;
+					point2.x = point3.x;
+					point2.y = point1.y;
+				}
+			} else if (sizeR1.center.x < sizeR2.center.x && sizeR1.center.y < sizeR2.center.y) {
+				if (Mathf.Abs (delta.x) < Mathf.Abs (delta.y)) {
+					point1.x = sizeR1.center.x;
+					point1.y = sizeR1.yMax;
+					point3.x = sizeR2.xMin;
+					point3.y = sizeR2.center.y;
+					point2.x = point1.x;
+					point2.y = point3.y;
+				} else {
+					point1.x = sizeR1.xMax;
+					point1.y = sizeR1.center.y;
+					point3.x = sizeR2.center.x;
+					point3.y = sizeR2.yMin;
+					point2.x = point3.x;
+					point2.y = point1.y;
+				}
+			} else {
+				if (Mathf.Abs (delta.x) < Mathf.Abs (delta.y)) {
+					point1.x = sizeR1.center.x;
+					point1.y = sizeR1.yMin;
+					point3.x = sizeR2.xMin;
+					point3.y = sizeR2.center.y;
+					point2.x = point1.x;
+					point2.y = point3.y;
+				} else {
+					point1.x = sizeR1.xMax;
+					point1.y = sizeR1.center.y;
+					point3.x = sizeR2.center.x;
+					point3.y = sizeR2.yMax;
+					point2.x = point3.x;
+					point2.y = point1.y;
+				}
+			}
+			CreateHallway (point1, point2, point3);
 		}
 	}
 
@@ -61,11 +130,10 @@ public class Hallway : MonoBehaviour {
 		return points.Count == 2;
 	}
 
-	public void CreateHallway2 (Vector2 point1, Vector2 point2) {
-		points.Add (point1);
-		points.Add (point2);
+	public void CreateHallway (params Vector2[] ls) {
+		foreach (var p in ls) {
+			points.Add (p);
+		}
 	}
-
-	public void CreateHallway3 (Vector2 point1, Vector2 point2) {
-	}
+	
 }

@@ -85,13 +85,8 @@ public class Room : MonoBehaviour {
 		r2.connectingRoom.Add (this);
 
 		if (IsIntersecting (r2)) {
-			SetNode (true);
-			r2.SetNode (true);
 			return null;
 		}
-
-		SetColor (Color.green);
-		r2.SetColor (Color.green);
 
 		GameObject hall = Instantiate (hallwayPrefab);
 		hall.GetComponent <Hallway> ().Init (this, r2);
