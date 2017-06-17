@@ -19,8 +19,6 @@ public class NextInstructionScript : MonoBehaviour {
 		directionPanel.transform.GetComponent<DirectionPanel> ().DisplayText ("Well done ! Now go to the common room, you have a coursework due in a few minutes !");
 		yield return new WaitForSeconds (3f);
 		directionPanel.SetActive (false);
-
-
 	}
 
 
