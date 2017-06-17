@@ -16,10 +16,10 @@ public class CourseworkScript : MonoBehaviour {
 	public int numberOfAvailableQuestions;
 	public QuestionsAndAnswers[] qaa;
 	public int numberOfQuestionsToAsk;
+	public int questionsGotRight;
 
 	private int numberOfThisQuestion;
 	private int questionsAsked;
-	private int questionsGotRight;
 	private bool doneIntroduction = false;
 
 
