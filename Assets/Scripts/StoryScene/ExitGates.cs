@@ -65,6 +65,7 @@ public class ExitGates : MonoBehaviour {
 			partShown = true;
 			partMention.transform.GetChild (0).GetComponent<Text> ().text = "part 2";
 			partMention.transform.GetChild (1).GetComponent<Text> ().text = "first week";
+			GameObject.FindGameObjectWithTag ("Player").GetComponent<Player> ().IncreaseHealth (100);
 		} else if (partShown && Time.time - time > 3) {
 			time = Time.time;
 			partShown = false;
