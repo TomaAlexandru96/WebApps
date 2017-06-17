@@ -7,6 +7,7 @@ using System;
 public class ExitGates : MonoBehaviour {
 
 	public bool exit;
+	public bool exit2;
 	public GameObject partMention;
 	public GameObject receptionist;
 	public GameObject floor;
@@ -20,6 +21,7 @@ public class ExitGates : MonoBehaviour {
 
 	public void Start() {
 		exit = false;
+		exit2 = false;
 		partDone = false;
 		partShown = false;
 		directionPanel = GameObject.FindGameObjectsWithTag ("Canvas")[0].transform.GetChild(1).gameObject;
@@ -29,6 +31,9 @@ public class ExitGates : MonoBehaviour {
 		if (exit) {
 			Exit ();
 			exit = false;
+		} else if (exit2) {
+			Exit2 ();
+			exit2 = false;
 		}
 	}
 
@@ -40,6 +45,16 @@ public class ExitGates : MonoBehaviour {
 		partMention.transform.GetChild(0).GetComponent<Text> ().text = "congrats";
 		partMention.transform.GetChild(1).GetComponent<Text> ().text = "Part 1 complete";
 		partDone = true;
+		time = Time.time;
+	}
+
+	private void Exit2() {
+		directionPanel.SetActive (false);
+		transform.GetComponent<SpecifyMovementScript> ().repeating = false;
+		Debug.Log ("mentioning while exit");
+		partMention.SetActive (true);
+		partMention.transform.GetChild(0).GetComponent<Text> ().text = "congrats";
+		partMention.transform.GetChild(1).GetComponent<Text> ().text = "Part 2 complete";
 		time = Time.time;
 	}
 

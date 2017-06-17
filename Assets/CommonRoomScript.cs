@@ -7,7 +7,8 @@ public class CommonRoomScript : MonoBehaviour {
 	public GameObject courseworkPanel;
 	public bool doneCoursework;
 	public GameObject directionPanel;
-
+	public GameObject exitGate1;
+	public GameObject exitGate2;
 
 	private int quesionsGotright;
 	private int totalNumberOfQuestions;
@@ -24,10 +25,7 @@ public class CommonRoomScript : MonoBehaviour {
 		if (!doneCoursework) {
 			courseworkPanel.SetActive (true);
 		} else {
-			
-			directionPanel.SetActive (true);
-			directionPanel.transform.GetComponent<DirectionPanel> ().DisplayText ("You got " + quesionsGotright + " questions right, out of the total of " + totalNumberOfQuestions + "" +
-				" that means your grade is " + CalculateGrade (quesionsGotright, totalNumberOfQuestions));
+			StartCoroutine (DisplayMessage ());
 		}
 	}
 	void OnTriggerExit2D(Collider2D coll){
@@ -50,6 +48,22 @@ public class CommonRoomScript : MonoBehaviour {
 			return "D";
 		else 
 			return "F";
+	}
+
+
+	private IEnumerator DisplayMessage () {
+		directionPanel.SetActive (true);
+
+		directionPanel.transform.GetComponent<DirectionPanel> ().DisplayText ("You got " + quesionsGotright + " questions right, out of the total of " + totalNumberOfQuestions + "" +
+			" that means your grade is " + CalculateGrade (quesionsGotright, totalNumberOfQuestions));
+		yield return new WaitForSeconds (2f);
+		directionPanel.transform.GetComponent<DirectionPanel> ().DisplayText ("You did it, now you can exit and go Home!!");
+		yield return new WaitForSeconds (2f);
+
+		directionPanel.SetActive (false);
+
+		exitGate1.GetComponent<ExitGates> ().exit2 = true;
+		exitGate2.GetComponent<ExitGates> ().exit2 = true;
 	}
 
 }
