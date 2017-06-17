@@ -170,7 +170,7 @@ public class InterviewScript : MonoBehaviour {
 		CreateQuestion (2, "What is the binary representation of the number 32 ?", "0011 0011", "1000 0001", "1111 1110", "0010 0000", 3);
 		CreateQuestion (3, "Which language would you use for low-level development ?", "C", "Java", "JavaScript", "C#", 0);
 		CreateQuestion (4, "Which one of these is a functional language ?", "C#", "Java", "Haskell", "Ruby", 2);
-		CreateQuestion (5, "You are given the following formula : ! (p AND q). Which one of the following formulas is equivalent to it ? " +
+		CreateQuestion (5, "You are given the following formula :   ! (p AND q). Which one of the following formulas is equivalent to it ? " +
 		" ( where ! is NOT)", "!p OR !q", "!(!p AND !q)", "p OR !q", "!p OR q", 0);
 		CreateQuestion (6, "Convert 0010 1010 to decimal", "46", "32", "42", "66", 2);
 		CreateQuestion (7, "Which one is the best editor ?", "Gedit", "Notepad", "Vim", "Emacs", 2);
