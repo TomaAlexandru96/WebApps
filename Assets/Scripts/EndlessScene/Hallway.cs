@@ -7,6 +7,7 @@ public class Hallway : MonoBehaviour {
 	public Room r1;
 	public Room r2;
 	public GameObject tilePrefab;
+	public int width;
 	public List<Vector2> points = new List<Vector2> ();
 
 	public bool Contains (Room r) {
@@ -140,10 +141,47 @@ public class Hallway : MonoBehaviour {
 			Vector2 p1 = new Vector2 (points [i - 1].x, points [i - 1].y);
 			Vector2 p2 = new Vector2 (points [i].x, points [i].y);
 
-			GameObject tile1 = Instantiate (tilePrefab, new Vector3 (p1.x, p1.y, 0), Quaternion.identity);
-			GameObject tile2 = Instantiate (tilePrefab, new Vector3 (p2.x, p2.y, 0), Quaternion.identity);
-			tile1.GetComponent<SpriteRenderer> ().sortingOrder = -2;
-			tile2.GetComponent<SpriteRenderer> ().sortingOrder = -2;
+			Vector2 start;
+			Vector2 fin;
+			Vector2 tileSize = tilePrefab.GetComponent<SpriteRenderer> ().size;
+
+			bool vertical;
+
+			if (p1.x == p2.x) {
+				// vertical bar
+				start = p1.y < p2.y ? p1 : p2;
+				fin = p1.y < p2.y ? p2 : p1;
+				vertical = true;
+				while (start.y < fin.y) {
+					for (int q = -width/2; q <= width/2; q++) {
+						GameObject tile1 = Instantiate (tilePrefab, new Vector3 (start.x + tileSize.x*q, start.y, 0), Quaternion.identity);
+						tile1.GetComponent<SpriteRenderer> ().sortingOrder = -2;	
+					}
+					start.y += tileSize.y;
+				}
+			} else {
+				// horizontal bar
+				start = p1.x < p2.x ? p1 : p2;
+				fin = p1.x < p2.x ? p2 : p1;
+				vertical = false;
+				while (start.x < fin.x) {
+					for (int q = -width/2; q <= width/2; q++) {
+						GameObject tile1 = Instantiate (tilePrefab, new Vector3 (start.x, start.y + tileSize.y*q, 0), Quaternion.identity);
+						tile1.GetComponent<SpriteRenderer> ().sortingOrder = -2;	
+					}
+					start.x += tileSize.x;
+				}
+			}
+
+			for (int q = -width/2; q <= width/2; q++) {
+				GameObject tile1;
+				if (vertical) {
+					tile1 = Instantiate (tilePrefab, new Vector3 (start.x + tileSize.x * q, start.y, 0), Quaternion.identity);
+				} else {
+					tile1 = Instantiate (tilePrefab, new Vector3 (start.x, start.y + tileSize.y*q, 0), Quaternion.identity);
+				}
+				tile1.GetComponent<SpriteRenderer> ().sortingOrder = -2;	
+			}
 		}
 
 		SetColor (Color.blue);
