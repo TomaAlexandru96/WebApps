@@ -118,7 +118,6 @@ public class ToniScript : MonoBehaviour {
 	}
 
 	public void Seated () {
-		Debug.Log ("Seated");
 		seated = true;
 	}
 }

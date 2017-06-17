@@ -175,7 +175,7 @@ public class InterviewScript : MonoBehaviour {
 		CreateQuestion (6, "Convert 0010 1010 to decimal", "46", "32", "42", "66", 2);
 		CreateQuestion (7, "Which one is the best editor ?", "Gedit", "Notepad", "Vim", "Emacs", 2);
 		CreateQuestion (8, "Differentiate f(x) = ln(x) ", "x^2", "ln(x)^2", "1 / ln(x)", "1 / x", 3);
-		CreateQuestion (9, "Which one of these algorithms uses the Devide & Conquer technique ?", "Binary Search", "Prim's Algorithm", "Bubble Sort", "KMP", 0);
+		CreateQuestion (9, "Which one of these algorithms uses the Divide & Conquer technique ?", "Binary Search", "Prim's Algorithm", "Bubble Sort", "KMP", 0);
 		CreateQuestion (10, " (HARD!) What technique would you use to determine the longest common substring of 2 strings ?",
 			"Divide & Conquer", "Dynammic Programming", "Greedy", "KMP", 1);
 		CreateQuestion (11, "Differentiate f(x) = x ln (x)", "ln (x) + 1/x", "ln (x) + 1", "x^2 ln (x)", "2 * xln(x)", 1);

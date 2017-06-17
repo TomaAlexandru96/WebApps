@@ -24,7 +24,7 @@ public class PlayerStats : EntityStats {
 
 	public PlayerStats (PlayerType type) {
 		level = 1;
-		maxHP = 20;
+		maxHP = 30;
 		speed = 1.5f;
 		damage = 1f;
 		switch (type) {
