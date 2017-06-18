@@ -13,6 +13,8 @@ public class ExitGates : MonoBehaviour {
 	public GameObject floor;
 	public GameObject labEntrance;
 	public Transform spawn;
+	public GameObject[] arrowsAcc = new GameObject[8];
+	public GameObject[] arrowsDacc = new GameObject[8];
 
 	private float time;
 	private bool partDone;
@@ -56,6 +58,12 @@ public class ExitGates : MonoBehaviour {
 		partMention.SetActive (true);
 		partMention.transform.GetChild(0).GetComponent<Text> ().text = "congrats";
 		partMention.transform.GetChild(1).GetComponent<Text> ().text = "Part 2 complete";
+		foreach (GameObject arrow in arrowsAcc) {
+			arrow.SetActive (true);
+		}
+		foreach (GameObject arrow in arrowsDacc) {
+			arrow.SetActive (false);
+		}
 		time = Time.time;
 		partShown2 = true;
 	}

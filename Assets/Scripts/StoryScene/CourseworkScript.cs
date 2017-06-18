@@ -18,6 +18,8 @@ public class CourseworkScript : MonoBehaviour {
 	public QuestionsAndAnswers[] qaa;
 	public int numberOfQuestionsToAsk;
 	public int questionsGotRight;
+	public GameObject[] arrowsAcc = new GameObject[8];
+	public GameObject[] arrowsDacc = new GameObject[8];
 
 	private int numberOfThisQuestion;
 	private int questionsAsked;
@@ -81,6 +83,12 @@ public class CourseworkScript : MonoBehaviour {
 				button3.SetActive (false);
 				questionPanelText.text = "The coursework is complete. You now need to go to the printers in labs, print your work, sign it and submit it to the Student Administration Office (SAO) \n " +
 					" Quick, the deadling is approaching !!!";
+				foreach (GameObject arrow in arrowsAcc) {
+					arrow.SetActive (true);
+				}
+				foreach (GameObject arrow in arrowsDacc) {
+					arrow.SetActive (false);
+				}
 				yield return new WaitForSeconds (5f);
 				Debug.Log (questionsGotRight);
 				commonRoom.GetComponent<CommonRoomScript> ().setQuestionsGotRight (questionsGotRight);
