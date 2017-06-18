@@ -13,8 +13,8 @@ public class ExitGates : MonoBehaviour {
 	public GameObject floor;
 	public GameObject labEntrance;
 	public Transform spawn;
-	public GameObject[] arrowsAcc = new GameObject[8];
-	public GameObject[] arrowsDacc = new GameObject[8];
+	public GameObject[] arrowsAcc = new GameObject[1];
+	public GameObject[] arrowsDacc = new GameObject[1];
 
 	private float time;
 	private bool partDone;
@@ -58,12 +58,6 @@ public class ExitGates : MonoBehaviour {
 		partMention.SetActive (true);
 		partMention.transform.GetChild(0).GetComponent<Text> ().text = "congrats";
 		partMention.transform.GetChild(1).GetComponent<Text> ().text = "Part 2 complete";
-		foreach (GameObject arrow in arrowsAcc) {
-			arrow.SetActive (true);
-		}
-		foreach (GameObject arrow in arrowsDacc) {
-			arrow.SetActive (false);
-		}
 		time = Time.time;
 		partShown2 = true;
 	}
@@ -75,6 +69,12 @@ public class ExitGates : MonoBehaviour {
 			partShown = true;
 			partMention.transform.GetChild (0).GetComponent<Text> ().text = "part 2";
 			partMention.transform.GetChild (1).GetComponent<Text> ().text = "first week";
+			foreach (GameObject arrow in arrowsAcc) {
+				arrow.SetActive (true);
+			}
+			foreach (GameObject arrow in arrowsDacc) {
+				arrow.SetActive (false);
+			}
 			GameObject.FindGameObjectWithTag ("Player").GetComponent<Player> ().IncreaseHealth (100);
 		} else if (partShown && Time.time - time > 3) {
 			time = Time.time;

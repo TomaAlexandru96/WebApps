@@ -20,7 +20,7 @@ public class ToniScript : MonoBehaviour {
 	protected bool inside;
 	protected float dateTime;
 	private Transform huxely308;
-	public GameObject[] arrowsAcc = new GameObject[8];
+	public GameObject[] arrowsAcc = new GameObject[4];
 	public GameObject[] arrowsDacc = new GameObject[8];
 
 	public void Start () {
