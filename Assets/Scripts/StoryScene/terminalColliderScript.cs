@@ -20,7 +20,8 @@ public class terminalColliderScript : MonoBehaviour {
 			instructionsPanel.SetActive (true);
 			es.GetComponent<TerminalEventSystem> ().SelectNextItem();
 			canBeActivated = false;
-			GameObject.FindGameObjectWithTag ("PartyPanel").GetComponent<Transform> ().SetPositionAndRotation (new Vector3 (-10000, -10000, 0), Quaternion.identity);
+			GameObject.FindGameObjectWithTag ("Canvas").GetComponent<CanvasScript> ().RemovePartyPanel ();
+			GameObject.FindGameObjectWithTag ("Labs").GetComponent<Labs> ().RemoveStudents ();
 			GameObject.FindGameObjectWithTag ("Player").GetComponent<Player> ().SetMovement (false);
 			GameObject.FindGameObjectWithTag ("Player").GetComponent<Rigidbody2D> ().velocity = Vector2.zero;
 		}

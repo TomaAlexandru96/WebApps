@@ -12,6 +12,7 @@ public class CanvasScript : MonoBehaviour {
 	private GameObject playerAbilities;
 	private GameObject directionPanel;
 	private GameObject partMentionPanel;
+	private GameObject partyPanel;
 
 	void Start () {
 		time = Time.time;
@@ -37,6 +38,9 @@ public class CanvasScript : MonoBehaviour {
 			partMentionPanel.SetActive (false);
 			directionPanel.SetActive (true);
 		}
+		if (partyPanel == null) {
+			partyPanel = GameObject.FindGameObjectWithTag ("PartyPanel");
+		}
 	}
 
 	public void ExitGame () {
@@ -46,5 +50,13 @@ public class CanvasScript : MonoBehaviour {
 		}, (error) => {
 			Debug.LogError (error);	
 		});
+	}
+
+	public void RemovePartyPanel() {
+		partyPanel.SetActive (false);
+	}
+
+	public void AddPartyPanel() {
+		partyPanel.SetActive (true);
 	}
 }

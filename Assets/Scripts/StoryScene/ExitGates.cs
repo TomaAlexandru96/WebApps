@@ -42,7 +42,6 @@ public class ExitGates : MonoBehaviour {
 	private void Exit() {
 		directionPanel.SetActive (false);
 		transform.GetComponent<SpecifyMovementScript> ().repeating = false;
-		Debug.Log ("mentioning while exit");
 		partMention.SetActive (true);
 		partMention.transform.GetChild(0).GetComponent<Text> ().text = "congrats";
 		partMention.transform.GetChild(1).GetComponent<Text> ().text = "Part 1 complete";
