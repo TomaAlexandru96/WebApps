@@ -10,12 +10,12 @@ public class CommonRoomScript : MonoBehaviour {
 	public GameObject exitGate1;
 	public GameObject exitGate2;
 
+
 	private int quesionsGotright;
 	private int totalNumberOfQuestions;
 
 	public void Start () {
 		totalNumberOfQuestions = courseworkPanel.GetComponent<CourseworkScript> ().numberOfQuestionsToAsk;
-		quesionsGotright = courseworkPanel.GetComponent<CourseworkScript> ().questionsGotRight;
 		courseworkPanel.SetActive (false);
 		doneCoursework = false;
 		directionPanel.SetActive (false);
@@ -65,5 +65,9 @@ public class CommonRoomScript : MonoBehaviour {
 		exitGate1.GetComponent<ExitGates> ().exit2 = true;
 		exitGate2.GetComponent<ExitGates> ().exit2 = true;
 	}
+
+	public void setQuestionsGotRight (int q){
+		quesionsGotright = q;
+	} 
 
 }

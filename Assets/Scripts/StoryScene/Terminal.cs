@@ -10,6 +10,8 @@ public class Terminal : MonoBehaviour {
 	public GameObject scrollView;
 	public GameObject instructions;
 	public GameObject floor;
+	public Sprite goodSprite;
+
 
 	public GameObject terminal;
 	public GameObject vim;
@@ -69,9 +71,13 @@ public class Terminal : MonoBehaviour {
 		} else if (executionNumeber == 6) {
 			terminal.SetActive (false);
 			instructions.SetActive (false);
-			floor.SetActive (true);
 			partyPanel.SetActive (true);
+			floor.GetComponent<SpriteRenderer> ().sprite = goodSprite;
+			GameObject.FindGameObjectWithTag ("PartyPanel").GetComponent<Transform> ().SetPositionAndRotation (new Vector3 (0, 0, 0), Quaternion.identity);
 			GameObject.FindGameObjectWithTag ("Player").GetComponent<Player> ().SetMovement (true);
+
+
+
 		} else {
 			Debug.Log ("try again");
 		}
