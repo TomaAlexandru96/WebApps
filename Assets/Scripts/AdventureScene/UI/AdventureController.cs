@@ -45,7 +45,9 @@ public class AdventureController : Photon.MonoBehaviour {
 	public void StartGame () {
 		if (NetworkService.GetInstance ().IsMasterClient ()) {
 			NetworkService.GetInstance ().SpawnScene (party.name, Vector3.zero, Quaternion.identity, 0);
-			SpawnEnemies ();
+			StartCoroutine (Waves ());
+
+			//SpawnEnemies ();
 		}
 		loadingScreen.SetActive (false);
 	}
@@ -74,10 +76,29 @@ public class AdventureController : Photon.MonoBehaviour {
 			playerSpawnPoints [CurrentUser.GetInstance ().GetPositionInParty ()].position, Quaternion.identity, 0, new object[1] {CurrentUser.GetInstance ().GetUserInfo ()});
 	}
 
-	public void SpawnEnemies () {
+	public IEnumerator Waves() {
+		Debug.Log ("Waves");
+		GameObject[] spawnersObj = GameObject.FindGameObjectsWithTag ("Spawner");
+		Spawner[] spawners = new Spawner[spawnersObj.Length];
+		for (int i = 0; i < spawnersObj.Length; i++) {
+			spawners[i] = spawnersObj [i].GetComponent<Spawner> ();
+		}
+
+		for (int i = 0; i < spawnersObj.Length; i++) {
+			spawners [i].Spawn (new string[] {"EnemyGit"}, new int[] {99}, 1, 5, 2f);
+		}
+
+		yield return new WaitForSeconds (30f);
+
+		for (int i = 0; i < spawnersObj.Length; i++) {
+			spawners [i].Spawn (new string[] {"EnemyGit", "EnemyJS"}, new int[] {50, 99}, 2, 10, 1f);
+		}
+	}
+
+	/*public void SpawnEnemies () {
 		for (int i = 0; i < 10; i++) {
 			NetworkService.GetInstance ().SpawnScene (enemies [0].name, new Vector3 (7.795f, -3f, 0f), Quaternion.identity, 0);	
 		}
 		NetworkService.GetInstance ().SpawnScene (enemies [0].name, new Vector3 (7.795f, -4f, 0f), Quaternion.identity, 0);	
-	}
+	}*/
 }

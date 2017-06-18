@@ -7,37 +7,44 @@ public class Spawner : MonoBehaviour {
 	public float spawnTime;        // The amount of time between each spawn.
 	public GameObject[] enemy;
 
-	public int maxDistance;
-	public int minDistance;
 	public Transform target;
 	public Transform myTransform;
+	public float spawnRadius;
 
 	void Awake() {
 		myTransform = transform;
 	}
 
 	void Start() {
-		GameObject stop = GameObject.FindGameObjectWithTag("Player");
-		enemy = GameObject.FindGameObjectsWithTag ("Enemy");
-		target = stop.transform;
-		maxDistance = 20;
-		minDistance = 20;
-		spawnTime = 10f;
-		StartCoroutine(SpawnTimeDelay());
+		spawnRadius = 3f;
 	}
 
-	IEnumerator SpawnTimeDelay() {
-		while (true) {
-			float distance = Vector3.Distance (target.position, myTransform.position);
-			if (distance < maxDistance && distance > minDistance) {
-				int spawnPointIndex = Random.Range (0, enemy.Length);
-				Instantiate (enemy[spawnPointIndex], transform.position, Quaternion.identity);
-				yield return new WaitForSeconds (spawnTime);
-			}
+	public void Spawn (string[] enemies, int[] probab, int length, int enemiesNumber, float spawnTime) {
+		StartCoroutine (SpawnHelper (enemies, probab, length, enemiesNumber, spawnTime));
+	}
 
-			if (Vector3.Distance (target.position, myTransform.position) > maxDistance) {
-				yield return null;
-			}                
+	private IEnumerator SpawnHelper (string[] enemies, int[] probab, int length, int enemiesNumber, float spawnTime) {
+		Debug.Log ("Spawn");
+		for (int i = 0; i < enemiesNumber; i++) {
+			// get random enemy
+			int enemyP = Random.Range (0, 100);
+			for (int p = 0; p < length; p++) {
+				if (enemyP < probab[p]) {
+					SpawnTimeDelay (enemies [p]);
+					yield return new WaitForSeconds (spawnTime);
+					break;
+				}
+			}
 		}
+	}
+
+	void SpawnTimeDelay(string enemy) {
+		Debug.Log (enemy);
+		float randomRadiusX = Random.Range (0.0f, 1.0f) * spawnRadius;
+		float randomRadiusY = Random.Range (0.0f, 1.0f) * spawnRadius;
+		NetworkService.GetInstance ().SpawnScene (
+			enemy, 
+			new Vector3(transform.position.x+randomRadiusX, transform.position.y+randomRadiusY, transform.position.z), 
+			Quaternion.identity, 0);
 	}
 }
