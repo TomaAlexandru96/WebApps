@@ -27,6 +27,7 @@ public class InterviewScript : MonoBehaviour {
 	private int questionsAsked;
 	private int questionsGotRight;
 	private bool doneIntroduction = false;
+	private bool acceptsInput;
 
 
 	public struct QuestionsAndAnswers{
@@ -46,6 +47,7 @@ public class InterviewScript : MonoBehaviour {
 		qaa = new QuestionsAndAnswers[numberOfAvailableQuestions]; 
 		verdictPanel.text = "";
 		questionPanelText.text = "";
+		acceptsInput = true;
 		button0.SetActive (false);
 		button1.SetActive (false);
 		button2.SetActive (false);
@@ -114,7 +116,7 @@ public class InterviewScript : MonoBehaviour {
 		button3.transform.GetChild(0).GetComponent<Text> ().text = qaa [numberOfThisQuestion].answer3;
 
 
-
+		acceptsInput = true;
 		questionsAsked++;
 	}
 
@@ -137,12 +139,15 @@ public class InterviewScript : MonoBehaviour {
 	}
 
 	public void Verify (int answerNumber) {
-		bool correct = false;
-		if (answerNumber == qaa [numberOfThisQuestion].numberOfCorrectAnswer) {
-			correct = true;
-			questionsGotRight++;
-		} 	
-		StartCoroutine(DisplayMessage (correct));
+		if (acceptsInput) {
+			bool correct = false;
+			if (answerNumber == qaa [numberOfThisQuestion].numberOfCorrectAnswer) {
+				correct = true;
+				questionsGotRight++;
+			} 	
+			StartCoroutine (DisplayMessage (correct));
+			acceptsInput = false;
+		}
 	}
 
 	private IEnumerator DisplayMessage (bool correct) {
