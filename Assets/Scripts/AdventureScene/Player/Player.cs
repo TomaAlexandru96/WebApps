@@ -69,7 +69,7 @@ public class Player : Entity<PlayerStats> {
 				curSpeed = stats.runSpeed;
 			} else {
 				curSpeed = stats.speed;
-			}
+			}		
 		}
 	}
 
@@ -184,7 +184,7 @@ public class Player : Entity<PlayerStats> {
 		}
 	}
 
-	public void IncreaseHealth (float points) {
+	public void IncreaseHealth(float points) {
 		ChangeHealth (curHP + points);
 	}
 

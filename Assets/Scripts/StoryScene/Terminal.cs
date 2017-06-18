@@ -9,6 +9,9 @@ public class Terminal : MonoBehaviour {
 	public GameObject terminalEntry;
 	public GameObject scrollView;
 	public GameObject instructions;
+	public GameObject floor;
+	public Sprite goodSprite;
+
 
 	public GameObject terminal;
 	public GameObject vim;
@@ -16,6 +19,12 @@ public class Terminal : MonoBehaviour {
 	public int numberOfEntries = 0;
 
 	public int executionNumeber = 0;
+
+	private GameObject partyPanel;
+
+	public void Start() {
+		partyPanel = GameObject.FindGameObjectWithTag ("PartyPanel");
+	}
 
 	public void ExecuteCommand(Transform command) {
 		string executable = command.GetComponent<InputField> ().text;
@@ -62,7 +71,13 @@ public class Terminal : MonoBehaviour {
 		} else if (executionNumeber == 6) {
 			terminal.SetActive (false);
 			instructions.SetActive (false);
+			floor.GetComponent<SpriteRenderer> ().sprite = goodSprite;
+			GameObject.FindGameObjectWithTag ("Canvas").GetComponent<CanvasScript> ().AddPartyPanel ();
+			GameObject.FindGameObjectWithTag ("Labs").GetComponent<Labs> ().AddStudents();
 			GameObject.FindGameObjectWithTag ("Player").GetComponent<Player> ().SetMovement (true);
+
+
+
 		} else {
 			Debug.Log ("try again");
 		}
