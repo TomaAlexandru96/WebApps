@@ -9,5 +9,11 @@ public class RoomName : MonoBehaviour {
 
 	public void UpdateRoomName(string name) {
 		roomName.GetComponent<Text> ().text = name;
+
+		if (name.Length > 20) {
+			roomName.GetComponent<Text> ().fontSize = 11;
+		} else {
+			roomName.GetComponent<Text> ().fontSize = 14;
+		}
 	}
 }
