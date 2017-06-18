@@ -14,6 +14,7 @@ public class LabsEntrance : MonoBehaviour {
 	public GameObject thisScene;
 	public GameObject nextScene;
 	public Transform spawn;
+	public string newRoomName;
 
 	public void Start () {
 		student = false;
@@ -39,6 +40,7 @@ public class LabsEntrance : MonoBehaviour {
 			thisScene.SetActive (false);
 			nextScene.SetActive (true);
 			GameObject.FindGameObjectWithTag ("Player").transform.position = spawn.position;
+			GameObject.FindGameObjectWithTag ("RoomName").GetComponent<RoomName> ().UpdateRoomName (newRoomName);
 		} else if (closeOnce){
 			directionPanel.SetActive (false);
 			closeOnce = false;
