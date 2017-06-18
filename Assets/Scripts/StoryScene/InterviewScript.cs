@@ -96,6 +96,9 @@ public class InterviewScript : MonoBehaviour {
 				yield return new WaitForSeconds (5f);
 				Exit (exitGate1);
 				Exit (exitGate2);
+				GameObject.FindGameObjectWithTag ("Player").GetComponent<Player> ().SetMovement (true);
+				GameObject.FindGameObjectWithTag ("Canvas").GetComponent<CanvasScript> ().AddPartyPanel ();
+				GameObject.FindGameObjectWithTag ("Labs").GetComponent<Labs> ().AddStudents ();
 				Close ();
 			}
 		}
