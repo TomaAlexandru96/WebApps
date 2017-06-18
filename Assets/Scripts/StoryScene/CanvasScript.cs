@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class CanvasScript : MonoBehaviour {
 
@@ -11,6 +12,7 @@ public class CanvasScript : MonoBehaviour {
 	private GameObject playerAbilities;
 	private GameObject directionPanel;
 	private GameObject partMentionPanel;
+	private GameObject partyPanel;
 
 	void Start () {
 		time = Time.time;
@@ -36,5 +38,25 @@ public class CanvasScript : MonoBehaviour {
 			partMentionPanel.SetActive (false);
 			directionPanel.SetActive (true);
 		}
+		if (partyPanel == null) {
+			partyPanel = GameObject.FindGameObjectWithTag ("PartyPanel");
+		}
+	}
+
+	public void ExitGame () {
+		CurrentUser.GetInstance ().UnsubscribeCH (CurrentUser.GetInstance ().GetUserInfo ().party.owner);
+		DBServer.GetInstance ().LeaveParty (CurrentUser.GetInstance ().GetUserInfo ().username, () => {
+			SceneManager.LoadScene ("Menu");
+		}, (error) => {
+			Debug.LogError (error);	
+		});
+	}
+
+	public void RemovePartyPanel() {
+		partyPanel.SetActive (false);
+	}
+
+	public void AddPartyPanel() {
+		partyPanel.SetActive (true);
 	}
 }
