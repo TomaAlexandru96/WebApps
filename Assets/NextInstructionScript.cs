@@ -10,7 +10,6 @@ public class NextInstructionScript : MonoBehaviour {
 	}
 
 	void OnTriggerExit2D(Collider2D coll) {
-		Debug.Log ("gets here");
 		directionPanel.SetActive (true);
 		StartCoroutine (DisplayMessage ());
 	}
