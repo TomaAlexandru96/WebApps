@@ -10,6 +10,7 @@ public class Huxely_2ndFloor : MonoBehaviour {
 	public string[] text;
 	public int index; 
 	public DateTime dateTime;
+	public GameObject arrow;
 
 	private bool introFinish;
 
@@ -25,6 +26,7 @@ public class Huxely_2ndFloor : MonoBehaviour {
 		index = 1;
 		dateTime = DateTime.MinValue;
 		introFinish = true;
+		arrow.SetActive (true);
 	}
 
 	public void Update() {
