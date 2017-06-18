@@ -106,7 +106,7 @@ public class CourseworkScript : MonoBehaviour {
 
 		int index = (int)Random.Range (0f, (float)questionLeft.Count);
 		int questionToAsk = (int)questionLeft [index];
-		questionLeft.Remove (questionLeft.IndexOf(index));
+		questionLeft.RemoveAt (index);
 		return questionToAsk;
 	}
 
