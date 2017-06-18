@@ -21,8 +21,8 @@ public class CourseworkScript : MonoBehaviour {
 
 	private int numberOfThisQuestion;
 	private int questionsAsked;
-	private bool doneIntroduction = false;
-
+	private bool doneIntroduction;
+	private bool acceptsInput;
 
 	public struct QuestionsAndAnswers{
 		public string question;
@@ -38,6 +38,8 @@ public class CourseworkScript : MonoBehaviour {
 	public void Start () {
 		questionsAsked = 0;
 		questionsGotRight = 0;
+		acceptsInput = true;
+		doneIntroduction = false;
 		qaa = new QuestionsAndAnswers[numberOfAvailableQuestions]; 
 		questionPanelText.text = "";
 		button0.SetActive (false);
@@ -98,7 +100,7 @@ public class CourseworkScript : MonoBehaviour {
 		button3.transform.GetChild(0).GetComponent<Text> ().text = qaa [numberOfThisQuestion].answer3;
 
 
-
+		acceptsInput = true;
 		questionsAsked++;
 	}
 
@@ -121,17 +123,15 @@ public class CourseworkScript : MonoBehaviour {
 	}
 
 	public void Verify (int answerNumber) {
-		if (answerNumber == qaa [numberOfThisQuestion].numberOfCorrectAnswer) {
-			questionsGotRight++;
-		} 	
-//		StartCoroutine(DisplayMessage (correct));
-		StartCoroutine (NextQuestion ());
-	}
+		if (acceptsInput) {
+			if (answerNumber == qaa [numberOfThisQuestion].numberOfCorrectAnswer) {
+				questionsGotRight++;
+			} 	
+			StartCoroutine (NextQuestion ());
 
-	private IEnumerator DisplayMessage (bool correct) {
-		yield return null;
+		}
 	}
-
+		
 	void InitializeQuestionsStruct () {
 		for (int i = 0; i < numberOfAvailableQuestions; i++) {
 			qaa [i].askedBefore = false;
