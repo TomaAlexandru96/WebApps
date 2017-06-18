@@ -1,17 +1,22 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Photon;
 
-public class EndlessController : MonoBehaviour {
+public class EndlessController : Photon.PunBehaviour {
 
 	public GameObject playerPrefab;
 	public GameObject partyPrefab;
 	public GameObject loadingScreen;
 	public GameObject canvas;
+	public float lastAttack;
+
+	public List<Player> players = new List<Player> ();
 
 	// Use this for initialization
 	void Start () {
 		GameObject.FindGameObjectWithTag ("DungeonGenerator").GetComponent<DungeonGenerator> ().BeginGeneration (PlayerPrefs.GetInt ("endless_animation") != 0);
+		lastAttack = Time.time;
 	}
 
 	void OnApplicationQuit () {
@@ -28,7 +33,37 @@ public class EndlessController : MonoBehaviour {
 		ChatController.GetChat ().InitDefaultChat ();
 		GameObject player = NetworkService.GetInstance ().Spawn (playerPrefab.name, position, Quaternion.identity, 0,
 			new object[1] {CurrentUser.GetInstance ().GetUserInfo ()});
-		NetworkService.GetInstance ().SpawnScene (partyPrefab.name, Vector3.zero, Quaternion.identity, 0);
+		
+		if (NetworkService.GetInstance ().IsMasterClient ()) {
+			NetworkService.GetInstance ().SpawnScene (partyPrefab.name, Vector3.zero, Quaternion.identity, 0);
+			players.Add (player.GetComponent<Player> ());
+		}
+
 		loadingScreen.SetActive (false);
+	}
+
+	void Update () {
+		return;
+		if (lastAttack + 0.2f >= Time.time) {
+			return;
+		}
+
+		lastAttack = Time.time;
+
+		foreach (var player in players) {
+			Collider2D[] colls = new Collider2D[100];
+			int len = player.gameObject.GetComponent<BoxCollider2D> ().GetContacts (colls);
+			bool onLava = true;
+
+			for (int i = 0; i < len; i++) {
+				if (colls[i].tag.Equals ("NormalMapComponent")) {
+					onLava = false;
+				}
+			}
+
+			if (onLava) {
+				player.DecreaseHealth (0.2f);
+			}
+		}
 	}
 }
