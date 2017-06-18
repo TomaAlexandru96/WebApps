@@ -71,9 +71,9 @@ public class Terminal : MonoBehaviour {
 		} else if (executionNumeber == 6) {
 			terminal.SetActive (false);
 			instructions.SetActive (false);
-			partyPanel.SetActive (true);
 			floor.GetComponent<SpriteRenderer> ().sprite = goodSprite;
-			GameObject.FindGameObjectWithTag ("PartyPanel").GetComponent<Transform> ().SetPositionAndRotation (new Vector3 (0, 0, 0), Quaternion.identity);
+			GameObject.FindGameObjectWithTag ("Canvas").GetComponent<CanvasScript> ().AddPartyPanel ();
+			GameObject.FindGameObjectWithTag ("Labs").GetComponent<Labs> ().AddStudents();
 			GameObject.FindGameObjectWithTag ("Player").GetComponent<Player> ().SetMovement (true);
 
 
