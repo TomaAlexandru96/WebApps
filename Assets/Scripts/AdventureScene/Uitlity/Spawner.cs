@@ -24,7 +24,6 @@ public class Spawner : MonoBehaviour {
 	}
 
 	private IEnumerator SpawnHelper (string[] enemies, int[] probab, int length, int enemiesNumber, float spawnTime) {
-		Debug.Log ("Spawn");
 		for (int i = 0; i < enemiesNumber; i++) {
 			// get random enemy
 			int enemyP = Random.Range (0, 100);
@@ -39,7 +38,6 @@ public class Spawner : MonoBehaviour {
 	}
 
 	void SpawnTimeDelay(string enemy) {
-		Debug.Log (enemy);
 		float randomRadiusX = Random.Range (0.0f, 1.0f) * spawnRadius;
 		float randomRadiusY = Random.Range (0.0f, 1.0f) * spawnRadius;
 		NetworkService.GetInstance ().SpawnScene (
