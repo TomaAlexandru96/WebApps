@@ -162,7 +162,7 @@ public abstract class Enemy : Entity<EnemyStats> {
 					GetComponent<Rigidbody2D> ().velocity = movement.normalized * 0.8f;
 					return;
 				}
-				// Debug.Log ("current: " + currentBr.position.X + ", " + currentBr.position.Y);
+				/*// Debug.Log ("current: " + currentBr.position.X + ", " + currentBr.position.Y);
 				// Debug.Log ("next: " + next.position.X + ", " + next.position.Y);
 				int xdiff = currentBr.position.X - next.position.X;
 				int ydiff = currentBr.position.Y - next.position.Y;
@@ -283,7 +283,7 @@ public abstract class Enemy : Entity<EnemyStats> {
 						}
 					}
 
-				}
+				}*/
 			}
 		}
 	}

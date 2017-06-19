@@ -18,6 +18,7 @@ public class InterviewScript : MonoBehaviour {
 	public QuestionsAndAnswers[] qaa;
 	public int numberOfQuestionsToAsk;
 	public int numberOfQuestionsToGetRight;
+	public GameObject[] arrowsDacc = new GameObject[8];
 
 	public GameObject exitGate1;
 	public GameObject exitGate2;
@@ -27,6 +28,7 @@ public class InterviewScript : MonoBehaviour {
 	private int questionsAsked;
 	private int questionsGotRight;
 	private bool doneIntroduction = false;
+	private bool acceptsInput;
 
 
 	public struct QuestionsAndAnswers{
@@ -46,6 +48,7 @@ public class InterviewScript : MonoBehaviour {
 		qaa = new QuestionsAndAnswers[numberOfAvailableQuestions]; 
 		verdictPanel.text = "";
 		questionPanelText.text = "";
+		acceptsInput = true;
 		button0.SetActive (false);
 		button1.SetActive (false);
 		button2.SetActive (false);
@@ -96,6 +99,15 @@ public class InterviewScript : MonoBehaviour {
 				yield return new WaitForSeconds (5f);
 				Exit (exitGate1);
 				Exit (exitGate2);
+				GameObject.FindGameObjectWithTag ("Player").GetComponent<Player> ().SetMovement (true);
+				GameObject.FindGameObjectWithTag ("Canvas").GetComponent<CanvasScript> ().AddPartyPanel ();
+				GameObject.FindGameObjectWithTag ("Labs").GetComponent<Labs> ().AddStudents ();
+
+				// Deactivate arrows
+				foreach (GameObject arrow in arrowsDacc) {
+					arrow.SetActive (false);
+				}
+
 				Close ();
 			}
 		}
@@ -111,7 +123,7 @@ public class InterviewScript : MonoBehaviour {
 		button3.transform.GetChild(0).GetComponent<Text> ().text = qaa [numberOfThisQuestion].answer3;
 
 
-
+		acceptsInput = true;
 		questionsAsked++;
 	}
 
@@ -119,7 +131,7 @@ public class InterviewScript : MonoBehaviour {
 
 		int index = (int)Random.Range (0f, (float)questionLeft.Count);
 		int questionToAsk = (int)questionLeft [index];
-		questionLeft.Remove (questionLeft.IndexOf(index));
+		questionLeft.RemoveAt (index);
 		return questionToAsk;
 	}
 
@@ -134,12 +146,15 @@ public class InterviewScript : MonoBehaviour {
 	}
 
 	public void Verify (int answerNumber) {
-		bool correct = false;
-		if (answerNumber == qaa [numberOfThisQuestion].numberOfCorrectAnswer) {
-			correct = true;
-			questionsGotRight++;
-		} 	
-		StartCoroutine(DisplayMessage (correct));
+		if (acceptsInput) {
+			bool correct = false;
+			if (answerNumber == qaa [numberOfThisQuestion].numberOfCorrectAnswer) {
+				correct = true;
+				questionsGotRight++;
+			} 	
+			StartCoroutine (DisplayMessage (correct));
+			acceptsInput = false;
+		}
 	}
 
 	private IEnumerator DisplayMessage (bool correct) {
@@ -175,7 +190,7 @@ public class InterviewScript : MonoBehaviour {
 		CreateQuestion (6, "Convert 0010 1010 to decimal", "46", "32", "42", "66", 2);
 		CreateQuestion (7, "Which one is the best editor ?", "Gedit", "Notepad", "Vim", "Emacs", 2);
 		CreateQuestion (8, "Differentiate f(x) = ln(x) ", "x^2", "ln(x)^2", "1 / ln(x)", "1 / x", 3);
-		CreateQuestion (9, "Which one of these algorithms uses the Devide & Conquer technique ?", "Binary Search", "Prim's Algorithm", "Bubble Sort", "KMP", 0);
+		CreateQuestion (9, "Which one of these algorithms uses the Divide & Conquer technique ?", "Binary Search", "Prim's Algorithm", "Bubble Sort", "KMP", 0);
 		CreateQuestion (10, " (HARD!) What technique would you use to determine the longest common substring of 2 strings ?",
 			"Divide & Conquer", "Dynammic Programming", "Greedy", "KMP", 1);
 		CreateQuestion (11, "Differentiate f(x) = x ln (x)", "ln (x) + 1/x", "ln (x) + 1", "x^2 ln (x)", "2 * xln(x)", 1);

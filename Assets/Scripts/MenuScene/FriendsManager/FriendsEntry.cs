@@ -31,10 +31,10 @@ public class FriendsEntry : MonoBehaviour {
 				UpdateStatus ();
 			}
 		});
-		optionsPanel = GameObject.FindGameObjectWithTag ("FriendsOption");
 	}
 
 	public void Start() {
+		optionsPanel = GameObject.FindGameObjectWithTag ("PlayerPanel").transform.GetChild (3).gameObject;
 		GetOptionPanel ().SetActive (false);
 		UpdateStatus ();
 	}
