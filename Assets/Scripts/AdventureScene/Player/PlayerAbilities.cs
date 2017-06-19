@@ -6,6 +6,9 @@ public class PlayerAbilities : MonoBehaviour {
 
 	public GameObject abilityPrefab;
 	public RectTransform sprintBar;
+	public GameObject abilitiesObj;
+	public PlayerInfoController playerInfo;
+
 	private Player player;
 	private List<AbilityElement> abilities = new List<AbilityElement> ();
 	private AbilityElement selected;
@@ -15,9 +18,9 @@ public class PlayerAbilities : MonoBehaviour {
 	public void Init (Player player) {
 		this.player = player;
 		int i = 1;
-		foreach (var ability in this.player.stats.abilities) {
+		foreach (var ability in this.player.stats.GetAbilities ()) {
 			GameObject newAbility = Instantiate (abilityPrefab);
-			newAbility.transform.SetParent (transform);
+			newAbility.transform.SetParent (abilitiesObj.transform);
 			newAbility.GetComponent<AbilityElement> ().Init (ability, i);
 			abilities.Add (newAbility.GetComponent<AbilityElement> ());
 			i++;
@@ -27,6 +30,8 @@ public class PlayerAbilities : MonoBehaviour {
 
 		stamina = player.stats.defaultStamina;
 		lastSprint = Time.time;
+
+		playerInfo.Init (player);
 	}
 
 	public bool UseAbility () {
