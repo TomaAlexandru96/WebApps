@@ -33,7 +33,7 @@ public class Bullet : MonoBehaviour {
 			Destroy (this.gameObject);
 		}
 
-		if (coll.gameObject.tag == "Map") {
+		if (coll.gameObject.tag == "Labs") {
 			Destroy (this.gameObject);
 		}
 	}
