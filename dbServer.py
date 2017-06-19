@@ -231,9 +231,9 @@ class DBHTTPHandler(BaseHTTPRequestHandler):
       return
 
     query1 = '''
-		INSERT INTO CHARACTERS (CHARACTER_NAME, CHARACTER_TYPE)
-		VALUES ( '{}', '{}')
- 		'''.format(params['characterName'][0], params['characterID'][0])
+		INSERT INTO CHARACTERS (CHARACTER_NAME, CHARACTER_TYPE, PTYPE)
+		VALUES ( '{}', '{}', '{}')
+ 		'''.format(params['characterName'][0], params['characterID'][0], params['characterPType'][0])
     self.send_db_query(query1)
     query2 = '''
 		UPDATE USERS SET CHARACTER_NAME = '{}'
@@ -269,10 +269,12 @@ class DBHTTPHandler(BaseHTTPRequestHandler):
       user['character'] = character
       character['name'] = response[9]
       character['type'] = response[10]
+      character['xp'] = response[11]
+      character['pType'] = response[12]
       user['party'] = party
-      party['owner'] = response[11]
-      party['partyMembers'] = response[12]
-      party['state'] = response[13]
+      party['owner'] = response[13]
+      party['partyMembers'] = response[14]
+      party['state'] = response[15]
       return user
 
 
@@ -371,7 +373,6 @@ def set_interval(func, sec):
 
 def check_for_inactive_users():
   r = requests.post('https://cloud-vm-46-104.doc.ic.ac.uk:8000/logout_inactive_users')
-  print(r.status_code)
 
 
 def start_server():

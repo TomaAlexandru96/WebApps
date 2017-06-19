@@ -15,25 +15,16 @@ public class ChooseAvatarPanelController : MonoBehaviour {
 	public InputField characterName;
 
 	public void RequestCharacter () {
-		DBServer.GetInstance ().ChooseCharacter (CurrentUser.GetInstance ().GetUserInfo (), characterName.text, characterNumber, () => {
-			chooseAvatarPanel.SetActive(false);
-			avatarTypePanel.SetActive(true);
-		}, (errorCode) => {
-			String errorMessage = errorCode + ": ";
-			switch (errorCode) {
-			case DBServer.NOT_FOUND_STATUS: errorMessage += "Username or password combination wrong!\n";break;
-			default: errorMessage += "Could not connect to the server!\n";break;
-			}
-
-		}); 
-		
+		avatarTypePanel.GetComponent<AvatarTypePanel> ().SetCHName (characterName.text);
+		avatarTypePanel.GetComponent<AvatarTypePanel> ().SetCHID (characterNumber);
+		chooseAvatarPanel.SetActive(false);
+		avatarTypePanel.SetActive(true);
 	}
 
-	public void AvatarChosen(int num) {
+	public void AvatarChosen (int num) {
 		foreach (GameObject avatar in avatars) {
 			avatar.transform.GetComponent<Image> ().color = new Color32 (200, 200, 200, 100);
 		}
-		Debug.Log ("Avatar " + num);
 		avatars [num].transform.GetComponent<Image> ().color = new Color32 (255, 255, 255, 255);
 	}
 }
