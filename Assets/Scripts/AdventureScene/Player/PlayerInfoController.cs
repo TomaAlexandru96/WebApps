@@ -23,13 +23,13 @@ public class PlayerInfoController : MonoBehaviour {
 
 	public void Init (Player player) {
 		this.player = player;
-		UpdateInfo (player.user);
+		UpdateInfo ();
 	}
 
-	public void UpdateInfo (User info) {
-		PlayerStats stats = info.character.GetStats ();
-		avatar.sprite = info.character.GetImage ();
-		characterName.text = info.character.name;
+	public void UpdateInfo () {
+		PlayerStats stats = player.stats;
+		avatar.sprite = player.user.character.GetImage ();
+		characterName.text = player.user.character.name;
 		webStats.text = stats.web.ToString ();
 		funcStats.text = stats.functional.ToString ();
 		ooStats.text = stats.oo.ToString ();
@@ -38,7 +38,7 @@ public class PlayerInfoController : MonoBehaviour {
 		level.text = stats.GetLevel ().ToString ();
 
 		Vector3 xpFillScale = xpFill.localScale;
-		xpFillScale.x = (float) stats.xp / stats.GetNextMilestoneXP ();
+		xpFillScale.x = (float) (stats.xp % stats.baseLevelXP) / stats.baseLevelXP;
 		xpFill.localScale = xpFillScale;
 
 		PlayerGameUIController.SetHp (healthObj, player);
@@ -49,6 +49,6 @@ public class PlayerInfoController : MonoBehaviour {
 			return;
 		}
 
-		UpdateInfo (player.user);
+		UpdateInfo ();
 	}
 }

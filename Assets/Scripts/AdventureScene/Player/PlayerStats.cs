@@ -16,37 +16,45 @@ public class PlayerStats : EntityStats {
 	public float staminaChargeCooldown = 1f;
 	public float runStaminaGain = 0.02f;
 
+	private int levelIncrease = 3;
+	public int baseLevelXP = 350;
+
 	private List<Ability> abilities = new List<Ability> () {new Ability (Ability.Mele), 
 		new Ability (Ability.ForkBomb), new Ability (Ability.DebugGun), new Ability (Ability.ElectricShock)
 	};
 
 	public PlayerStats (PlayerType type, int xp) {
-		this.xp = xp;
 		this.pType = type;
 		maxHP = 30;
 		speed = 1.5f;
 		damage = 1f;
 
-		xp = 1;
-		web = 1;
-		functional = 1;
-		oo = 1;
+		GainXp (xp);
+	}
 
-		switch (type) {
+	public void GainXp (int xp) {
+		this.xp += xp;
+
+		web = GetLevel () * levelIncrease;
+		functional = GetLevel () * levelIncrease;
+		oo = GetLevel () * levelIncrease;
+		git = GetLevel () * levelIncrease;
+
+		switch (pType) {
 		case PlayerType.FrontEndDev: 
-			web = 8;
-			git = 5;
+			web += 8;
+			git += 5;
 			break;
 		case PlayerType.BackEndDev:
-			web = 2;
-			git = 5;
+			web += 2;
+			git += 5;
 			break;
 		case PlayerType.FullStackDev:
-			web = 5;
+			web += 5;
 			break;
 		case PlayerType.ProductManager:
-			web = 5;
-			git = 5;
+			web += 5;
+			git += 5;
 			break;
 		}
 	}
@@ -56,11 +64,15 @@ public class PlayerStats : EntityStats {
 	}
 
 	public int GetLevel () {
-		return 9000;
+		return xp / baseLevelXP + 1;
 	}
 
 	public int GetNextMilestoneXP () {
-		return 350;
+		if (GetLevel () * baseLevelXP < xp) {
+			return (GetLevel () + 1) * baseLevelXP;
+		} else {
+			return GetLevel () * baseLevelXP;
+		}
 	}
 }
 

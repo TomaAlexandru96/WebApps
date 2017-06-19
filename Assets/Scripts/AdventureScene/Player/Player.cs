@@ -180,6 +180,10 @@ public class Player : Entity<PlayerStats> {
 		}
 		PlayAnimation ("Animate");
 	}
+
+	public void Killed (Enemy other) {
+		stats.GainXp (other.stats.xpReward);
+	}
 		
 	public void GetHitOvertime () {
 		ChangeHealth (curHP - 1);
