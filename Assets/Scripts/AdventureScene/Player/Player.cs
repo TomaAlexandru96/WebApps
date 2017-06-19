@@ -12,7 +12,7 @@ public class Player : Entity<PlayerStats> {
 	public GameObject explosionPrefab;
 
 	private PlayerAbilities abilities;
-	private User user;
+	public User user;
 	private bool canAttack = true;
 	private bool canMove = true;
 
@@ -39,7 +39,7 @@ public class Player : Entity<PlayerStats> {
 	}
 
 	protected override void SetStats () {
-		stats = new PlayerStats (PlayerType.FrontEndDev);
+		stats = user.character.GetStats ();
 	}
 
 	private bool IsStory () {
@@ -179,6 +179,10 @@ public class Player : Entity<PlayerStats> {
 			transform.position = Vector3.Lerp(transform.position, networkPosition, 0.5f);
 		}
 		PlayAnimation ("Animate");
+	}
+
+	public void Killed (Enemy other) {
+		stats.GainXp (other.stats.xpReward);
 	}
 		
 	public void GetHitOvertime () {

@@ -1,10 +1,13 @@
 ﻿using System;
 
 public class EnemyStats : EntityStats {
-	
-	public EnemyStats (float maxHP, float damage, float speed) {
+
+	public int xpReward;
+
+	public EnemyStats (float maxHP, float damage, float speed, int xpReward) {
 		this.maxHP = maxHP;
 		this.damage = damage;
 		this.speed = speed;
+		this.xpReward = xpReward;
 	}
 }

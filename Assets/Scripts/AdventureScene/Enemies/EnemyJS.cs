@@ -5,11 +5,11 @@ using UnityEngine;
 public class EnemyJS : Enemy {
 
 	protected override void SetStats() {
-		this.stats = new EnemyStats (5f, 1f, 0.5f);
+		this.stats = new EnemyStats (5f, 1f, 0.5f, 10);
 	}
 
 	public override void GetHit<E> (Entity<E> entity) {
-		float hit = (entity.stats as PlayerStats).javascript;
+		float hit = (entity.stats as PlayerStats).web;
 		ChangeHealth (curHP - hit);
 		base.GetHit (entity);
 	}

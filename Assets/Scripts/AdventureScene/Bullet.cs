@@ -30,7 +30,7 @@ public class Bullet : MonoBehaviour {
 			coll.gameObject.GetComponent<Enemy> ().GetHit (player);
 			Object bulletImpact = Resources.Load ("bulletImpact");
 			NetworkService.GetInstance ().SpawnScene (bulletImpact.name, transform.position, Quaternion.identity, 0);
-			Destroy (this.gameObject);
+			NetworkService.GetInstance ().Destroy (gameObject);
 		}
 
 		if (coll.gameObject.tag == "Labs") {
