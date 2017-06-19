@@ -215,17 +215,18 @@ public class DBServer : MonoBehaviour {
 		}
 	}
 
-	public void ChooseCharacter (User user, String characterName, int id, Action callback, Action<long> errorcall) {
-		StartCoroutine (ChooseCharacterHelper (user, characterName, id, callback, errorcall));
+	public void ChooseCharacter (User user, String characterName, PlayerType pType, int id, Action callback, Action<long> errorcall) {
+		StartCoroutine (ChooseCharacterHelper (user, characterName, id, pType, callback, errorcall));
 	}
 
-	public IEnumerator<AsyncOperation> ChooseCharacterHelper (User user, String characterName, int id,
+	public IEnumerator<AsyncOperation> ChooseCharacterHelper (User user, String characterName, int id, PlayerType pType,
 																Action callback, Action<long> errorcall) {
 
 		WWWForm form = new WWWForm ();
 		form.AddField ("username", user.username);
 		form.AddField ("characterName", characterName);
 		form.AddField ("characterID", id);
+		form.AddField ("characterPType", ((int)pType).ToString ());
 
 		UnityWebRequest request = UnityWebRequest.Post (DBServerAddr + "/chooseCharacter", form);
 
