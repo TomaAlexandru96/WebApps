@@ -18,8 +18,8 @@ public class CourseworkScript : MonoBehaviour {
 	public QuestionsAndAnswers[] qaa;
 	public int numberOfQuestionsToAsk;
 	public int questionsGotRight;
-	public GameObject[] arrowsAcc = new GameObject[8];
-	public GameObject[] arrowsDacc = new GameObject[8];
+	public GameObject[] arrowsAcc;
+	public GameObject[] arrowsDacc;
 
 	private int numberOfThisQuestion;
 	private int questionsAsked;
@@ -92,6 +92,7 @@ public class CourseworkScript : MonoBehaviour {
 				yield return new WaitForSeconds (5f);
 				Debug.Log (questionsGotRight);
 				commonRoom.GetComponent<CommonRoomScript> ().setQuestionsGotRight (questionsGotRight);
+				commonRoom.GetComponent<CommonRoomScript> ().setDoneCoursework (true);
 				Close ();
 				
 			}
@@ -150,7 +151,7 @@ public class CourseworkScript : MonoBehaviour {
 
 		CreateQuestion (0, "Which one of these is a valid convergence test ?", "D'Alambert's ratio test", "Einstein's ratio test", "Ibrahimovic's limit test", "All of the above", 0);
 		CreateQuestion (1, "Which one of the following statements are true ?", "The geometric series diverges for any |X| < 2", "The geometric series diverges for any |X| > 2", "The harmonic series diverges", "All of the above", 2);
-		CreateQuestion (2, "Assuming p is true and q is false, which one of these logical statements is valid ? ?", "q -> p", "q -> !p", "p -> p", "All of the above", 3);
+		CreateQuestion (2, "Assuming p is true and q is false, which one of these logical statements is valid ?", "q -> p", "q -> !p", "p -> p", "All of the above", 3);
 		CreateQuestion (3, "Differentiate f(x) = sin(x)cos(x)", "2 sin(x)cos(x)", "-2 sin(x)cos(x)", "sin(2x)", "cox(2x)", 3);
 		CreateQuestion (4, "What is the next number in the sequence : 0 3 8 15", "21", "24", "26", "35", 1);
 		CreateQuestion (5, "Which one of the following is true ?", "every natural number n > 2 can be written as the sum of two prime numbers", "not every natural number n > 2 can be written as the sum of two prime numbers",

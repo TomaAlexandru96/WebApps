@@ -77,7 +77,6 @@ public class AdventureController : Photon.MonoBehaviour {
 	}
 
 	public IEnumerator Waves() {
-		Debug.Log ("Waves");
 		GameObject[] spawnersObj = GameObject.FindGameObjectsWithTag ("Spawner");
 		Spawner[] spawners = new Spawner[spawnersObj.Length];
 		for (int i = 0; i < spawnersObj.Length; i++) {

@@ -99,10 +99,20 @@ public class Player : Entity<PlayerStats> {
 					PlayAnimation ("PlayForkBombAttackAnimation");
 				}
 			} else if (selectedAbility.type == Ability.DebugGun) {
-				RaycastHit2D hit = Physics2D.Raycast (mainCamera.ScreenToWorldPoint (Input.mousePosition), 
-					Vector2.zero, 1f, LayerMask.GetMask ("MouseInput"));
-				
+				if (!abilities.UseAbility ()) {
+					return;
+				}
+				Object bullet = Resources.Load ("vimBullet");
+				((GameObject)bullet).GetComponent<Bullet> ().SetPlayer(this);
+				Vector3 mouseDirection = GetMouseInput (new string[] {"MouseInput"});
+				GameObject ob = NetworkService.GetInstance ().SpawnScene (bullet.name, transform.position, Quaternion.identity, 0);
+				((GameObject)ob).GetComponent<Rigidbody2D> ().velocity = mouseDirection * 2f;
+
+				PlayAnimation ("PlayBulletAttackAnimation");
 			} else if (selectedAbility.type == Ability.ElectricShock) {
+				if (!abilities.UseAbility ()) {
+					return;
+				}
 				CircleCollider2D electricRange = gameObject.AddComponent<CircleCollider2D> () as CircleCollider2D;
 				electricRange.isTrigger = true;
 				electricRange.radius = 1;
@@ -120,9 +130,6 @@ public class Player : Entity<PlayerStats> {
 					}
 				}
 				PlayAnimation ("PlayElectricShockAttackAnimation");
-				if (!abilities.UseAbility ()) {
-					return;
-				}
 			}
 		}
 	}
@@ -258,6 +265,16 @@ public class Player : Entity<PlayerStats> {
 		GetComponent<Animator> ().Play ("P"+(user.character.type+1)+"_LaptopAttack");
 		yield return new WaitForSeconds (0.9f);
 		NetworkService.GetInstance().Destroy (ob);
+		attackRadius.GetComponent<Animator> ().Play ("Default");
+		attackRadius.GetComponent<PlayerAttack> ().StopAttack ();
+		isAttacking = false;
+	}
+
+	protected IEnumerator PlayBulletAttackAnimation () {
+		isAttacking = true;
+		attackRadius.GetComponent<PlayerAttack> ().StartAttack ();
+		GetComponent<Animator> ().Play ("P"+(user.character.type+1)+"_LaptopAttack");
+		yield return new WaitForSeconds (0.3f);
 		attackRadius.GetComponent<Animator> ().Play ("Default");
 		attackRadius.GetComponent<PlayerAttack> ().StopAttack ();
 		isAttacking = false;
