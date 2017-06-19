@@ -84,13 +84,13 @@ public class AdventureController : Photon.MonoBehaviour {
 		}
 
 		for (int i = 0; i < spawnersObj.Length; i++) {
-			spawners [i].Spawn (new string[] {"EnemyGit"}, new int[] {99}, 1, 5, 2f);
+			spawners [i].Spawn (new string[] {"EnemyGit"}, new int[] {99}, 1, 2, 2f);
 		}
 
 		yield return new WaitForSeconds (30f);
 
 		for (int i = 0; i < spawnersObj.Length; i++) {
-			spawners [i].Spawn (new string[] {"EnemyGit", "EnemyJS"}, new int[] {50, 99}, 2, 10, 1f);
+			spawners [i].Spawn (new string[] {"EnemyHTML", "EnemyJS", "EnemyCSS"}, new int[] {33, 66, 99}, 3, 5, 1f);
 		}
 	}
 

@@ -16,7 +16,7 @@ public class Spawner : MonoBehaviour {
 	}
 
 	void Start() {
-		spawnRadius = 3f;
+		spawnRadius = 1f;
 	}
 
 	public void Spawn (string[] enemies, int[] probab, int length, int enemiesNumber, float spawnTime) {
