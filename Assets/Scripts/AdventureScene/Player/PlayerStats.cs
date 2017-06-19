@@ -74,5 +74,13 @@ public class PlayerStats : EntityStats {
 			return GetLevel () * baseLevelXP;
 		}
 	}
+
+	public void UpdateDBXP () {
+		DBServer.GetInstance ().UpdateXP (CurrentUser.GetInstance ().GetUserInfo ().username, xp, () => {
+			
+		}, (error) => {
+			Debug.LogError (error);
+		});
+	}
 }
 
