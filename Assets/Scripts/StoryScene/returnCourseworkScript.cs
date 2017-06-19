@@ -17,16 +17,16 @@ public class returnCourseworkScript : MonoBehaviour {
 	}
 
 	private IEnumerator DisplayMessage () {
-		directionPanel.transform.GetComponent<DirectionPanel> ().DisplayText ("Huh, you made it in time ! Nice Work !");
-		yield return new WaitForSeconds (2f);
-		directionPanel.transform.GetComponent<DirectionPanel> ().DisplayText ("It looks like your coursework has already been marked, go back to the common room to see what grade you got!");
-		yield return new WaitForSeconds (4f);
 		foreach (GameObject arrow in arrowsAcc) {
 			arrow.SetActive (true);
 		}
 		foreach (GameObject arrow in arrowsDacc) {
 			arrow.SetActive (false);
 		}
+		directionPanel.transform.GetComponent<DirectionPanel> ().DisplayText ("Huh, you made it in time ! Nice Work !");
+		yield return new WaitForSeconds (2f);
+		directionPanel.transform.GetComponent<DirectionPanel> ().DisplayText ("It looks like your coursework has already been marked, go back to the common room to see what grade you got!");
+		yield return new WaitForSeconds (4f);
 		directionPanel.SetActive (false);
 
 
