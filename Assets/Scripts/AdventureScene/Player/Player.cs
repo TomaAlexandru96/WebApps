@@ -195,6 +195,10 @@ public class Player : Entity<PlayerStats> {
 		ChangeHealth (curHP + points);
 	}
 
+	public void DecreaseHealth (float points) {
+		ChangeHealth (curHP - points);
+	}
+
 	public override void GetHit<E> (Entity<E> entity) {
 		ChangeHealth (curHP - entity.stats.damage);
 		base.GetHit (entity);
