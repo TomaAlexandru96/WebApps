@@ -8,7 +8,7 @@ public class EnemyGit : Enemy {
 
 	protected override void SetStats() {
 		this.startAttack = Time.time;
-		this.stats = new EnemyStats (7f, 2f, 0.5f);
+		this.stats = new EnemyStats (7f, 2f, 0.5f, 20);
 	}
 
 	public override void GetHit<E> (Entity<E> entity) {
@@ -22,7 +22,6 @@ public class EnemyGit : Enemy {
 
 		ChangeHealth (curHP - hit);
 		base.GetHit (entity);
-
 	}
 
 	void OnCollisionStay2D(Collision2D coll) {
