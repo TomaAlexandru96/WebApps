@@ -18,6 +18,7 @@ public class InterviewScript : MonoBehaviour {
 	public QuestionsAndAnswers[] qaa;
 	public int numberOfQuestionsToAsk;
 	public int numberOfQuestionsToGetRight;
+	public GameObject[] arrowsDacc = new GameObject[8];
 
 	public GameObject exitGate1;
 	public GameObject exitGate2;
@@ -101,6 +102,12 @@ public class InterviewScript : MonoBehaviour {
 				GameObject.FindGameObjectWithTag ("Player").GetComponent<Player> ().SetMovement (true);
 				GameObject.FindGameObjectWithTag ("Canvas").GetComponent<CanvasScript> ().AddPartyPanel ();
 				GameObject.FindGameObjectWithTag ("Labs").GetComponent<Labs> ().AddStudents ();
+
+				// Deactivate arrows
+				foreach (GameObject arrow in arrowsDacc) {
+					arrow.SetActive (false);
+				}
+
 				Close ();
 			}
 		}

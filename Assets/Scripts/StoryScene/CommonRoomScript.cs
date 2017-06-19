@@ -28,23 +28,23 @@ public class CommonRoomScript : MonoBehaviour {
 			StartCoroutine (DisplayMessage ());
 		}
 	}
-	void OnTriggerExit2D(Collider2D coll){
-		doneCoursework = true;
+	public void setDoneCoursework (bool done) {
+		doneCoursework = done;
 	}
 
 	private string CalculateGrade (int questionsGotRight, int totalNumberOfQuestions) {
 		float fraction = (float)questionsGotRight / totalNumberOfQuestions;
-		if (fraction > 0.9f)
+		if (fraction >= 0.9f)
 			return "A*";
-		else if (fraction > 0.8f)
+		else if (fraction >= 0.8f)
 			return "A+";
-		else if (fraction > 0.7f)
+		else if (fraction >= 0.7f)
 			return "A";
-		else if (fraction > 0.6f)
+		else if (fraction >= 0.6f)
 			return "B";
-		else if (fraction > 0.5f)
+		else if (fraction >= 0.5f)
 			return "C";
-		else if (fraction > 0.4f)
+		else if (fraction >= 0.4f)
 			return "D";
 		else 
 			return "F";
