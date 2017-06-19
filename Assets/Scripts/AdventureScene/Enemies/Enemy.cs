@@ -109,7 +109,13 @@ public abstract class Enemy : Entity<EnemyStats> {
 		}
 	}
 
-	public override void GetHit<E> (Entity<E> entity) { 
+	public override void GetHit<E> (Entity<E> entity) {
+		if (isDead ()) {
+			if (entity is Player) {
+				(entity as Player).Killed (this);	
+			}
+		}
+
 		base.GetHit<E> (entity);
 	}
 

@@ -4,75 +4,75 @@ using UnityEngine;
 
 public class PlayerStats : EntityStats {
 	
-	public int level;
-	public int javascript;
-	public int html;
-	public int python;
-	public int java;
-	public int mySQL;
+	public int xp;
+	public int web;
+	public int functional;
+	public int oo;
 	public int git;
+	public PlayerType pType;
 	public float runSpeed = 3f;
 	public float defaultStamina = 500f;
 	public float runStaminaBurn = 0.05f;
 	public float staminaChargeCooldown = 1f;
 	public float runStaminaGain = 0.02f;
 
-	public List<Ability> abilities = new List<Ability> () {new Ability(Ability.Mele), 
-		new Ability(Ability.ForkBomb), new Ability(Ability.DebugGun), new Ability(Ability.ElectricShock)};
+	private int levelIncrease = 3;
+	public int baseLevelXP = 350;
 
-	public const int increaseLevelUp = 3;
+	private List<Ability> abilities = new List<Ability> () {new Ability (Ability.Mele), 
+		new Ability (Ability.ForkBomb), new Ability (Ability.DebugGun), new Ability (Ability.ElectricShock)
+	};
 
-	public PlayerStats (PlayerType type) {
-		level = 1;
+	public PlayerStats (PlayerType type, int xp) {
+		this.pType = type;
 		maxHP = 30;
 		speed = 1.5f;
 		damage = 1f;
-		switch (type) {
+
+		GainXp (xp);
+	}
+
+	public void GainXp (int xp) {
+		this.xp += xp;
+
+		web = GetLevel () * levelIncrease;
+		functional = GetLevel () * levelIncrease;
+		oo = GetLevel () * levelIncrease;
+		git = GetLevel () * levelIncrease;
+
+		switch (pType) {
 		case PlayerType.FrontEndDev: 
-			javascript = 8;
-			html = 8;
-			python = 2;
-			java = 2;
-			mySQL = 2;
-			git = 5;
+			web += 8;
+			git += 5;
 			break;
 		case PlayerType.BackEndDev:
-			javascript = 2;
-			html = 2;
-			python = 8;
-			java = 8;
-			mySQL = 8;
-			git = 5;
+			web += 2;
+			git += 5;
 			break;
 		case PlayerType.FullStackDev:
-			javascript = 5;
-			html = 5;
-			python = 5;
-			java = 5;
-			mySQL = 5;
-			git = 5;
+			web += 5;
 			break;
 		case PlayerType.ProductManager:
-			javascript = 5;
-			html = 5;
-			python = 5;
-			java = 5;
-			mySQL = 5;
-			git = 5;
+			web += 5;
+			git += 5;
 			break;
 		}
 	}
 
-	public void LevelUp() {
-		level++;
-		maxHP += increaseLevelUp;
-		javascript += increaseLevelUp;
-		html += increaseLevelUp;
-		python += increaseLevelUp;
-		java += increaseLevelUp;
-		mySQL += increaseLevelUp;
-		git += increaseLevelUp;
+	public List<Ability> GetAbilities () {
+		return abilities;
 	}
 
+	public int GetLevel () {
+		return xp / baseLevelXP + 1;
+	}
+
+	public int GetNextMilestoneXP () {
+		if (GetLevel () * baseLevelXP < xp) {
+			return (GetLevel () + 1) * baseLevelXP;
+		} else {
+			return GetLevel () * baseLevelXP;
+		}
+	}
 }
 

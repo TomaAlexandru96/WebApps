@@ -1,5 +1,6 @@
 ﻿using System;
 
+[System.Serializable]
 public enum PlayerType {
-	BackEndDev = 0, FrontEndDev = 1, FullStackDev = 2, ProductManager = 3
+	FrontEndDev = 0, BackEndDev = 1, FullStackDev = 2, ProductManager = 3
 };
