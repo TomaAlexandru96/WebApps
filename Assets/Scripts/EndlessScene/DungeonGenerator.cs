@@ -231,13 +231,6 @@ public class DungeonGenerator : MonoBehaviour {
 
 		foreach (var hall in hallways) {
 			hall.SetActive (true);
-			Hallway h = hall.GetComponent<Hallway> ();
-			if (h.IsHallway2 ()) {
-				CreateLine (new Vector3 (h.points [0].x, h.points [0].y), new Vector3 (h.points [1].x, h.points [1].y));
-			} else {
-				CreateLine (new Vector3 (h.points [0].x, h.points [0].y), new Vector3 (h.points [1].x, h.points [1].y));
-				CreateLine (new Vector3 (h.points [2].x, h.points [2].y), new Vector3 (h.points [1].x, h.points [1].y));
-			}
 			if (withAnimation) {
 				yield return new WaitForSeconds (0.01f);
 			}

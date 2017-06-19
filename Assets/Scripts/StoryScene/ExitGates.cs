@@ -7,21 +7,27 @@ using System;
 public class ExitGates : MonoBehaviour {
 
 	public bool exit;
+	public bool exit2;
 	public GameObject partMention;
 	public GameObject receptionist;
 	public GameObject floor;
 	public GameObject labEntrance;
 	public Transform spawn;
+	public GameObject[] arrowsAcc = new GameObject[1];
+	public GameObject[] arrowsDacc = new GameObject[1];
 
 	private float time;
 	private bool partDone;
 	private bool partShown;
+	private bool partShown2;
 	private GameObject directionPanel;
 
 	public void Start() {
 		exit = false;
+		exit2 = false;
 		partDone = false;
 		partShown = false;
+		partShown2 = false;
 		directionPanel = GameObject.FindGameObjectsWithTag ("Canvas")[0].transform.GetChild(1).gameObject;
 	}
 
@@ -29,18 +35,31 @@ public class ExitGates : MonoBehaviour {
 		if (exit) {
 			Exit ();
 			exit = false;
+		} else if (exit2) {
+			Exit2 ();
+			exit2 = false;
 		}
 	}
 
 	private void Exit() {
 		directionPanel.SetActive (false);
 		transform.GetComponent<SpecifyMovementScript> ().repeating = false;
-		Debug.Log ("mentioning while exit");
 		partMention.SetActive (true);
 		partMention.transform.GetChild(0).GetComponent<Text> ().text = "congrats";
 		partMention.transform.GetChild(1).GetComponent<Text> ().text = "Part 1 complete";
 		partDone = true;
 		time = Time.time;
+	}
+
+	private void Exit2() {
+		directionPanel.SetActive (false);
+		transform.GetComponent<SpecifyMovementScript> ().repeating = false;
+		Debug.Log ("mentioning while exit");
+		partMention.SetActive (true);
+		partMention.transform.GetChild(0).GetComponent<Text> ().text = "congrats";
+		partMention.transform.GetChild(1).GetComponent<Text> ().text = "Part 2 complete";
+		time = Time.time;
+		partShown2 = true;
 	}
 
 	public void Update() {
@@ -50,6 +69,13 @@ public class ExitGates : MonoBehaviour {
 			partShown = true;
 			partMention.transform.GetChild (0).GetComponent<Text> ().text = "part 2";
 			partMention.transform.GetChild (1).GetComponent<Text> ().text = "first week";
+			foreach (GameObject arrow in arrowsAcc) {
+				arrow.SetActive (true);
+			}
+			foreach (GameObject arrow in arrowsDacc) {
+				arrow.SetActive (false);
+			}
+			GameObject.FindGameObjectWithTag ("Player").GetComponent<Player> ().IncreaseHealth (100);
 		} else if (partShown && Time.time - time > 3) {
 			time = Time.time;
 			partShown = false;
@@ -58,6 +84,11 @@ public class ExitGates : MonoBehaviour {
 			receptionist.GetComponent<SpecifyMovementScript> ().ChangeRepeatingText ("receptionist: You can find labs through the doors on my right!!");
 			transform.GetComponent<SpecifyMovementScript> ().repeating = true;
 			WelcomeScript ();
+		} else if (partShown2 && Time.time - time > 3) {
+			time = Time.time;
+			partShown2 = false;
+			partMention.SetActive (false);
+			GameObject.FindGameObjectWithTag ("Canvas").GetComponent<CanvasScript> ().ExitGame ();
 		}
 	}
 

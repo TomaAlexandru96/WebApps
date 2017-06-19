@@ -23,7 +23,6 @@ public class TerminalEventSystem : MonoBehaviour {
 		vimActive = false;
 		writable = false;
 		writable2 = false;
-		SelectNextItem ();
 		vimCommand.SetActive (false);
 	}
 

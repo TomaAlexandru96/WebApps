@@ -20,6 +20,8 @@ public class ToniScript : MonoBehaviour {
 	protected bool inside;
 	protected float dateTime;
 	private Transform huxely308;
+	public GameObject[] arrowsAcc = new GameObject[4];
+	public GameObject[] arrowsDacc = new GameObject[8];
 
 	public void Start () {
 		dateTime = Time.time -1;
@@ -93,6 +95,13 @@ public class ToniScript : MonoBehaviour {
 		if (interview && (Time.time - dateTime) > 5) {
 			directionPanel.SetActive (true);
 			directionPanel.transform.GetComponent<DirectionPanel> ().DisplayText ("Go to 341, 342 for your interview, near main staircase..");
+			foreach (GameObject arrow in arrowsAcc) {
+				arrow.SetActive (true);
+			}
+			foreach (GameObject arrow in arrowsDacc) {
+				arrow.SetActive (false);
+			}
+
 		}
 	}
 
@@ -118,7 +127,6 @@ public class ToniScript : MonoBehaviour {
 	}
 
 	public void Seated () {
-		Debug.Log ("Seated");
 		seated = true;
 	}
 }

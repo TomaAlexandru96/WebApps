@@ -9,6 +9,7 @@ public class OptionScript : MonoBehaviour {
 	private string playerName;
 
 	public void Start () {
+		GameObject.FindGameObjectWithTag ("FriendsOption").SetActive (false);
 	}
 
 	public void Update () {
