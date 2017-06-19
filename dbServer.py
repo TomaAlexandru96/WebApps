@@ -63,6 +63,8 @@ class DBHTTPHandler(BaseHTTPRequestHandler):
       self.handle_create_party(parse_qs(data))
     elif (url.path == "/join_party"):
       self.handle_join_party(parse_qs(data))
+    elif (url.path == "/update_xp"):
+      self.handle_update_xp(parse_qs(data))
     elif (url.path == "/leave_party"):
       self.handle_leave_party(parse_qs(data), True)
     elif (url.path == "/logout_inactive_users"):
@@ -109,6 +111,18 @@ class DBHTTPHandler(BaseHTTPRequestHandler):
       conn.commit()
     return cursor
 
+  
+  def handle_update_xp(self, params):
+    user = self.helper_find_user(params['username'][0])
+    if (user is None):
+      self.send_code_only(NOT_ACCEPTABLE)
+    else:
+      query = '''UPDATE CHARACTERS SET XP = '{}'
+                 WHERE CHARACTER_NAME = '{}'
+              '''.format(params['xp'][0], user['character']['name'])
+
+      self.send_db_query(query)
+      self.send_code_only(OK)
 
   # login method
   def handle_login(self, params):
