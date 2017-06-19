@@ -26,7 +26,10 @@ public class Player : Entity<PlayerStats> {
 		GetComponent<Animator> ().runtimeAnimatorController = playerControllers [user.character.type];
 		mainCamera.enabled = photonView.isMine;
 		mainCamera.GetComponent<AudioListener> ().enabled = photonView.isMine;
-		InvokeRepeating ("GetHitOvertime", 10, 20);
+
+		if (IsStory ()) {
+			InvokeRepeating ("GetHitOvertime", 10, 20);	
+		}
 
 		if (photonView.isMine) {
 			abilities = GameObject.FindGameObjectWithTag ("PlayerAbilities").GetComponent<PlayerAbilities> ();
@@ -183,6 +186,9 @@ public class Player : Entity<PlayerStats> {
 
 	public void Killed (Enemy other) {
 		stats.GainXp (other.stats.xpReward);
+		if (photonView.isMine) {
+			stats.UpdateDBXP ();
+		}
 	}
 		
 	public void GetHitOvertime () {

@@ -318,4 +318,24 @@ public class DBServer : MonoBehaviour {
 			});
 		}
 	}
+
+	public void UpdateXP (String username, int xp, Action callback, Action<long> errorcall) {
+		StartCoroutine (UpdateXPHelper (username, xp, callback, errorcall));
+	}
+
+	private IEnumerator<AsyncOperation> UpdateXPHelper (String username, int xp, Action callback, Action<long> errorcall) {
+		WWWForm form = new WWWForm ();
+		form.AddField ("username", username);
+		form.AddField ("xp", xp.ToString ());
+
+		UnityWebRequest request = UnityWebRequest.Post (DBServerAddr + "/update_xp", form);
+
+		yield return request.Send ();
+
+		if (request.responseCode != OK_STATUS) {
+			errorcall (request.responseCode);
+		} else {
+			callback ();
+		}
+	}
 }
