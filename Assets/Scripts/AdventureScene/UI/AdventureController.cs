@@ -83,15 +83,26 @@ public class AdventureController : Photon.MonoBehaviour {
 			spawners[i] = spawnersObj [i].GetComponent<Spawner> ();
 		}
 
+		// GIT WAVE
 		for (int i = 0; i < spawnersObj.Length; i++) {
 			spawners [i].Spawn (new string[] {"EnemyGit"}, new int[] {99}, 1, 2, 2f);
 		}
 
 		yield return new WaitForSeconds (30f);
 
+		// WEB WAVE
 		for (int i = 0; i < spawnersObj.Length; i++) {
 			spawners [i].Spawn (new string[] {"EnemyHTML", "EnemyJS", "EnemyCSS"}, new int[] {33, 66, 99}, 3, 5, 1f);
 		}
+
+		yield return new WaitForSeconds (60f);
+
+		// PYTHON WAVE
+		for (int i = 0; i < spawnersObj.Length; i++) {
+			spawners [i].Spawn (new string[] {"EnemyPython"}, new int[] {99}, 1, 2, 1f);
+		}
+
+		yield return new WaitForSeconds (60f);
 	}
 
 	/*public void SpawnEnemies () {
