@@ -105,7 +105,13 @@ public abstract class Enemy : Entity<EnemyStats> {
 				currentBr = currentBr.next;
 			}
 		} else {
-			GetComponent<Rigidbody2D> ().velocity = new Vector2(0,0);
+			if (Vector2.Distance(target.position, transform.position) < 1) {
+				GetComponent<Rigidbody2D> ().velocity = new Vector2(0,0);
+			} else {
+				Vector3 movement = target.position - transform.position;
+				GetComponent<Rigidbody2D> ().velocity = movement.normalized * 0.8f;
+				return;
+			}
 		}
 	}
 
