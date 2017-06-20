@@ -144,6 +144,8 @@ public class Hallway : Photon.MonoBehaviour {
 			Vector2 start;
 			Vector2 fin;
 			Vector2 tileSize = tilePrefab.GetComponent<SpriteRenderer> ().size;
+			Vector2 colliderSize;
+			Vector2 center;
 
 			bool vertical;
 
@@ -152,36 +154,49 @@ public class Hallway : Photon.MonoBehaviour {
 				start = p1.y < p2.y ? p1 : p2;
 				fin = p1.y < p2.y ? p2 : p1;
 				vertical = true;
+				int z = 1;
 				while (start.y < fin.y) {
 					for (int q = -width/2; q <= width/2; q++) {
-						GameObject tile1 = Instantiate (tilePrefab, new Vector3 (start.x + tileSize.x*q, start.y, 0), Quaternion.identity);
+						GameObject tile1 = Instantiate (tilePrefab, new Vector3 (start.x + tileSize.x*q, start.y, 0), Quaternion.identity, transform);
 						tile1.GetComponent<SpriteRenderer> ().sortingOrder = -2;	
 					}
 					start.y += tileSize.y;
+					z++;
 				}
+				colliderSize = new Vector2 (width * tileSize.x, tileSize.y * z);
+				center = new Vector2 (p1.x, (p1.y < p2.y ? p1.y : p2.y) + Mathf.Abs (p1.y - p2.y) / 2);
 			} else {
 				// horizontal bar
 				start = p1.x < p2.x ? p1 : p2;
 				fin = p1.x < p2.x ? p2 : p1;
 				vertical = false;
+				int z = 1;
 				while (start.x < fin.x) {
 					for (int q = -width/2; q <= width/2; q++) {
-						GameObject tile1 = Instantiate (tilePrefab, new Vector3 (start.x, start.y + tileSize.y*q, 0), Quaternion.identity);
+						GameObject tile1 = Instantiate (tilePrefab, new Vector3 (start.x, start.y + tileSize.y*q, 0), Quaternion.identity, transform);
 						tile1.GetComponent<SpriteRenderer> ().sortingOrder = -2;	
 					}
 					start.x += tileSize.x;
+					z++;
 				}
+				colliderSize = new Vector2 (z * tileSize.x, tileSize.y * width);
+				center = new Vector2 ((p1.x < p2.x ? p1.x : p2.x) + Mathf.Abs (p1.x - p2.x) / 2, p1.y);
 			}
 
 			for (int q = -width/2; q <= width/2; q++) {
 				GameObject tile1;
 				if (vertical) {
-					tile1 = Instantiate (tilePrefab, new Vector3 (start.x + tileSize.x * q, start.y, 0), Quaternion.identity);
+					tile1 = Instantiate (tilePrefab, new Vector3 (start.x + tileSize.x * q, start.y, 0), Quaternion.identity, transform);
 				} else {
-					tile1 = Instantiate (tilePrefab, new Vector3 (start.x, start.y + tileSize.y*q, 0), Quaternion.identity);
+					tile1 = Instantiate (tilePrefab, new Vector3 (start.x, start.y + tileSize.y*q, 0), Quaternion.identity, transform);
 				}
-				tile1.GetComponent<SpriteRenderer> ().sortingOrder = -2;	
+				tile1.GetComponent<SpriteRenderer> ().sortingOrder = -2;
 			}
+
+			BoxCollider2D box = gameObject.AddComponent<BoxCollider2D> ();
+			box.isTrigger = true;
+			box.size = colliderSize;
+			box.offset = center;
 		}
 
 		SetColor (Color.blue);
