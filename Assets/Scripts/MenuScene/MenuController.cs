@@ -65,6 +65,11 @@ public class MenuController : MonoBehaviour {
 		UIPanels [2].SetActive (true);
 	}
 
+	public void SwitchToLeaderboard () {
+		ClearView ();
+		UIPanels [1].SetActive (true);
+	}
+
 	public void SwtichToMenuView () {
 		ClearView ();
 		UIPanels [0].SetActive (true);

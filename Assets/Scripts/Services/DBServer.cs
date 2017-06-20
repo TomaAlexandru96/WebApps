@@ -338,4 +338,20 @@ public class DBServer : MonoBehaviour {
 			callback ();
 		}
 	}
+
+	public void GetLeaderboard (Action<LeaderboardInfo> callback, Action<long> errorcall) {
+		StartCoroutine (GetLeaderboardHelper (callback, errorcall));
+	}
+
+	private IEnumerator<AsyncOperation> GetLeaderboardHelper (Action<LeaderboardInfo> callback, Action<long> errorcall) {
+		UnityWebRequest request = UnityWebRequest.Get (DBServerAddr + "/get_leaderboard");
+
+		yield return request.Send ();
+
+		if (request.responseCode != OK_STATUS) {
+			errorcall (request.responseCode);
+		} else {
+			callback (JsonUtility.FromJson<LeaderboardInfo> (request.downloadHandler.text));
+		}
+	}
 }
