@@ -106,7 +106,7 @@ public class AdventureController : Photon.MonoBehaviour {
 			spawners[i] = spawnersObj [i].GetComponent<Spawner> ();
 		}
 
-	
+		Debug.Log ("gets here");
 		StartCoroutine (DisplayWaveName ("Git Wave"));
 		// GIT WAVE
 		for (int i = 0; i < spawnersObj.Length; i++) {
