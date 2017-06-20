@@ -239,7 +239,7 @@ public class Player : Entity<PlayerStats> {
 	protected IEnumerator PlayMeleAttackAnimation () {
 		Vector3 mouseDirection = GetMouseInput (new string[] {"MouseInput"});
 
-		if (!NetworkService.GetInstance ().IsMasterClient ()) {
+		if (!photonView.isMine) {
 			mouseDirection = mouseOther;
 		}
 
@@ -290,7 +290,7 @@ public class Player : Entity<PlayerStats> {
 		((GameObject)bullet).GetComponent<Bullet> ().SetPlayer(this);
 		Vector3 mouseDirection = GetMouseInput (new string[] {"MouseInput"});
 
-		if (!NetworkService.GetInstance ().IsMasterClient ()) {
+		if (!photonView.isMine) {
 			mouseDirection = mouseOther;
 		}
 
