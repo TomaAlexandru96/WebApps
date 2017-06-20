@@ -78,6 +78,8 @@ class DBHTTPHandler(BaseHTTPRequestHandler):
     url = urlparse(self.path)
     if (url.path == "/find_user"):
       self.handle_find_user(parse_qs(url.query))
+    elif (url.path == "/get_leaderboard"):
+      self.handle_get_leaderboard()
     else:
       self.send_code_only(NOT_FOUND);
 
@@ -102,6 +104,17 @@ class DBHTTPHandler(BaseHTTPRequestHandler):
     self.send_header('Content-type','text/html')
     self.end_headers()
     self.wfile.write(bytes(json.dumps(obj), "utf8"))
+
+  
+  def handle_get_leaderboard(self):
+    query = 'SELECT users.username FROM characters LEFT JOIN users ON characters.character_name = users.character_name ORDER BY characters.xp desc'
+    cursor = self.send_db_query(query)
+    response = cursor.fetchall()
+    users = {'users': []}
+    for user in response:
+      user = self.helper_find_user(user[0])
+      users['users'].append(user)
+    self.send_JSON(users)
 
 
   def send_db_query(self, query):
