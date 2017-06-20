@@ -43,8 +43,7 @@ public class AdventureController : Photon.MonoBehaviour {
 		}
 	}
 
-	public IEnumerator DisplayWaveName (string waveName){
-		
+	public IEnumerator DisplayWaveName (string waveName) {
 		nameOfWavePanel.transform.GetChild (0).GetComponent<Text> ().text = waveName;
 		nameOfWavePanel.SetActive (true);
 		yield return new WaitForSeconds (2f);

@@ -122,7 +122,7 @@ public class Room : Photon.MonoBehaviour {
 			go.transform.SetParent (transform, false);
 			go.transform.position = GetRandomPoint ();
 		}
-		SpawnEnemies ();
+		InvokeRepeating ("SpawnEnemies", 0f, 30f);
 	}
 
 	public void SpawnEnemies () {

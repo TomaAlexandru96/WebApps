@@ -105,11 +105,6 @@ public class Player : Entity<PlayerStats> {
 				if (!abilities.UseAbility ()) {
 					return;
 				}
-				Object bullet = Resources.Load ("vimBullet");
-				((GameObject)bullet).GetComponent<Bullet> ().SetPlayer(this);
-				Vector3 mouseDirection = GetMouseInput (new string[] {"MouseInput"});
-				GameObject ob = NetworkService.GetInstance ().SpawnScene (bullet.name, transform.position, Quaternion.identity, 0);
-				((GameObject)ob).GetComponent<Rigidbody2D> ().velocity = mouseDirection * 2f;
 
 				PlayAnimation ("PlayBulletAttackAnimation");
 			} else if (selectedAbility.type == Ability.ElectricShock) {
@@ -282,6 +277,13 @@ public class Player : Entity<PlayerStats> {
 
 	protected IEnumerator PlayBulletAttackAnimation () {
 		isAttacking = true;
+
+		Object bullet = Resources.Load ("vimBullet");
+		((GameObject)bullet).GetComponent<Bullet> ().SetPlayer(this);
+		Vector3 mouseDirection = GetMouseInput (new string[] {"MouseInput"});
+		GameObject ob = NetworkService.GetInstance ().SpawnScene (bullet.name, transform.position, Quaternion.identity, 0);
+		((GameObject)ob).GetComponent<Rigidbody2D> ().velocity = mouseDirection * 2f;
+
 		attackRadius.GetComponent<PlayerAttack> ().StartAttack ();
 		GetComponent<Animator> ().Play ("P"+(user.character.type+1)+"_LaptopAttack");
 		yield return new WaitForSeconds (0.3f);
