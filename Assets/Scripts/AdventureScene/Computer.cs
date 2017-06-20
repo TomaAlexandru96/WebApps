@@ -47,12 +47,12 @@ public class Computer : Entity<ComputerStats> {
 				coll.gameObject.GetComponent<Enemy> ().GetHit (this);
 			}
 
-			Rigidbody2D rb = coll.gameObject.GetComponent<Rigidbody2D>();
+			/*Rigidbody2D rb = coll.gameObject.GetComponent<Rigidbody2D>();
 			if (rb != null) {
 				Vector2 dir = (transform.position - coll.transform.position);
 				float wearoff = 1 - (Vector2.Distance(coll.transform.position, transform.position));
 				rb.AddForce(dir.normalized * 30f * wearoff, ForceMode2D.Impulse);
-			}
+			}*/
 		}
 		yield return new WaitForSeconds (0.9f);
 		NetworkService.GetInstance().Destroy (ob);
