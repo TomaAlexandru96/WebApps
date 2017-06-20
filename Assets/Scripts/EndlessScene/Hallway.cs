@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Hallway : MonoBehaviour {
+public class Hallway : Photon.MonoBehaviour {
 	
 	public Room r1;
 	public Room r2;
