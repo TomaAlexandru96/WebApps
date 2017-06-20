@@ -34,7 +34,7 @@ public class Bullet : MonoBehaviour {
 		}
 
 		if (coll.gameObject.tag == "Labs") {
-			Destroy (this.gameObject);
+			NetworkService.GetInstance ().Destroy (gameObject);
 		}
 	}
 		

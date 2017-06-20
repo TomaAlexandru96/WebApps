@@ -248,11 +248,15 @@ public class DungeonGenerator : MonoBehaviour {
 		mainCamera.gameObject.SetActive (false);
 		progressText.gameObject.SetActive (false);
 
-		GameObject.FindGameObjectWithTag ("EndlessScript").GetComponent <EndlessController> ().SpawnPlayer (spawnPoint);
+		foreach (var room in mainRooms) {
+			room.SpawnObjects ();
+		}
+			
+		GameObject.FindGameObjectWithTag ("EndlessScript").GetComponent <EndlessController> ().OnFinishedDungeon (spawnPoint);
 	}
 
 	public GameObject CreateLine (Vector3 position1, Vector3 position2) {
-		GameObject line = Instantiate (linePrefab);
+		GameObject line = Instantiate (linePrefab, Vector3.zero, Quaternion.identity);
 		line.GetComponent<LineRenderer> ().SetPosition (0, position1);
 		line.GetComponent<LineRenderer> ().SetPosition (1, position2);
 		line.GetComponent<LineRenderer> ().sortingOrder = 10;
@@ -272,7 +276,7 @@ public class DungeonGenerator : MonoBehaviour {
 
 	public Room GenerateRoom () {
 		Vector2 position = GetRandomPointInEllipse ();
-		GameObject room = Instantiate (roomPrefab);
+		GameObject room = Instantiate (roomPrefab, Vector3.zero, Quaternion.identity);
 		room.GetComponent <Room> ().Init (position, Random.Range(minRoomWidth, maxRoomWidth), Random.Range (minRoomHeight, maxRoomHeight), transform);
 		return room.GetComponent <Room> ();
 	}
