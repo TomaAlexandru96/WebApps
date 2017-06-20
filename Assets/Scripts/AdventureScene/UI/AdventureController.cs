@@ -11,6 +11,7 @@ public class AdventureController : Photon.MonoBehaviour {
 	public Transform[] playerSpawnPoints;
 	public GameObject player;
 	public GameObject[] enemies;
+	public GameObject nameOfWavePanel;
 
 	private HashSet<string> loadedPlayers;
 
@@ -42,6 +43,15 @@ public class AdventureController : Photon.MonoBehaviour {
 		}
 	}
 
+	public IEnumerator DisplayWaveName (string waveName){
+		
+		nameOfWavePanel.transform.GetChild (0).GetComponent<Text> ().text = waveName;
+		nameOfWavePanel.SetActive (true);
+		yield return new WaitForSeconds (2f);
+		nameOfWavePanel.SetActive (false);
+
+	}
+
 	public void StartGame () {
 		if (NetworkService.GetInstance ().IsMasterClient ()) {
 			NetworkService.GetInstance ().SpawnScene (party.name, Vector3.zero, Quaternion.identity, 0);
@@ -70,6 +80,7 @@ public class AdventureController : Photon.MonoBehaviour {
 		});
 	}
 
+
 	public void SpawnPlayer () {
 		// to be changed
 		NetworkService.GetInstance ().Spawn (player.name, 
@@ -83,15 +94,30 @@ public class AdventureController : Photon.MonoBehaviour {
 			spawners[i] = spawnersObj [i].GetComponent<Spawner> ();
 		}
 
+	
+		StartCoroutine (DisplayWaveName ("Git Wave"));
+		// GIT WAVE
 		for (int i = 0; i < spawnersObj.Length; i++) {
 			spawners [i].Spawn (new string[] {"EnemyGit"}, new int[] {99}, 1, 2, 2f);
 		}
 
 		yield return new WaitForSeconds (30f);
 
+		StartCoroutine (DisplayWaveName ("Web Wave"));
+		// WEB WAVE
 		for (int i = 0; i < spawnersObj.Length; i++) {
 			spawners [i].Spawn (new string[] {"EnemyHTML", "EnemyJS", "EnemyCSS"}, new int[] {33, 66, 99}, 3, 5, 1f);
 		}
+
+		yield return new WaitForSeconds (60f);
+
+		StartCoroutine (DisplayWaveName ("Python Wave"));
+		// PYTHON WAVE
+		for (int i = 0; i < spawnersObj.Length; i++) {
+			spawners [i].Spawn (new string[] {"EnemyPython"}, new int[] {99}, 1, 2, 1f);
+		}
+
+		yield return new WaitForSeconds (60f);
 	}
 
 	/*public void SpawnEnemies () {
