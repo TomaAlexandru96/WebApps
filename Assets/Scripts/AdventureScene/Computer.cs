@@ -6,9 +6,11 @@ public class Computer : Entity<ComputerStats> {
 
 	public bool exploded = false;
 	private Object explosion;
+	private Player player;
 
-	public void explode() {
+	public void Explode(Player p) {
 		exploded = true;
+		this.player = p;
 		PlayAnimation ("PlayHackingAnimation");
 	}
 
@@ -41,10 +43,11 @@ public class Computer : Entity<ComputerStats> {
 			if (coll == null) {
 				break;
 			}
+
 			if (coll.gameObject.GetComponent<Player> () != null) {
-				coll.gameObject.GetComponent<Player> ().GetHit (this);
+				coll.gameObject.GetComponent<Player> ().GetHit (player);
 			} else if (coll.gameObject.GetComponent<Enemy> () != null) {
-				coll.gameObject.GetComponent<Enemy> ().GetHit (this);
+				coll.gameObject.GetComponent<Enemy> ().GetHit (player);
 			}
 
 			/*Rigidbody2D rb = coll.gameObject.GetComponent<Rigidbody2D>();

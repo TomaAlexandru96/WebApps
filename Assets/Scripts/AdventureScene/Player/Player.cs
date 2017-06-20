@@ -104,7 +104,7 @@ public class Player : Entity<PlayerStats> {
 					if (!abilities.UseAbility ()) {
 						return;
 					}
-					hit.transform.GetComponent<Computer> ().explode ();
+					hit.transform.GetComponent<Computer> ().Explode (this);
 					PlayAnimation ("PlayForkBombAttackAnimation");
 				}
 			} else if (selectedAbility.type == Ability.DebugGun) {
