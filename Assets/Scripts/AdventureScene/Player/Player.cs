@@ -48,7 +48,7 @@ public class Player : Entity<PlayerStats> {
 	}
 
 	private bool IsStory () {
-		return user.character.type == PartyMembers.STORY;
+		return user.party.state == PartyMembers.STORY;
 	}
 
 	private Vector2 GetMouseInput (string[] layer) {
@@ -70,6 +70,10 @@ public class Player : Entity<PlayerStats> {
 
 		curSpeed = stats.speed;
 		if (Input.GetKey (KeyCode.LeftShift)) {
+			if (IsStory ()) {
+				curSpeed = stats.runSpeed;
+				return;
+			}
 			if (abilities.Sprint ()) {
 				curSpeed = stats.runSpeed;
 			} else {

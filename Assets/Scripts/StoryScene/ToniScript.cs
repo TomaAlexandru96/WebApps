@@ -74,7 +74,7 @@ public class ToniScript : MonoBehaviour {
 			foodServed = false;
 			huxely308.GetComponent<Controller308> ().SetFood();
 		}
-		if (inside && index < maxSize &&  (Time.time - dateTime) > 5) {
+		if (inside && index < maxSize &&  (Time.time - dateTime) > 2) {
 			Conversation();
 		}
 		if (foodInfo && (Time.time - dateTime) > 5) {

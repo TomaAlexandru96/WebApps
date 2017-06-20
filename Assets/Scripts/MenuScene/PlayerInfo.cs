@@ -22,7 +22,9 @@ public class PlayerInfo : MonoBehaviour {
 
 	// Use this for initialization
 	void UpdateInfo () {
-		avatar.sprite = user.character.GetImage ();
+		if (avatar != null) {
+			avatar.sprite = user.character.GetImage ();	
+		}
 
 		PlayerStats stats = user.character.GetStats ();
 		characterName.text = user.character.name;
