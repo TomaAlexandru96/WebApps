@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class Room : MonoBehaviour {
+public class Room : Photon.MonoBehaviour {
 
 	public GameObject tilePrefab;
 	public GameObject nodePrefab;
@@ -89,7 +89,7 @@ public class Room : MonoBehaviour {
 			return null;
 		}
 
-		GameObject hall = Instantiate (hallwayPrefab);
+		GameObject hall = NetworkService.GetInstance ().SpawnScene (hallwayPrefab.name, Vector3.zero, Quaternion.identity, 0);
 		hall.GetComponent <Hallway> ().Init (this, r2);
 		return hall;
 	}
