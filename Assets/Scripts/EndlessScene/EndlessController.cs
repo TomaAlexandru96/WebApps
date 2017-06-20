@@ -36,7 +36,6 @@ public class EndlessController : Photon.PunBehaviour {
 			return;
 		}
 
-		return;
 		if (lastAttack + 0.2f >= Time.time) {
 			return;
 		}
@@ -55,7 +54,7 @@ public class EndlessController : Photon.PunBehaviour {
 			}
 
 			if (onLava) {
-				player.DecreaseHealth (0.2f);
+				player.DecreaseHealth (2f);
 			}
 		}
 	}

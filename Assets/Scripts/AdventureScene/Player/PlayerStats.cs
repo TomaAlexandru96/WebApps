@@ -11,7 +11,7 @@ public class PlayerStats : EntityStats {
 	public int git;
 	public PlayerType pType;
 	public float runSpeed = 3f;
-	public float defaultStamina = 500f;
+	public float defaultStamina = 5f;
 	public float runStaminaBurn = 0.05f;
 	public float staminaChargeCooldown = 1f;
 	public float runStaminaGain = 0.02f;
