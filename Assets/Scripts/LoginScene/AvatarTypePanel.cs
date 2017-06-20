@@ -10,6 +10,9 @@ public class AvatarTypePanel : MonoBehaviour {
 	public List<GameObject> avatars = new List<GameObject> ();
 	public int characterNumber;
 
+	public GameObject avatarTypePanel;
+	public GameObject chooseAvatarPanel;
+
 	private string characterName;
 	private int characterID;
 
@@ -31,6 +34,11 @@ public class AvatarTypePanel : MonoBehaviour {
 
 	public void SetCHID (int characterID) {
 		this.characterID = characterID;
+	}
+
+	public void Back () {
+		avatarTypePanel.SetActive (false);
+		chooseAvatarPanel.SetActive (true);
 	}
 
 	public void AvatarChosen(int num) {
