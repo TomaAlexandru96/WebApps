@@ -89,7 +89,7 @@ public class Room : Photon.MonoBehaviour {
 			return null;
 		}
 
-		GameObject hall = Instantiate (hallwayPrefab);
+		GameObject hall = NetworkService.GetInstance ().SpawnScene (hallwayPrefab.name, Vector3.zero, Quaternion.identity, 0);
 		hall.GetComponent <Hallway> ().Init (this, r2);
 		return hall;
 	}
