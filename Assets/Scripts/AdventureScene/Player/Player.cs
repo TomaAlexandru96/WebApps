@@ -16,6 +16,8 @@ public class Player : Entity<PlayerStats> {
 	private bool canAttack = true;
 	private bool canMove = true;
 
+	private Vector2 mouseOther;
+
 	void Awake () {
 		this.user = (User) photonView.instantiationData [0];
 	}
@@ -105,11 +107,6 @@ public class Player : Entity<PlayerStats> {
 				if (!abilities.UseAbility ()) {
 					return;
 				}
-				Object bullet = Resources.Load ("vimBullet");
-				((GameObject)bullet).GetComponent<Bullet> ().SetPlayer(this);
-				Vector3 mouseDirection = GetMouseInput (new string[] {"MouseInput"});
-				GameObject ob = NetworkService.GetInstance ().SpawnScene (bullet.name, transform.position, Quaternion.identity, 0);
-				((GameObject)ob).GetComponent<Rigidbody2D> ().velocity = mouseDirection * 2f;
 
 				PlayAnimation ("PlayBulletAttackAnimation");
 			} else if (selectedAbility.type == Ability.ElectricShock) {
@@ -224,10 +221,12 @@ public class Player : Entity<PlayerStats> {
 
 	protected override void OnSendNext (PhotonStream stream, PhotonMessageInfo info) {
 		stream.SendNext (move);
+		stream.SendNext (GetMouseInput (new string[] {"MouseInput"}));
 	}
 
 	protected override void OnReceiveNext (PhotonStream stream, PhotonMessageInfo info) {
 		move = (Direction) stream.ReceiveNext ();
+		mouseOther = (Vector2) stream.ReceiveNext ();
 	}
 
 
@@ -239,6 +238,10 @@ public class Player : Entity<PlayerStats> {
 
 	protected IEnumerator PlayMeleAttackAnimation () {
 		Vector3 mouseDirection = GetMouseInput (new string[] {"MouseInput"});
+
+		if (!photonView.isMine) {
+			mouseDirection = mouseOther;
+		}
 
 		bool inverted = Vector3.Cross (attackRadius.transform.localPosition, mouseDirection).z < 0;
 		float angle = Vector3.Angle (attackRadius.transform.localPosition, mouseDirection);
@@ -282,6 +285,18 @@ public class Player : Entity<PlayerStats> {
 
 	protected IEnumerator PlayBulletAttackAnimation () {
 		isAttacking = true;
+
+		Object bullet = Resources.Load ("vimBullet");
+		((GameObject)bullet).GetComponent<Bullet> ().SetPlayer(this);
+		Vector3 mouseDirection = GetMouseInput (new string[] {"MouseInput"});
+
+		if (!photonView.isMine) {
+			mouseDirection = mouseOther;
+		}
+
+		GameObject ob = NetworkService.GetInstance ().SpawnScene (bullet.name, transform.position, Quaternion.identity, 0);
+		((GameObject)ob).GetComponent<Rigidbody2D> ().velocity = mouseDirection * 2f;
+
 		attackRadius.GetComponent<PlayerAttack> ().StartAttack ();
 		GetComponent<Animator> ().Play ("P"+(user.character.type+1)+"_LaptopAttack");
 		yield return new WaitForSeconds (0.3f);

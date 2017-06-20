@@ -8,7 +8,9 @@ public class Room : Photon.MonoBehaviour {
 	public GameObject tilePrefab;
 	public GameObject nodePrefab;
 	public GameObject hallwayPrefab;
+	public GameObject[] spawnablePrefabs;
 	public List<Room> connectingRoom;
+	public Spawner spawner;
 
 	private int height;
 	private int width;
@@ -63,7 +65,7 @@ public class Room : Photon.MonoBehaviour {
 	}
 
 	public void SetColor (Color color) {
-		for (int i = 0; i < width * height; i++) {
+		for (int i = 1; i <= width * height; i++) {
 			transform.GetChild (i).GetComponent<SpriteRenderer> ().color = color;
 		}
 	}
@@ -89,7 +91,7 @@ public class Room : Photon.MonoBehaviour {
 			return null;
 		}
 
-		GameObject hall = NetworkService.GetInstance ().SpawnScene (hallwayPrefab.name, Vector3.zero, Quaternion.identity, 0);
+		GameObject hall = Instantiate (hallwayPrefab, Vector3.zero, Quaternion.identity, transform.parent);
 		hall.GetComponent <Hallway> ().Init (this, r2);
 		return hall;
 	}
@@ -106,5 +108,27 @@ public class Room : Photon.MonoBehaviour {
 		Vector2 s = new Vector2 (width * tilePrefab.GetComponent<SpriteRenderer> ().size.x, height * tilePrefab.GetComponent<SpriteRenderer> ().size.y);
 		Rect r = new Rect (transform.position, s);
 		return r;
+	}
+
+	private Vector3 GetRandomPoint () {
+		return new Vector3 (Random.Range (GetRect ().xMin, GetRect ().xMax), Random.Range (GetRect ().yMin, GetRect ().yMax), GetPosition ().z);
+	}
+
+	public void SpawnObjects () {
+		int q = Random.Range (1, 10);
+
+		for (int i = 0; i < q; i++) {
+			GameObject go = NetworkService.GetInstance ().SpawnScene (spawnablePrefabs [Random.Range (0, spawnablePrefabs.Length - 1)].name, Vector3.zero, Quaternion.identity, 0);
+			go.transform.SetParent (transform, false);
+			go.transform.position = GetRandomPoint ();
+		}
+		InvokeRepeating ("SpawnEnemies", 0f, 30f);
+	}
+
+	public void SpawnEnemies () {
+		Vector3 center = GetRect ().center;
+
+		spawner.transform.position = center;
+		spawner.Spawn (new string[] { "EnemyHTML", "EnemyJS", "EnemyCSS", "EnemyGit" }, new int[]{ 25, 50, 75, 99 }, 4, 1, 0.1f);
 	}
 }
