@@ -5,6 +5,7 @@ using UnityEngine.UI;
 
 public class PlayerInfo : MonoBehaviour {
 
+	public User user = CurrentUser.GetInstance ().GetUserInfo ();
 	public Image avatar;
 	public Text characterName;
 	public Text webStats;
@@ -21,10 +22,10 @@ public class PlayerInfo : MonoBehaviour {
 
 	// Use this for initialization
 	void UpdateInfo () {
-		avatar.sprite = CurrentUser.GetInstance ().GetUserInfo ().character.GetImage ();
+		avatar.sprite = user.character.GetImage ();
 
-		PlayerStats stats = CurrentUser.GetInstance ().GetUserInfo ().character.GetStats ();
-		characterName.text = CurrentUser.GetInstance ().GetUserInfo ().character.name;
+		PlayerStats stats = user.character.GetStats ();
+		characterName.text = user.character.name;
 		webStats.text = stats.web.ToString ();
 		funcStats.text = stats.functional.ToString ();
 		ooStats.text = stats.oo.ToString ();
@@ -35,5 +36,10 @@ public class PlayerInfo : MonoBehaviour {
 		Vector3 xpFillScale = xpFill.localScale;
 		xpFillScale.x = (float) (stats.xp % stats.baseLevelXP) / stats.baseLevelXP;
 		xpFill.localScale = xpFillScale;
+	}
+
+	public void SetUser (User user) {
+		this.user = user;
+		UpdateInfo ();
 	}
 }
