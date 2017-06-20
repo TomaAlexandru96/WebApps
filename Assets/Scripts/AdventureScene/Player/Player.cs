@@ -16,6 +16,8 @@ public class Player : Entity<PlayerStats> {
 	private bool canAttack = true;
 	private bool canMove = true;
 
+	private Vector2 mouseOther;
+
 	void Awake () {
 		this.user = (User) photonView.instantiationData [0];
 	}
@@ -219,10 +221,12 @@ public class Player : Entity<PlayerStats> {
 
 	protected override void OnSendNext (PhotonStream stream, PhotonMessageInfo info) {
 		stream.SendNext (move);
+		stream.SendNext (GetMouseInput (new string[] {"MouseInput"}));
 	}
 
 	protected override void OnReceiveNext (PhotonStream stream, PhotonMessageInfo info) {
 		move = (Direction) stream.ReceiveNext ();
+		mouseOther = (Vector2) stream.ReceiveNext ();
 	}
 
 
@@ -234,6 +238,10 @@ public class Player : Entity<PlayerStats> {
 
 	protected IEnumerator PlayMeleAttackAnimation () {
 		Vector3 mouseDirection = GetMouseInput (new string[] {"MouseInput"});
+
+		if (!NetworkService.GetInstance ().IsMasterClient ()) {
+			mouseDirection = mouseOther;
+		}
 
 		bool inverted = Vector3.Cross (attackRadius.transform.localPosition, mouseDirection).z < 0;
 		float angle = Vector3.Angle (attackRadius.transform.localPosition, mouseDirection);
@@ -281,6 +289,11 @@ public class Player : Entity<PlayerStats> {
 		Object bullet = Resources.Load ("vimBullet");
 		((GameObject)bullet).GetComponent<Bullet> ().SetPlayer(this);
 		Vector3 mouseDirection = GetMouseInput (new string[] {"MouseInput"});
+
+		if (!NetworkService.GetInstance ().IsMasterClient ()) {
+			mouseDirection = mouseOther;
+		}
+
 		GameObject ob = NetworkService.GetInstance ().SpawnScene (bullet.name, transform.position, Quaternion.identity, 0);
 		((GameObject)ob).GetComponent<Rigidbody2D> ().velocity = mouseDirection * 2f;
 
