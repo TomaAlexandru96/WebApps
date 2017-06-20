@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Photon;
+using UnityEngine.SceneManagement;
 
 public class EndlessController : Photon.PunBehaviour {
 
@@ -15,8 +16,10 @@ public class EndlessController : Photon.PunBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		GameObject.FindGameObjectWithTag ("DungeonGenerator").GetComponent<DungeonGenerator> ().BeginGeneration (PlayerPrefs.GetInt ("endless_animation") != 0);
-		lastAttack = Time.time;
+		if (NetworkService.GetInstance ().IsMasterClient ()) {
+			GameObject.FindGameObjectWithTag ("DungeonGenerator").GetComponent<DungeonGenerator> ().BeginGeneration (PlayerPrefs.GetInt ("endless_animation") != 0);
+			lastAttack = Time.time;	
+		}
 	}
 
 	void OnApplicationQuit () {
@@ -28,21 +31,11 @@ public class EndlessController : Photon.PunBehaviour {
 		});
 	}
 
-	public void SpawnPlayer (Vector3 position) {
-		canvas.SetActive (true);
-		ChatController.GetChat ().InitDefaultChat ();
-		GameObject player = NetworkService.GetInstance ().Spawn (playerPrefab.name, position, Quaternion.identity, 0,
-			new object[1] {CurrentUser.GetInstance ().GetUserInfo ()});
-		
-		if (NetworkService.GetInstance ().IsMasterClient ()) {
-			NetworkService.GetInstance ().SpawnScene (partyPrefab.name, Vector3.zero, Quaternion.identity, 0);
-			players.Add (player.GetComponent<Player> ());
+	void Update () {
+		if (!NetworkService.GetInstance ().IsMasterClient ()) {
+			return;
 		}
 
-		loadingScreen.SetActive (false);
-	}
-
-	void Update () {
 		return;
 		if (lastAttack + 0.2f >= Time.time) {
 			return;
@@ -65,5 +58,33 @@ public class EndlessController : Photon.PunBehaviour {
 				player.DecreaseHealth (0.2f);
 			}
 		}
+	}
+
+	public void Exit () {
+		CurrentUser.GetInstance ().UnsubscribeCH (CurrentUser.GetInstance ().GetUserInfo ().party.owner);
+		DBServer.GetInstance ().LeaveParty (CurrentUser.GetInstance ().GetUserInfo ().username, () => {
+			SceneManager.LoadScene ("Menu");
+		}, (error) => {
+			Debug.LogError (error);	
+		});
+	}
+
+	public void OnFinishedDungeon (Vector3 position) {
+		photonView.RPC ("SpawnPlayer", PhotonTargets.All, position);
+	}
+
+	[PunRPC]
+	public void SpawnPlayer (Vector3 position) {
+		canvas.SetActive (true);
+		ChatController.GetChat ().InitDefaultChat ();
+		GameObject player = NetworkService.GetInstance ().Spawn (playerPrefab.name, position, Quaternion.identity, 0,
+			new object[1] {CurrentUser.GetInstance ().GetUserInfo ()});
+
+		if (NetworkService.GetInstance ().IsMasterClient ()) {
+			NetworkService.GetInstance ().SpawnScene (partyPrefab.name, Vector3.zero, Quaternion.identity, 0);
+			players.Add (player.GetComponent<Player> ());
+		}
+
+		loadingScreen.SetActive (false);
 	}
 }

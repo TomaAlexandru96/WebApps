@@ -248,7 +248,7 @@ public class DungeonGenerator : MonoBehaviour {
 		mainCamera.gameObject.SetActive (false);
 		progressText.gameObject.SetActive (false);
 
-		GameObject.FindGameObjectWithTag ("EndlessScript").GetComponent <EndlessController> ().SpawnPlayer (spawnPoint);
+		GameObject.FindGameObjectWithTag ("EndlessScript").GetComponent <EndlessController> ().OnFinishedDungeon (spawnPoint);
 	}
 
 	public GameObject CreateLine (Vector3 position1, Vector3 position2) {
