@@ -12,6 +12,7 @@ public class AdventureController : Photon.MonoBehaviour {
 	public GameObject player;
 	public GameObject[] enemies;
 	public GameObject nameOfWavePanel;
+	public GameObject infoPanel;
 
 	private HashSet<string> loadedPlayers;
 
@@ -33,6 +34,9 @@ public class AdventureController : Photon.MonoBehaviour {
 		SpawnPlayer ();
 		ChatController.GetChat ().withFadeOut = true;
 		photonView.RPC ("OnLoaded", PhotonTargets.All, CurrentUser.GetInstance ().GetUserInfo ().username);
+		nameOfWavePanel.transform.GetChild (0).GetComponent<Text> ().fontSize = 120;
+		nameOfWavePanel.transform.GetChild (0).GetComponent<Text> ().fontStyle = UnityEngine.FontStyle.BoldAndItalic;
+		infoPanel.SetActive (false);
 	}
 
 	[PunRPC]
@@ -44,7 +48,7 @@ public class AdventureController : Photon.MonoBehaviour {
 	}
 
 	public IEnumerator DisplayWaveName (string waveName){
-		
+
 		nameOfWavePanel.transform.GetChild (0).GetComponent<Text> ().text = waveName;
 		nameOfWavePanel.SetActive (true);
 		yield return new WaitForSeconds (2f);
@@ -60,6 +64,14 @@ public class AdventureController : Photon.MonoBehaviour {
 			//SpawnEnemies ();
 		}
 		loadingScreen.SetActive (false);
+	}
+
+	public void ShowInfo () {
+		infoPanel.SetActive (true);
+	}
+
+	public void HideInfo () {
+		infoPanel.SetActive (false);
 	}
 
 	public bool AllPartyUsersLoaded () {
