@@ -11,13 +11,9 @@ public class PlayerInfoController : MonoBehaviour {
 	public Text funcStats;
 	public Text ooStats;
 	public Text gitStats;
-	public GameObject xpBar;
 	public Text pType;
 	public RectTransform xpFill;
 	public Text level;
-	public Color healthNormal;
-	public Color healthDamaged;
-	public Color healthDangerouslyLow;
 	public RectTransform healthObj;
 	public Player player;
 
