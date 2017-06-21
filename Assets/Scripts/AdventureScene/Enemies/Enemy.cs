@@ -58,6 +58,11 @@ public abstract class Enemy : Entity<EnemyStats> {
 			if (!curTargetPos.Equals (lastTargetPos)) {
 				lastTargetPos = curTargetPos;
 
+				if (grid.endless) {
+					Vector3 movement = target.position - transform.position;
+					GetComponent<Rigidbody2D> ().velocity = movement.normalized * 0.8f;
+				} else {
+
 				if (curTargetPos != null) {
 					Point enemyPos = CurrentEnemyPoint ();
 
@@ -69,6 +74,7 @@ public abstract class Enemy : Entity<EnemyStats> {
 						Vector3 movement = target.position - transform.position;
 						GetComponent<Rigidbody2D> ().velocity = movement.normalized * 0.8f;
 					}
+				}
 				}
 			}
 			// MOVEMENT
@@ -94,23 +100,29 @@ public abstract class Enemy : Entity<EnemyStats> {
 	}
 
 	public virtual void MoveEnemy () {
-		if (currentBr != null) {
-			Vector2 bcRealPos = currentBr.toRealCoordinates (grid);
-			if (Vector2.Distance (transform.position, 
-				new Vector2 (bcRealPos.x, bcRealPos.y)) > 0.1f) {
-				Vector3 movement = new Vector2 (bcRealPos.x - transform.position.x,
-					bcRealPos.y - transform.position.y);
-				GetComponent<Rigidbody2D> ().velocity = movement.normalized * 0.8f;
-			} else {
-				currentBr = currentBr.next;
-			}
+		if (grid.endless) {
+			Vector3 movement = target.position - transform.position;
+			GetComponent<Rigidbody2D> ().velocity = movement.normalized * 0.8f;
+			return;
 		} else {
-			if (Vector2.Distance(target.position, transform.position) < 0.2f) {
-				GetComponent<Rigidbody2D> ().velocity = new Vector2(0,0);
+			if (currentBr != null) {
+				Vector2 bcRealPos = currentBr.toRealCoordinates (grid);
+				if (Vector2.Distance (transform.position, 
+					   new Vector2 (bcRealPos.x, bcRealPos.y)) > 0.1f) {
+					Vector3 movement = new Vector2 (bcRealPos.x - transform.position.x,
+						                  bcRealPos.y - transform.position.y);
+					GetComponent<Rigidbody2D> ().velocity = movement.normalized * 0.8f;
+				} else {
+					currentBr = currentBr.next;
+				}
 			} else {
-				Vector3 movement = target.position - transform.position;
-				GetComponent<Rigidbody2D> ().velocity = movement.normalized * 0.8f;
-				return;
+				if (Vector2.Distance (target.position, transform.position) < 0.2f) {
+					GetComponent<Rigidbody2D> ().velocity = new Vector2 (0, 0);
+				} else {
+					Vector3 movement = target.position - transform.position;
+					GetComponent<Rigidbody2D> ().velocity = movement.normalized * 0.8f;
+					return;
+				}
 			}
 		}
 	}

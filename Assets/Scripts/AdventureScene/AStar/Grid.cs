@@ -8,6 +8,7 @@ public class Grid : MonoBehaviour {
 
 	public int Width;
 	public int Height;
+	public bool endless;
 
 	public Node[,] Nodes;
 
