@@ -115,7 +115,7 @@ public class ToniScript : MonoBehaviour {
 	private void MakeAllFoodStudentAppear () {
 		Transform Huxely308 = GameObject.FindGameObjectWithTag ("Huxely308").transform;
 		int maxChild = Huxely308.childCount;
-		for (int i = 20; i < maxChild; i++) {
+		for (int i = 19; i < maxChild; i++) {
 			Huxely308.GetChild (i).gameObject.SetActive (true);
 		}
 	}

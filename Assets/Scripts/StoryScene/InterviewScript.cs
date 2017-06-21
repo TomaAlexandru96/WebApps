@@ -23,6 +23,7 @@ public class InterviewScript : MonoBehaviour {
 	public GameObject exitGate1;
 	public GameObject exitGate2;
 	public GameObject receptionist;
+	public GameObject directionPanel;
 
 	private int numberOfThisQuestion;
 	private int questionsAsked;
@@ -99,6 +100,7 @@ public class InterviewScript : MonoBehaviour {
 				yield return new WaitForSeconds (5f);
 				Exit (exitGate1);
 				Exit (exitGate2);
+				directionPanel.SetActive (false);
 				GameObject.FindGameObjectWithTag ("Player").GetComponent<Player> ().SetMovement (true);
 				GameObject.FindGameObjectWithTag ("Canvas").GetComponent<CanvasScript> ().AddPartyPanel ();
 				GameObject.FindGameObjectWithTag ("Labs").GetComponent<Labs> ().AddStudents ();
