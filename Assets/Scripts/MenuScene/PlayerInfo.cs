@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class PlayerInfo : MonoBehaviour {
 
-	public User user = CurrentUser.GetInstance ().GetUserInfo ();
+	public User user;
 	public Image avatar;
 	public Text characterName;
 	public Text webStats;
@@ -41,10 +41,5 @@ public class PlayerInfo : MonoBehaviour {
 			xpFillScale.x = (float) (stats.xp % stats.baseLevelXP) / stats.baseLevelXP;
 			xpFill.localScale = xpFillScale;	
 		});
-	}
-
-	public void SetUser (User user) {
-		this.user = user;
-		UpdateInfo ();
 	}
 }
