@@ -103,7 +103,6 @@ public static class PathFinder
 	//Neighbour options
 	//Our diamond pattern offsets top/bottom/left/right by 2 instead of 1
 	private static Point[] surrounding = new Point[]{                         
-		new Point(0, 1), new Point(-1, 0), new Point(1, 0), new Point(0,-1),	
-		new Point(-1, 1), new Point(-1, -1), new Point(1, 1), new Point(1, -1)
+		new Point(0, 1), new Point(-1, 0), new Point(1, 0), new Point(0,-1)
 	};
 }
