@@ -8,6 +8,10 @@ public class AbilityElement : MonoBehaviour {
 	public GameObject selected;
 	public Text key;
 	public Text abilityName;
+	public Sprite mele;
+	public Sprite bomb;
+	public Sprite bullet;
+	public Sprite electricity;
 
 	public Ability ability;
 	private float lastUsed;
@@ -18,6 +22,20 @@ public class AbilityElement : MonoBehaviour {
 		this.abilityName.text = ability.ToString ();
 		selected.SetActive (false);
 		lastUsed = Time.time - ability.GetCooldown ();
+		switch (index) {
+		case 1:
+			GetComponent<Image> ().sprite = mele;
+			break;
+		case 2:
+			GetComponent<Image> ().sprite = bomb;
+			break;
+		case 3: 
+			GetComponent<Image> ().sprite = bullet;
+			break;
+		case 4:
+			GetComponent<Image> ().sprite = electricity;
+			break;
+		}
 	}
 
 	public bool Use () {
@@ -40,5 +58,6 @@ public class AbilityElement : MonoBehaviour {
 		float deltaTime = Mathf.Clamp(Time.time - lastUsed, 0, ability.GetCooldown ());
 
 		GetComponent<Image> ().fillAmount = deltaTime / ability.GetCooldown ();
+
 	}
 }
