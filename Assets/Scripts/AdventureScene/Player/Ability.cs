@@ -36,7 +36,7 @@ public class Ability {
 		case DebugGun: 
 			return "Debug Gun";
 		case ElectricShock:
-			return "Electrik Shock";
+			return "Electric Shock";
 		default:
 			return "No ability";
 		}
