@@ -77,13 +77,13 @@ public class ToniScript : MonoBehaviour {
 		if (inside && index < maxSize &&  (Time.time - dateTime) > 2) {
 			Conversation();
 		}
-		if (foodInfo && (Time.time - dateTime) > 5) {
+		if (foodInfo && (Time.time - dateTime) > 3) {
 			directionPanel.transform.GetComponent<DirectionPanel> ().DisplayText ("Eating food increase your health, you can grab food with (Space key)");
 			foodFinished = true;
 			foodInfo = false;
 			dateTime = Time.time;
 		}
-		if (foodFinished && (Time.time - dateTime) > 15) {
+		if (foodFinished && (Time.time - dateTime) > 5) {
 			huxely308.GetComponent<Controller308> ().DissapearFood ();
 			FoodGone ();
 			directionPanel.SetActive (true);
@@ -92,7 +92,7 @@ public class ToniScript : MonoBehaviour {
 			dateTime = Time.time;
 			interview = true;
 		}
-		if (interview && (Time.time - dateTime) > 5) {
+		if (interview && (Time.time - dateTime) > 3) {
 			directionPanel.SetActive (true);
 			directionPanel.transform.GetComponent<DirectionPanel> ().DisplayText ("Go to 341, 342 for your interview, near main staircase..");
 			foreach (GameObject arrow in arrowsAcc) {
